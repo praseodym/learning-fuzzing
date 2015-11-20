@@ -1,0 +1,16 @@
+# Auto detect text files and perform LF normalization
+*        text=auto
+
+*.java   text diff=java
+*.aj     text diff=java
+*.html   text diff=html
+*.css    text
+*.js     text
+*.sql    text
+
+# Declare files that will always have CRLF line endings on checkout.
+*.bat    text eol=crlf
+
+# Denote all files that are truly binary and should not be modified.
+*.png    binary
+*.jpg    binary
