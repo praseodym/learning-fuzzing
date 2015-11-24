@@ -30,5 +30,6 @@ add_executable(afl-gotcpu afl-gotcpu.c ${COMM_HDR})
 #add_executable(test-instr test-instr.c)
 
 add_library(forkserver MODULE forkserver.c net_praseodym_activelearner_ForkServer.h ${COMM_HDR})
+add_executable(forkserver_test forkserver.c net_praseodym_activelearner_ForkServer.h ${COMM_HDR})
 
 #set_target_properties(libforkserver PROPERTIES SUFFIX ".so")

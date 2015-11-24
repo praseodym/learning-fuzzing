@@ -286,7 +286,16 @@ enum {
 
 
 JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_hello(JNIEnv *env, jobject obj) {
-  printf("derp");
+  printf("hello\n");
+}
+
+JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_pre(JNIEnv *env, jobject obj) {
+  printf("pre\n");
+
+}
+
+JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_post(JNIEnv *env, jobject obj) {
+  printf("post\n");
 }
 
 
