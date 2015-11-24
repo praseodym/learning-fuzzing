@@ -38,7 +38,7 @@ public class MealyMachineLearner implements CommandLineRunner {
 
     @Autowired
     SUL<String, String> sul;
-l
+
     private SimpleAlphabet<String> alphabet;
 
     private Experiment.MealyExperiment<String, String> experiment() {
