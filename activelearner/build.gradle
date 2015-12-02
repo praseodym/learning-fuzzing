@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '1.3.0.RC1'
+        springBootVersion = '1.3.0.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -15,12 +15,16 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'spring-boot' 
-
+apply plugin: 'spring-boot'
 jar {
     baseName = 'activelearner'
     version = '0.0.1-SNAPSHOT'
 }
+
+springBoot {
+    mainClass = 'net.praseodym.activelearner.ActivelearnerApplication'
+}
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
