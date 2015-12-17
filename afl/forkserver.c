@@ -53,6 +53,8 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include <sys/file.h>
+#include <linux/memfd.h>
+#include <asm/unistd_64.h>
 
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined (__OpenBSD__)
 #  include <sys/sysctl.h>
@@ -237,6 +239,27 @@ static u32 a_extras_cnt;              /* Total number of tokens available */
 
 static u8* (*post_handler)(u8* buf, u32* len);
 
+static char* stdout_buffer;
+static s32 stdout_fd = -1;
+
+#ifndef F_LINUX_SPECIFIC_BASE
+#define F_LINUX_SPECIFIC_BASE 1024
+#endif
+
+#ifndef F_ADD_SEALS
+#define F_ADD_SEALS (F_LINUX_SPECIFIC_BASE + 9)
+#define F_GET_SEALS (F_LINUX_SPECIFIC_BASE + 10)
+
+#define F_SEAL_SEAL     0x0001  /* prevent further seals from being set */
+#define F_SEAL_SHRINK   0x0002  /* prevent file from shrinking */
+#define F_SEAL_GROW     0x0004  /* prevent file from growing */
+#define F_SEAL_WRITE    0x0008  /* prevent writes */
+#endif
+
+static int memfd_create(const char *name, unsigned int flags) {
+  return syscall(__NR_memfd_create, name, flags);
+}
+
 /* Interesting values, as per config.h */
 
 static s8  interesting_8[]  = { INTERESTING_8 };
@@ -283,21 +306,6 @@ enum {
   /* 04 */ FAULT_NOINST,
   /* 05 */ FAULT_NOBITS
 };
-
-
-JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_hello(JNIEnv *env, jobject obj) {
-  printf("hello\n");
-}
-
-JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_pre(JNIEnv *env, jobject obj) {
-  printf("pre\n");
-
-}
-
-JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_post(JNIEnv *env, jobject obj) {
-  printf("post\n");
-}
-
 
 /* Get unix time in milliseconds */
 
@@ -1222,6 +1230,14 @@ static void setup_shm(void) {
   
   if (!trace_bits) PFATAL("shmat() failed");
 
+  // Create a memfd (shm) to save stdout of our target
+  const int shm_size = 1024*1024;
+  int ret;
+  stdout_fd = memfd_create("stdout_fd", MFD_ALLOW_SEALING);
+  ret = ftruncate(stdout_fd, shm_size);
+  ret = fcntl(stdout_fd, F_ADD_SEALS, F_SEAL_SHRINK);
+  stdout_buffer = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, stdout_fd, 0);
+  SAYF("stdout_fd: %d\n", stdout_fd);
 }
 
 
@@ -1836,6 +1852,14 @@ static void init_forkserver(char** argv) {
 
   if (!forksrv_pid) {
 
+//    FILE *stdout_file = fdopen(stdout_fd, "w");
+//    fwrite("forked", 1, 6, stdout_file);
+//    fclose(stdout_file);
+    SAYF("stdout_fd in fork is %d\n", stdout_fd);
+    //char *shm = mmap(NULL, 1024*1024, PROT_WRITE, MAP_PRIVATE, stdout_fd, 0);
+    //if (shm == MAP_FAILED)
+    //  FATAL("fork stdout mmap ERROR %d\n", errno);
+    
     struct rlimit r;
 
     /* Umpf. On OpenBSD, the default fd limit for root users is set to
@@ -1881,7 +1905,16 @@ static void init_forkserver(char** argv) {
 
     setsid();
 
-    dup2(dev_null_fd, 1);
+//    FILE* stdout_test_file = fopen("/tmp/test", "w");
+//    int stdout_test_fd = fileno(stdout_test_file);
+//    fwrite("derp", 1, 4, stdout_test_file);
+//    fclose(stdout_test_file);
+//    dup2(stdout_test_fd, 1);
+
+    printf("\n\nfork dup stdout_fd: %d\n", stdout_fd);
+    dup2(stdout_fd, 1);
+
+//    dup2(dev_null_fd, 1);
     dup2(dev_null_fd, 2);
 
     if (out_file) {
@@ -1905,6 +1938,7 @@ static void init_forkserver(char** argv) {
     close(st_pipe[0]);
     close(st_pipe[1]);
 
+    close(stdout_fd);
     close(out_dir_fd);
     close(dev_null_fd);
     close(dev_urandom_fd);
@@ -2203,6 +2237,9 @@ static u8 run_target(char** argv) {
 
     /* In non-dumb mode, we have the fork server up and running, so simply
        tell it to have at it, and then read back PID. */
+
+    // rewind stdout_fd
+    lseek(stdout_fd, 0, SEEK_SET);
 
     if ((res = write(fsrv_ctl_fd, &prev_timed_out, 4)) != 4) {
 
@@ -7340,10 +7377,307 @@ static void save_cmdline(u32 argc, char** argv) {
 
 }
 
+/* Forkserver main entry point */
+int main(int argc, char** argv) {
+
+  s32 opt;
+  u64 prev_queued = 0;
+  u32 sync_interval_cnt = 0, seek_to;
+  u8  *extras_dir = 0;
+  u8  mem_limit_given = 0;
+
+  char** use_argv;
+
+  while ((opt = getopt(argc, argv, "+i:o:f:m:t:T:dnCB:S:M:x:Q")) > 0)
+
+    switch (opt) {
+
+      case 'i':
+
+        if (in_dir) FATAL("Multiple -i options not supported");
+        in_dir = optarg;
+
+        if (!strcmp(in_dir, "-")) in_place_resume = 1;
+
+        break;
+
+      case 'o': /* output dir */
+
+        if (out_dir) FATAL("Multiple -o options not supported");
+        out_dir = optarg;
+        break;
+
+      case 'M':
+
+        force_deterministic = 1;
+        /* Fall through */
+
+      case 'S': /* sync ID */
+
+        if (sync_id) FATAL("Multiple -S or -M options not supported");
+        sync_id = optarg;
+        break;
+
+      case 'f': /* target file */
+
+        if (out_file) FATAL("Multiple -f options not supported");
+        out_file = optarg;
+        break;
+
+      case 'x':
+
+        if (extras_dir) FATAL("Multiple -x options not supported");
+        extras_dir = optarg;
+        break;
+
+      case 't': {
+
+        u8 suffix = 0;
+
+        if (timeout_given) FATAL("Multiple -t options not supported");
+
+        if (sscanf(optarg, "%u%c", &exec_tmout, &suffix) < 1 ||
+            optarg[0] == '-') FATAL("Bad syntax used for -t");
+
+        if (exec_tmout < 5) FATAL("Dangerously low value of -t");
+
+        if (suffix == '+') timeout_given = 2; else timeout_given = 1;
+
+        break;
+
+      }
+
+      case 'm': {
+
+        u8 suffix = 'M';
+
+        if (mem_limit_given) FATAL("Multiple -m options not supported");
+        mem_limit_given = 1;
+
+        if (!strcmp(optarg, "none")) {
+
+          mem_limit = 0;
+          break;
+
+        }
+
+        if (sscanf(optarg, "%llu%c", &mem_limit, &suffix) < 1 ||
+            optarg[0] == '-') FATAL("Bad syntax used for -m");
+
+        switch (suffix) {
+
+          case 'T': mem_limit *= 1024 * 1024; break;
+          case 'G': mem_limit *= 1024; break;
+          case 'k': mem_limit /= 1024; break;
+          case 'M': break;
+
+          default:  FATAL("Unsupported suffix or bad syntax for -m");
+
+        }
+
+        if (mem_limit < 5) FATAL("Dangerously low value of -m");
+
+        if (sizeof(rlim_t) == 4 && mem_limit > 2000)
+          FATAL("Value of -m out of range on 32-bit systems");
+
+      }
+
+        break;
+
+      case 'd':
+
+        if (skip_deterministic) FATAL("Multiple -d options not supported");
+        skip_deterministic = 1;
+        use_splicing = 1;
+        break;
+
+      case 'B':
+
+        /* This is a secret undocumented option! It is useful if you find
+           an interesting test case during a normal fuzzing process, and want
+           to mutate it without rediscovering any of the test cases already
+           found during an earlier run.
+
+           To use this mode, you need to point -B to the fuzz_bitmap produced
+           by an earlier run for the exact same binary... and that's it.
+
+           I only used this once or twice to get variants of a particular
+           file, so I'm not making this an official setting. */
+
+        if (in_bitmap) FATAL("Multiple -B options not supported");
+
+        in_bitmap = optarg;
+        read_bitmap(in_bitmap);
+        break;
+
+      case 'C':
+
+        if (crash_mode) FATAL("Multiple -C options not supported");
+        crash_mode = FAULT_CRASH;
+        break;
+
+      case 'n':
+
+        if (dumb_mode) FATAL("Multiple -n options not supported");
+        if (getenv("AFL_DUMB_FORKSRV")) dumb_mode = 2; else dumb_mode = 1;
+
+        break;
+
+      case 'T':
+
+        if (use_banner) FATAL("Multiple -T options not supported");
+        use_banner = optarg;
+        break;
+
+      case 'Q':
+
+        if (qemu_mode) FATAL("Multiple -Q options not supported");
+        qemu_mode = 1;
+
+        if (!mem_limit_given) mem_limit = MEM_LIMIT_QEMU;
+
+        break;
+
+      default:
+
+        usage(argv[0]);
+
+    }
+
+  if (optind == argc || !in_dir || !out_dir) usage(argv[0]);
+
+  setup_signal_handlers();
+  check_asan_opts();
+
+  if (sync_id) fix_up_sync();
+
+  if (!strcmp(in_dir, out_dir))
+    FATAL("Input and output directories can't be the same");
+
+  if (dumb_mode) {
+
+    if (crash_mode) FATAL("-C and -n are mutually exclusive");
+    if (qemu_mode)  FATAL("-Q and -n are mutually exclusive");
+
+  }
+
+  if (getenv("AFL_NO_FORKSRV"))   no_forkserver    = 1;
+  if (getenv("AFL_NO_CPU_RED"))   no_cpu_meter_red = 1;
+  if (getenv("AFL_NO_VAR_CHECK")) no_var_check     = 1;
+
+  if (dumb_mode == 2 && no_forkserver)
+    FATAL("AFL_DUMB_FORKSRV and AFL_NO_FORKSRV are mutually exclusive");
+
+  save_cmdline(argc, argv);
+
+  fix_up_banner(argv[optind]);
+
+  check_if_tty();
+
+  get_core_count();
+  check_crash_handling();
+  check_cpu_governor();
+
+  setup_post();
+  setup_shm();
+
+  setup_dirs_fds();
+  read_testcases(); // TODO: skip for forkserver mode
+  load_auto();
+
+  pivot_inputs();
+
+  if (extras_dir) load_extras(extras_dir);
+
+  if (!timeout_given) find_timeout();
+
+  detect_file_args(argv + optind + 1);
+
+  if (!out_file) setup_stdio_file();
+
+  check_binary(argv[optind]);
+
+  use_argv = argv + optind;
+
+  perform_dry_run(use_argv);
+
+  start_time = get_cur_time();
+
+  if (qemu_mode)
+    use_argv = get_qemu_argv(argv[0], argv + optind, argc - optind);
+  else
+    use_argv = argv + optind;
+
+  perform_dry_run(use_argv);
+
+  cull_queue();
+
+  show_init_stats();
+
+  seek_to = find_start_position();
+
+  write_stats_file(0, 0);
+  save_auto();
+
+  //if (stop_soon) goto stop_fuzzing;
+
+  /* Woop woop woop */
+
+//  skipped_fuzz = fuzz_one(use_argv);
+
+//  init_forkserver - calibrate
+//  common_fuzz_stuff - fuzz_one
+
+  // Test code
+  /*printf("run\n");
+  char* testcase = "1";
+  printf("testcase: %s\n", testcase);
+
+  //main(7, argv);
+  // put testcase in out_file / out_fd
+  printf("out_file: %s\n", out_file);
+  write_to_testcase(testcase, (u32) sizeof(testcase));
+
+  // argv for target
+  char* argvy[] = {NULL};
+  run_target(argvy);
+
+  printf("stdout: %s\n", stdout_buffer);*/
+}
+
+
+void stop() {
+  //write_bitmap();
+  //write_stats_file(0, 0);
+  //save_auto();
+  
+  // TODO: clean up memfd (stdout_fd)
+
+  /* Running for more than 30 minutes but still doing first cycle? */
+
+  if (queue_cycle == 1 && get_cur_time() - start_time > 30 * 60 * 1000) {
+
+    SAYF("\n" cYEL "[!] " cRST
+                 "Stopped during the first cycle, results may be incomplete.\n"
+                         "    (For info on resuming, see %s/README.)\n", doc_path);
+
+  }
+
+  //fclose(plot_file);
+  destroy_queue();
+  destroy_extras();
+  ck_free(target_path);
+
+  alloc_report();
+
+  OKF("We're done here. Have a nice day!\n");
+
+  exit(0);
+}
 
 /* Main entry point */
 
-int main(int argc, char** argv) {
+int main_original(int argc, char** argv) {
 
   s32 opt;
   u64 prev_queued = 0;
@@ -7684,4 +8018,55 @@ stop_fuzzing:
 
   exit(0);
 
+}
+
+JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_hello(JNIEnv *env, jobject obj) {
+  SAYF("hello\n");
+}
+
+JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_pre(JNIEnv *env, jobject obj, jstring jargv) {
+  const char *xargv = (*env)->GetStringUTFChars(env, jargv, 0);
+
+  SAYF("pre\n");
+  SAYF("argv: %s\n", xargv);
+
+  // TODO: get at least target program path via JNI
+  char* argv[] = {"afl-test", "-i", "afl_in", "-o", "afl_out", "--", "/home/mark/tigress-target/simpletarget", NULL};
+
+  main(7, argv);
+
+  (*env)->ReleaseStringUTFChars(env, jargv, xargv);
+}
+
+JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_ForkServer_run(JNIEnv *env, jobject obj, jstring jtestcase) {
+  jbyte* testcase = (*env)->GetByteArrayElements(env, jtestcase, NULL);
+  jsize testcase_length = (*env)->GetArrayLength(env, jtestcase);
+
+  SAYF("run\n");
+  SAYF("testcase: %s\n", testcase);
+
+  //main(7, argv);
+  // put testcase in out_file / out_fd
+  SAYF("out_file: %s\n", out_file);
+  write_to_testcase(testcase, (u32) testcase_length);
+
+  // argv for target
+  char* argv[] = {NULL};
+  run_target(argv);
+
+  __off64_t stdout_position = lseek(stdout_fd, 0, SEEK_CUR);
+  SAYF("lseek: %d\n", stdout_position);
+  SAYF("stdout: %s\n", stdout_buffer);
+
+  (*env)->ReleaseByteArrayElements(env, jtestcase, testcase, 0);
+
+  jbyteArray array = (*env)->NewByteArray(env, (jsize) stdout_position);
+  (*env)->SetByteArrayRegion(env, array, 0, (jsize) stdout_position, (jbyte*)stdout_buffer);
+  return array;
+  
+}
+
+JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_post(JNIEnv *env, jobject obj) {
+  SAYF("post\n");
+  stop();
 }

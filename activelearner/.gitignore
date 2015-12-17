@@ -9,3 +9,5 @@ out/
 
 # Others
 learnedModel.*
+afl_in/
+afl_out/

@@ -18,10 +18,18 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_hello
 /*
  * Class:     net_praseodym_activelearner_ForkServer
  * Method:    pre
- * Signature: ()V
+ * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_pre
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     net_praseodym_activelearner_ForkServer
+ * Method:    run
+ * Signature: ([B)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_ForkServer_run
+  (JNIEnv *, jobject, jbyteArray);
 
 /*
  * Class:     net_praseodym_activelearner_ForkServer
