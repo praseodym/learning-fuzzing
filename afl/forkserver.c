@@ -1237,7 +1237,7 @@ static void setup_shm(void) {
   ret = ftruncate(stdout_fd, shm_size);
   ret = fcntl(stdout_fd, F_ADD_SEALS, F_SEAL_SHRINK);
   stdout_buffer = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, stdout_fd, 0);
-  SAYF("stdout_fd: %d\n", stdout_fd);
+  //SAYF("stdout_fd: %d\n", stdout_fd);
 }
 
 
@@ -1855,7 +1855,7 @@ static void init_forkserver(char** argv) {
 //    FILE *stdout_file = fdopen(stdout_fd, "w");
 //    fwrite("forked", 1, 6, stdout_file);
 //    fclose(stdout_file);
-    SAYF("stdout_fd in fork is %d\n", stdout_fd);
+    //SAYF("stdout_fd in fork is %d\n", stdout_fd);
     //char *shm = mmap(NULL, 1024*1024, PROT_WRITE, MAP_PRIVATE, stdout_fd, 0);
     //if (shm == MAP_FAILED)
     //  FATAL("fork stdout mmap ERROR %d\n", errno);
@@ -1911,7 +1911,7 @@ static void init_forkserver(char** argv) {
 //    fclose(stdout_test_file);
 //    dup2(stdout_test_fd, 1);
 
-    printf("\n\nfork dup stdout_fd: %d\n", stdout_fd);
+    //printf("\n\nfork dup stdout_fd: %d\n", stdout_fd);
     dup2(stdout_fd, 1);
 
 //    dup2(dev_null_fd, 1);
@@ -7672,7 +7672,7 @@ void stop() {
 
   OKF("We're done here. Have a nice day!\n");
 
-  exit(0);
+  //exit(0);
 }
 
 /* Main entry point */
@@ -8027,8 +8027,8 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_hello(JNIEnv 
 JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_pre(JNIEnv *env, jobject obj, jstring jargv) {
   const char *xargv = (*env)->GetStringUTFChars(env, jargv, 0);
 
-  SAYF("pre\n");
-  SAYF("argv: %s\n", xargv);
+  //SAYF("pre\n");
+  OKF("afl argv: %s", xargv);
 
   // TODO: get at least target program path via JNI
   char* argv[] = {"afl-test", "-i", "afl_in", "-o", "afl_out", "--", "/home/mark/tigress-target/simpletarget", NULL};
@@ -8042,12 +8042,11 @@ JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_ForkServer_run(JNI
   jbyte* testcase = (*env)->GetByteArrayElements(env, jtestcase, NULL);
   jsize testcase_length = (*env)->GetArrayLength(env, jtestcase);
 
-  SAYF("run\n");
-  SAYF("testcase: %s\n", testcase);
+  //SAYF("run\n");
+  //SAYF("testcase: %s\n", testcase);
 
-  //main(7, argv);
   // put testcase in out_file / out_fd
-  SAYF("out_file: %s\n", out_file);
+  //SAYF("out_file: %s\n", out_file);
   write_to_testcase(testcase, (u32) testcase_length);
 
   // argv for target
@@ -8055,8 +8054,8 @@ JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_ForkServer_run(JNI
   run_target(argv);
 
   __off64_t stdout_position = lseek(stdout_fd, 0, SEEK_CUR);
-  SAYF("lseek: %d\n", stdout_position);
-  SAYF("stdout: %s\n", stdout_buffer);
+  //SAYF("lseek: %d\n", stdout_position);
+  //SAYF("stdout: %s\n", stdout_buffer);
 
   (*env)->ReleaseByteArrayElements(env, jtestcase, testcase, 0);
 
@@ -8067,6 +8066,6 @@ JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_ForkServer_run(JNI
 }
 
 JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_post(JNIEnv *env, jobject obj) {
-  SAYF("post\n");
+  //SAYF("post\n");
   stop();
 }

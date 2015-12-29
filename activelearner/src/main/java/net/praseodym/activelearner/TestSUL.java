@@ -13,9 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Test SUL
+ * Test System under Learning (SUL)
  */
-@Component
 public class TestSUL implements SUL<String, String> {
     List<String> previousSteps;
 
@@ -37,7 +36,7 @@ public class TestSUL implements SUL<String, String> {
         if (in == null)
             return null;
 
-        // TODO: support for multiple steps
+        // TODO: support for multiple steps (i.e. keep process alive)
         if (!previousSteps.isEmpty())
             return null;
 

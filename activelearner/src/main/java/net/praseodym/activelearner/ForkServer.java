@@ -1,8 +1,13 @@
 package net.praseodym.activelearner;
 
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+
 /**
  * Fork server native binding
  */
+@Component
+@Lazy
 public class ForkServer {
     public native void hello();
 
