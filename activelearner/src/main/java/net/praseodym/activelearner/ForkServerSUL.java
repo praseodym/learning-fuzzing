@@ -37,12 +37,13 @@ public class ForkServerSUL implements SUL<String, String>, InitializingBean, Dis
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        logger.info("Starting forkserver");
         forkServer.pre("test");
     }
 
     @Override
     public void destroy() throws Exception {
-        logger.info("{} executions total", execs++);
+        logger.info("Stopping forkserver with {} total target executions", execs++);
         forkServer.post();
     }
 

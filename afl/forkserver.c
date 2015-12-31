@@ -8034,6 +8034,7 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_pre(JNIEnv *e
   char* argv[] = {"afl-test", "-i", "afl_in", "-o", "afl_out", "--", "/home/mark/tigress-target/simpletarget", NULL};
 
   main(7, argv);
+  fflush(stdout);
 
   (*env)->ReleaseStringUTFChars(env, jargv, xargv);
 }
@@ -8068,4 +8069,5 @@ JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_ForkServer_run(JNI
 JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_post(JNIEnv *env, jobject obj) {
   //SAYF("post\n");
   stop();
+  fflush(stdout);
 }
