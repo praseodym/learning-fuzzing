@@ -39,6 +39,14 @@ JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_ForkServer_run
 JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_post
   (JNIEnv *, jobject);
 
+/*
+ * Class:     net_praseodym_activelearner_ForkServer
+ * Method:    getQueuedDiscovered
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_net_praseodym_activelearner_ForkServer_getQueuedDiscovered
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

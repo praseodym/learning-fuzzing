@@ -17,6 +17,8 @@ public class ForkServer {
 
     public native void post();
 
+    public native int getQueuedDiscovered();
+
     public static void main(String[] args) {
         ForkServer forkServer = new ForkServer();
         forkServer.hello();

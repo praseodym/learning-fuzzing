@@ -8048,11 +8048,10 @@ JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_ForkServer_run(JNI
 
   // put testcase in out_file / out_fd
   //SAYF("out_file: %s\n", out_file);
-  write_to_testcase(testcase, (u32) testcase_length);
 
   // argv for target
   char* argv[] = {NULL};
-  run_target(argv);
+  common_fuzz_stuff(argv, (u8 *) testcase, (u32) testcase_length);
 
   __off64_t stdout_position = lseek(stdout_fd, 0, SEEK_CUR);
   //SAYF("lseek: %d\n", stdout_position);
@@ -8070,4 +8069,9 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_post(JNIEnv *
   //SAYF("post\n");
   stop();
   fflush(stdout);
+}
+
+JNIEXPORT jint JNICALL Java_net_praseodym_activelearner_ForkServer_getQueuedDiscovered
+        (JNIEnv *env, jobject obj) {
+  return queued_discovered;
 }

@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 /**
  * Forkserver System under Learning (SUL)
- *
+ * <p>
  * We do not implement SUL#fork() because we are not a true single-step SUL.
  */
 public class ForkServerSUL implements SUL<String, String>, InitializingBean, DisposableBean {
@@ -29,7 +29,8 @@ public class ForkServerSUL implements SUL<String, String>, InitializingBean, Dis
     private byte[] previousInput;
     private byte[] previousOutput;
 
-    int execs;
+    private int queuedDiscovered;
+    private int execs;
 
     public ForkServerSUL() {
         System.loadLibrary("forkserver");
@@ -38,6 +39,7 @@ public class ForkServerSUL implements SUL<String, String>, InitializingBean, Dis
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.info("Starting forkserver");
+        // TODO: configurable initial input
         forkServer.pre("test");
     }
 
@@ -82,6 +84,13 @@ public class ForkServerSUL implements SUL<String, String>, InitializingBean, Dis
             out = new String(newOutput);
         } else {
             out = new String(output);
+        }
+
+        int newQueuedDiscovered = forkServer.getQueuedDiscovered();
+        if (queuedDiscovered != newQueuedDiscovered) {
+            logger.info("Discovered new testcase ({} -> {}) - stdin: [{}], stdout: [{}]",
+                    queuedDiscovered, newQueuedDiscovered, in, out);
+            queuedDiscovered = newQueuedDiscovered;
         }
 
         previousInput = input;
