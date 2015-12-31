@@ -1,5 +1,6 @@
 package net.praseodym.activelearner;
 
+import com.google.common.primitives.Bytes;
 import de.learnlib.api.SUL;
 import de.learnlib.api.SULException;
 import org.slf4j.Logger;
@@ -9,12 +10,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Nullable;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Forkserver System under Learning (SUL)
@@ -25,10 +21,15 @@ public class ForkServerSUL implements SUL<String, String>, InitializingBean, Dis
 
     private final Logger logger = LoggerFactory.getLogger(ForkServerSUL.class);
 
+    public static final byte[] SEPARATOR = System.lineSeparator().getBytes();
+
     @Autowired
     private ForkServer forkServer;
 
-    private List<String> previousSteps;
+    private byte[] previousInput;
+    private byte[] previousOutput;
+
+    int execs;
 
     public ForkServerSUL() {
         System.loadLibrary("forkserver");
@@ -41,13 +42,15 @@ public class ForkServerSUL implements SUL<String, String>, InitializingBean, Dis
 
     @Override
     public void destroy() throws Exception {
+        logger.info("{} executions total", execs++);
         forkServer.post();
     }
 
     @Override
     public void pre() {
         logger.trace("pre");
-        previousSteps = new ArrayList<>();
+        previousInput = null;
+        previousOutput = null;
     }
 
     @Override
@@ -61,16 +64,27 @@ public class ForkServerSUL implements SUL<String, String>, InitializingBean, Dis
         logger.trace("stdin: {}", in);
 
         if (in == null)
-            return null;
+            in = "";
 
-        // TODO: support for multiple steps (replay previous steps)
-        if (!previousSteps.isEmpty())
-            return null;
+        byte[] input = in.getBytes();
+        if (previousInput == null) {
+            input = Bytes.concat(input, SEPARATOR);
+        } else {
+            input = Bytes.concat(previousInput, input, SEPARATOR);
+        }
 
-        byte[] output = forkServer.run("1\0".getBytes());
-        String out = new String(output);
+        execs++;
+        byte[] output = forkServer.run(input);
+        String out;
+        if (previousOutput != null && previousOutput.length > 0) {
+            byte[] newOutput = Arrays.copyOfRange(output, previousOutput.length, output.length);
+            out = new String(newOutput);
+        } else {
+            out = new String(output);
+        }
 
-        previousSteps.add(in);
+        previousInput = input;
+        previousOutput = output;
 
         logger.trace("stdout: {}", out);
 

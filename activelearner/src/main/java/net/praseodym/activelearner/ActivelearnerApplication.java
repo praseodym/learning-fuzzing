@@ -26,6 +26,6 @@ public class ActivelearnerApplication {
     @Bean
     @Profile("!forkserver")
     public SUL<String, String> testSul() {
-        return new TestSUL();
+        return new ProcessSUL();
     }
 }
