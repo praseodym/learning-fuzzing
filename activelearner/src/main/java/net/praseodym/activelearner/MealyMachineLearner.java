@@ -21,11 +21,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -89,25 +90,27 @@ public class MealyMachineLearner implements CommandLineRunner {
         return result;
     }
 
-    private void writeResult(MealyMachine mealyMachine) {
+    private void writeResult(MealyMachine mealyMachine) throws IOException {
         // Copy configuration to output file
         // Files.copy(Paths.get(configFile), Paths.get(learner.config.output_dir + "/config.properties"), StandardCopyOption.REPLACE_EXISTING);
 
-        // Write output to file
+        // Write output to file and convert to pdf
 //        String outputFilename = learner.config.output_dir + "/learnedModel.dot";
         String outputFilename = "learnedModel.dot";
         String outputFilenamePdf = outputFilename.replace(".dot", ".pdf");
         File dotFile = new File(outputFilename);
         PrintStream psDotFile = null;
-        try {
-            psDotFile = new PrintStream(dotFile);
-            GraphDOT.write(mealyMachine, alphabet, psDotFile);
+        psDotFile = new PrintStream(dotFile);
+        GraphDOT.write(mealyMachine, alphabet, psDotFile);
+        Runtime.getRuntime().exec("dot -Tpdf -o " + outputFilenamePdf + " " + outputFilename);
 
-            // Convert .dot to .pdf
-            Runtime.getRuntime().exec("dot -Tpdf -o " + outputFilenamePdf + " " + outputFilename);
-        } catch (java.io.IOException e) {
-            log.error("Could not write dot file", e);
-        }
+        // Simplify .dot file and convert to pdf
+        List<String> lines = Files.readAllLines(Paths.get(outputFilename));
+        List<String> simpified = SimplifyDot.simplifyDot(lines);
+        String simplifiedOutputFilename = outputFilename.replace(".dot", "_simple.dot");
+        Files.write(Paths.get(simplifiedOutputFilename), simpified, Charset.defaultCharset());
+        String simplifiedOutputFilenamePdf = outputFilenamePdf.replace(".pdf", "_simple.pdf");
+        Runtime.getRuntime().exec("dot -Tpdf -o " + simplifiedOutputFilenamePdf + " " + simplifiedOutputFilename);
     }
 
     @Override

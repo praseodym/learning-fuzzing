@@ -8,6 +8,6 @@ build/
 out/
 
 # Others
-learnedModel.*
+learnedModel*
 afl_in/
 afl_out/
