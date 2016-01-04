@@ -1,5 +1,6 @@
 package net.praseodym.activelearner;
 
+import de.learnlib.api.MembershipOracle;
 import de.learnlib.api.SUL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +20,22 @@ public class ActivelearnerApplication {
 
     @Bean
     @Profile("forkserver")
+    public MembershipOracle.MealyMembershipOracle<String, String> forkserverMealyOracle(SUL<String, String> sul) {
+        // dumb method
+        return new LoggingSULOracle<String, String>(sul);
+//        return new ForkServerMealyOracle();
+    }
+
+    @Bean
+    @Profile("forkserver")
     public SUL<String, String> forkserverSul() {
         return new ForkServerSUL();
+    }
+
+    @Bean
+    @Profile("!forkserver")
+    public MembershipOracle.MealyMembershipOracle<String, String> processMealyOracle(SUL<String, String> sul) {
+        return new LoggingSULOracle<String, String>(sul);
     }
 
     @Bean

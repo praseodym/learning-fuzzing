@@ -21,7 +21,8 @@ public class ForkServerSUL implements SUL<String, String>, InitializingBean, Dis
 
     private final Logger logger = LoggerFactory.getLogger(ForkServerSUL.class);
 
-    public static final byte[] SEPARATOR = System.lineSeparator().getBytes();
+    public static final String SEPARATOR = System.lineSeparator();
+    public static final byte[] SEPARATOR_BYTE = SEPARATOR.getBytes();
 
     @Autowired
     private ForkServer forkServer;
@@ -71,15 +72,17 @@ public class ForkServerSUL implements SUL<String, String>, InitializingBean, Dis
 
         byte[] input = in.getBytes();
         if (previousInput == null) {
-            input = Bytes.concat(input, SEPARATOR);
+            input = Bytes.concat(input, SEPARATOR_BYTE);
         } else {
-            input = Bytes.concat(previousInput, input, SEPARATOR);
+            input = Bytes.concat(previousInput, input, SEPARATOR_BYTE);
         }
 
         execs++;
         byte[] output = forkServer.run(input);
         String out;
-        if (previousOutput != null && previousOutput.length > 0) {
+        if (previousOutput != null && previousOutput.length == output.length) {
+            return null;
+        } else if (previousOutput != null && previousOutput.length > 0) {
             byte[] newOutput = Arrays.copyOfRange(output, previousOutput.length, output.length);
             out = new String(newOutput);
         } else {

@@ -4,6 +4,7 @@ import de.learnlib.api.SUL;
 import de.learnlib.api.SULException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
@@ -14,7 +15,7 @@ import java.io.OutputStream;
 /**
  * External process System under Learning (SUL) wrapper
  */
-public class ProcessSUL implements SUL<String, String> {
+public class ProcessSUL implements SUL<String, String>, DisposableBean {
 
     private final Logger logger = LoggerFactory.getLogger(ProcessSUL.class);
 
@@ -23,6 +24,12 @@ public class ProcessSUL implements SUL<String, String> {
     private Process p;
     private OutputStream stdin;
     private BufferedReader stdout;
+    private int execs;
+
+    @Override
+    public void destroy() throws Exception {
+        logger.info("{} total process executions", execs++);
+    }
 
     @Override
     public void pre() {
@@ -31,6 +38,7 @@ public class ProcessSUL implements SUL<String, String> {
         ProcessBuilder pb = new ProcessBuilder("/home/mark/target/simpletarget");
         try {
             p = pb.start();
+            execs++;
             stdin = p.getOutputStream();
             stdout = new BufferedReader(new InputStreamReader(p.getInputStream()));
         } catch (IOException e) {
@@ -73,4 +81,5 @@ public class ProcessSUL implements SUL<String, String> {
 
         return out;
     }
+
 }

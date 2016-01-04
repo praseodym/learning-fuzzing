@@ -4,7 +4,6 @@ import de.learnlib.algorithms.lstargeneric.mealy.ExtensibleLStarMealy;
 import de.learnlib.algorithms.lstargeneric.mealy.ExtensibleLStarMealyBuilder;
 import de.learnlib.api.EquivalenceOracle;
 import de.learnlib.api.MembershipOracle;
-import de.learnlib.api.SUL;
 import de.learnlib.eqtests.basic.WMethodEQOracle;
 import de.learnlib.experiments.Experiment;
 import de.learnlib.oracles.CounterOracle;
@@ -37,23 +36,24 @@ public class MealyMachineLearner implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(MealyMachineLearner.class);
 
+    public static final int WMETHOD_MAX_DEPTH = 3;
+
     @Autowired
-    SUL<String, String> sul;
+    MembershipOracle.MealyMembershipOracle<String, String> mealyMembershipOracle;
 
     private SimpleAlphabet<String> alphabet;
 
     private Experiment.MealyExperiment<String, String> experiment() {
         alphabet = new SimpleAlphabet<>();
+        // TODO: configurable alphabet
         Stream.of("1", "2", "3", "4", "5", "42").forEach(alphabet::add);
 
         MapMapping<String, String> errorMapping = new MapMapping<>();
 
-        // FIXME: BasicMembershipOracle is never called?
-        MembershipOracle<String, Word<String>> membershipOracle = new CounterOracle.MealyCounterOracle<>(new BasicMembershipOracle(sul), "membership queries");
+        MembershipOracle<String, Word<String>> membershipOracle = new CounterOracle.MealyCounterOracle<>(mealyMembershipOracle, "membership queries");
 
         // TODO: caching and other stuff
-
-        EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle = new WMethodEQOracle.MealyWMethodEQOracle<>(3, new BasicEquivalenceOracle(sul));
+        EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle = new WMethodEQOracle.MealyWMethodEQOracle<>(WMETHOD_MAX_DEPTH, mealyMembershipOracle);
 
         ExtensibleLStarMealy<String, String> learningAlgorithm = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(membershipOracle).create();
 
@@ -99,8 +99,7 @@ public class MealyMachineLearner implements CommandLineRunner {
         String outputFilename = "learnedModel.dot";
         String outputFilenamePdf = outputFilename.replace(".dot", ".pdf");
         File dotFile = new File(outputFilename);
-        PrintStream psDotFile = null;
-        psDotFile = new PrintStream(dotFile);
+        PrintStream psDotFile = new PrintStream(dotFile);
         GraphDOT.write(mealyMachine, alphabet, psDotFile);
         Runtime.getRuntime().exec("dot -Tpdf -o " + outputFilenamePdf + " " + outputFilename);
 
