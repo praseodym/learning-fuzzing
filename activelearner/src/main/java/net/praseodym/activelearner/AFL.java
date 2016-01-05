@@ -5,11 +5,11 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
- * Fork server native binding
+ * afl native binding
  */
 @Component
 @Lazy
-public class ForkServer {
+public class AFL {
     public native void hello();
 
     public native void pre(String arguments);
@@ -21,31 +21,23 @@ public class ForkServer {
 
     public native int getQueuedDiscovered();
 
-    public native int getNumberOfExecutions();
-
     public static void main(String[] args) {
-        ForkServer forkServer = new ForkServer();
-        forkServer.hello();
-        //long l = System.nanoTime();
-        //for (int i = 0; i < 100; i++) {
-        //    forkServer.hello();
-        //}
-        //System.out.println("");
-        //System.out.println(System.nanoTime() - l);
+        AFL AFL = new AFL();
+        AFL.hello();
 
-        forkServer.pre("test");
+        AFL.pre("test");
 
-        byte[] testOutput = forkServer.run("1\0".getBytes());
+        byte[] testOutput = AFL.run("1\0".getBytes());
         System.out.println("Testcase 1 output: [" + new String(testOutput) + "]");
 
-        testOutput = forkServer.run("42\0".getBytes());
+        testOutput = AFL.run("42\0".getBytes());
 
         System.out.println("Testcase 2 output: [" + new String(testOutput) + "]");
 
-        forkServer.post();
+        AFL.post();
     }
 
     static {
-        System.loadLibrary("forkserver");
+        System.loadLibrary("afl");
     }
 }

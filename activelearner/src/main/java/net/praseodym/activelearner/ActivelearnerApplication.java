@@ -21,27 +21,27 @@ public class ActivelearnerApplication {
     }
 
     @Bean
-    @Profile("forkserver")
-    public MembershipOracle.MealyMembershipOracle<String, String> forkserverMealyOracle(SUL<String, String> sul) {
+    @Profile("afl")
+    public MembershipOracle.MealyMembershipOracle<String, String> aflMealyOracle(SUL<String, String> sul) {
         // dumb method
 //        return new LoggingSULOracle<String, String>(sul);
-        return new ForkServerMealyOracle();
+        return new AFLMealyOracle();
     }
 
     @Bean
-    @Profile("forkserver")
-    public SUL<String, String> forkserverSul() {
-        return new ForkServerSUL();
+    @Profile("afl")
+    public SUL<String, String> aflSul() {
+        return new AFLSUL();
     }
 
     @Bean
-    @Profile("!forkserver")
+    @Profile("!afl")
     public MembershipOracle.MealyMembershipOracle<String, String> processMealyOracle(SUL<String, String> sul) {
         return new LoggingSULOracle<String, String>(sul);
     }
 
     @Bean
-    @Profile("!forkserver")
+    @Profile("!afl")
     public SUL<String, String> testSul() {
         return new ProcessSUL();
     }

@@ -29,7 +29,7 @@
 #include "debug.h"
 #include "alloc-inl.h"
 #include "hash.h"
-#include "net_praseodym_activelearner_ForkServer.h"
+#include "net_praseodym_activelearner_AFL.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -8021,11 +8021,11 @@ stop_fuzzing:
 
 }
 
-JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_hello(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_hello(JNIEnv *env, jobject obj) {
   SAYF("hello\n");
 }
 
-JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_pre(JNIEnv *env, jobject obj, jstring jargv) {
+JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env, jobject obj, jstring jargv) {
   const char *xargv = (*env)->GetStringUTFChars(env, jargv, 0);
 
   //SAYF("pre\n");
@@ -8040,7 +8040,7 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_pre(JNIEnv *e
   (*env)->ReleaseStringUTFChars(env, jargv, xargv);
 }
 
-JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_ForkServer_run(JNIEnv *env, jobject obj, jstring jtestcase) {
+JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_run(JNIEnv *env, jobject obj, jstring jtestcase) {
   jbyte* testcase = (*env)->GetByteArrayElements(env, jtestcase, NULL);
   jsize testcase_length = (*env)->GetArrayLength(env, jtestcase);
 
@@ -8066,13 +8066,13 @@ JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_ForkServer_run(JNI
   
 }
 
-JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_post(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_post(JNIEnv *env, jobject obj) {
   //SAYF("post\n");
   stop();
   fflush(stdout);
 }
 
-JNIEXPORT jint JNICALL Java_net_praseodym_activelearner_ForkServer_getQueuedDiscovered
+JNIEXPORT jint JNICALL Java_net_praseodym_activelearner_AFL_getQueuedDiscovered
         (JNIEnv *env, jobject obj) {
   return queued_discovered;
 }

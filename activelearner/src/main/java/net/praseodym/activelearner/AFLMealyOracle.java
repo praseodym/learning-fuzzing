@@ -21,12 +21,12 @@ import java.util.stream.Collectors;
  * we execute the entire prefix/suffix in one step.
  */
 @ParametersAreNonnullByDefault
-public class ForkServerMealyOracle implements MembershipOracle.MealyMembershipOracle<String, String> {
+public class AFLMealyOracle implements MembershipOracle.MealyMembershipOracle<String, String> {
 
-    private final Logger log = LoggerFactory.getLogger(ForkServerMealyOracle.class);
+    private final Logger log = LoggerFactory.getLogger(AFLMealyOracle.class);
 
     @Autowired
-    private ForkServerSUL forkServerSUL;
+    private AFLSUL aflSUL;
 
     @Override
     public void processQueries(Collection<? extends Query<String, Word<String>>> queries) {
@@ -38,18 +38,18 @@ public class ForkServerMealyOracle implements MembershipOracle.MealyMembershipOr
 
     @Override
     public Word<String> answerQuery(Word<String> prefix, Word<String> suffix) {
-        forkServerSUL.pre();
+        aflSUL.pre();
         byte[] prefixInput, prefixOutput, suffixInput, suffixOutput;
         if (prefix.isEmpty()) {
             prefixInput = null;
             prefixOutput = null;
         } else {
             prefixInput = concatenateWord(prefix).getBytes();
-            prefixOutput = forkServerSUL.run(null, null, prefixInput);
+            prefixOutput = aflSUL.run(null, null, prefixInput);
         }
         suffixInput = concatenateWord(suffix).getBytes();
-        suffixOutput = forkServerSUL.run(prefixInput, prefixOutput, suffixInput);
-        forkServerSUL.post();
+        suffixOutput = aflSUL.run(prefixInput, prefixOutput, suffixInput);
+        aflSUL.post();
 
         String output = new String(suffixOutput);
         log.debug("Answered query with prefix [{}] and suffix [{}]: [{}]", prefix, suffix, output);
@@ -57,7 +57,7 @@ public class ForkServerMealyOracle implements MembershipOracle.MealyMembershipOr
     }
 
     private String concatenateWord(Word<String> in) {
-        return in.stream().collect(Collectors.joining(ForkServerSUL.SEPARATOR));
+        return in.stream().collect(Collectors.joining(AFLSUL.SEPARATOR));
     }
 
     /**
@@ -67,7 +67,7 @@ public class ForkServerMealyOracle implements MembershipOracle.MealyMembershipOr
     private Word<String> buildWord(@Nullable String in, int length) {
         WordBuilder<String> wb = new WordBuilder<>();
         if (in != null) {
-            Collections.addAll(wb, in.split(ForkServerSUL.SEPARATOR));
+            Collections.addAll(wb, in.split(AFLSUL.SEPARATOR));
         }
         while (wb.size() != length) {
             wb.add("");

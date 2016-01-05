@@ -14,19 +14,19 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 
 /**
- * Forkserver System under Learning (SUL)
+ * AFL System under Learning (SUL)
  * <p>
  * We do not implement SUL#fork() because we are not a true single-step SUL.
  */
-public class ForkServerSUL implements SUL<String, String>, InitializingBean, DisposableBean {
+public class AFLSUL implements SUL<String, String>, InitializingBean, DisposableBean {
 
-    private final Logger log = LoggerFactory.getLogger(ForkServerSUL.class);
+    private final Logger log = LoggerFactory.getLogger(AFLSUL.class);
 
     public static final String SEPARATOR = System.lineSeparator();
     public static final byte[] SEPARATOR_BYTE = SEPARATOR.getBytes();
 
     @Autowired
-    private ForkServer forkServer;
+    private AFL afl;
 
     private byte[] previousInput;
     private byte[] previousOutput;
@@ -34,21 +34,17 @@ public class ForkServerSUL implements SUL<String, String>, InitializingBean, Dis
     private int queuedDiscovered;
     private int execs;
 
-    public ForkServerSUL() {
-        System.loadLibrary("forkserver");
-    }
-
     @Override
     public void afterPropertiesSet() throws Exception {
         log.info("Starting forkserver");
         // TODO: configurable initial input
-        forkServer.pre("test");
+        afl.pre("test");
     }
 
     @Override
     public void destroy() throws Exception {
         log.info("Stopping forkserver, total run calls: {}", execs++);
-        forkServer.post();
+        afl.post();
     }
 
     @Override
@@ -94,7 +90,7 @@ public class ForkServerSUL implements SUL<String, String>, InitializingBean, Dis
         }
 
         // Run target
-        byte[] output = forkServer.run(input);
+        byte[] output = afl.run(input);
         execs++;
 
         if (log.isTraceEnabled()) {
@@ -109,7 +105,7 @@ public class ForkServerSUL implements SUL<String, String>, InitializingBean, Dis
         }
 
         // Check forkserver for new edges
-        int newQueuedDiscovered = forkServer.getQueuedDiscovered();
+        int newQueuedDiscovered = afl.getQueuedDiscovered();
         if (queuedDiscovered != newQueuedDiscovered) {
             log.info("Discovered new interesting testcase ({} -> {}) - stdin: [{}], stdout: [{}]",
                     queuedDiscovered, newQueuedDiscovered, new String(input), new String(output));
