@@ -39,14 +39,21 @@ public class ForkServerMealyOracle implements MembershipOracle.MealyMembershipOr
     @Override
     public Word<String> answerQuery(Word<String> prefix, Word<String> suffix) {
         forkServerSUL.pre();
-        log.debug("Answering query with prefix [{}] and suffix [{}]", prefix, suffix);
-        String in = concatenateWord(prefix);
-        forkServerSUL.step(in);
-        in = concatenateWord(suffix);
-        String out = forkServerSUL.step(in);
+        byte[] prefixInput, prefixOutput, suffixInput, suffixOutput;
+        if (prefix.isEmpty()) {
+            prefixInput = null;
+            prefixOutput = null;
+        } else {
+            prefixInput = concatenateWord(prefix).getBytes();
+            prefixOutput = forkServerSUL.run(null, null, prefixInput);
+        }
+        suffixInput = concatenateWord(suffix).getBytes();
+        suffixOutput = forkServerSUL.run(prefixInput, prefixOutput, suffixInput);
         forkServerSUL.post();
 
-        return buildWord(out, suffix.length());
+        String output = new String(suffixOutput);
+        log.debug("Answered query with prefix [{}] and suffix [{}]: [{}]", prefix, suffix, output);
+        return buildWord(output, suffix.length());
     }
 
     private String concatenateWord(Word<String> in) {
@@ -63,7 +70,7 @@ public class ForkServerMealyOracle implements MembershipOracle.MealyMembershipOr
             Collections.addAll(wb, in.split(ForkServerSUL.SEPARATOR));
         }
         while (wb.size() != length) {
-            wb.add(null);
+            wb.add("");
         }
         return wb.toWord();
     }

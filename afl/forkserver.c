@@ -8031,7 +8031,7 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_ForkServer_pre(JNIEnv *e
   OKF("afl argv: %s", xargv);
 
   // TODO: get at least target program path via JNI
-  char* argv[] = {"afl-test", "-i", "afl_in", "-o", "afl_out", "--", "/home/mark/tigress-target/simpletarget", NULL};
+  char* argv[] = {"afl-test", "-i", "afl_in", "-o", "afl_out", "--", "/home/mark/target/simpletarget", NULL};
 
   main(7, argv);
   fflush(stdout);

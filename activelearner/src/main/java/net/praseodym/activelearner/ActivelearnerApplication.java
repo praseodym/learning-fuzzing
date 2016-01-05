@@ -22,8 +22,8 @@ public class ActivelearnerApplication {
     @Profile("forkserver")
     public MembershipOracle.MealyMembershipOracle<String, String> forkserverMealyOracle(SUL<String, String> sul) {
         // dumb method
-        return new LoggingSULOracle<String, String>(sul);
-//        return new ForkServerMealyOracle();
+//        return new LoggingSULOracle<String, String>(sul);
+        return new ForkServerMealyOracle();
     }
 
     @Bean
