@@ -1,5 +1,6 @@
 package net.praseodym.activelearner;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -13,11 +14,14 @@ public class ForkServer {
 
     public native void pre(String arguments);
 
+    @Cacheable("runs")
     public native byte[] run(byte[] testcase);
 
     public native void post();
 
     public native int getQueuedDiscovered();
+
+    public native int getNumberOfExecutions();
 
     public static void main(String[] args) {
         ForkServer forkServer = new ForkServer();

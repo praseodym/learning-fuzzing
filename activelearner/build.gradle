@@ -39,10 +39,10 @@ ext {
 }
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter')
+    compile('org.springframework.boot:spring-boot-starter-cache')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 
-    compile('com.google.guava:guava:18.0')
+    compile('com.google.guava:guava')
 
     compile("de.learnlib:learnlib-cache:${learnlibVersion}")
     compile("de.learnlib:learnlib-basic-eqtests:${learnlibVersion}")

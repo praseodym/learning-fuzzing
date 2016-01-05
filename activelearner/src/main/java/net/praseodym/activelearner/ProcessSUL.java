@@ -28,7 +28,7 @@ public class ProcessSUL implements SUL<String, String>, DisposableBean {
 
     @Override
     public void destroy() throws Exception {
-        logger.info("{} total process executions", execs++);
+        logger.info("Total executions: {}", execs);
     }
 
     @Override

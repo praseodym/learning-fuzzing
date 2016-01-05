@@ -47,7 +47,7 @@ public class ForkServerSUL implements SUL<String, String>, InitializingBean, Dis
 
     @Override
     public void destroy() throws Exception {
-        log.info("Stopping forkserver with {} total target executions", execs++);
+        log.info("Stopping forkserver, total run calls: {}", execs++);
         forkServer.post();
     }
 

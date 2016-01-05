@@ -7670,6 +7670,7 @@ void stop() {
 
   alloc_report();
 
+  OKF("Total executions: %d", total_execs);
   OKF("We're done here. Have a nice day!\n");
 
   //exit(0);
