@@ -1,0 +1,690 @@
+Reachability problems:
+===============================
+error_0 reachable via input sequence
+[G, F, S]
+---------------
+
+error_3 reachable via input sequence
+[P, C, S, S]
+---------------
+
+error_4 reachable via input sequence
+[P, P, E, L, R, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, D, N, K, J, A]
+---------------
+
+error_12 reachable via input sequence
+[P, P, E, L, P, L, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, A, D, R]
+---------------
+
+error_18 reachable via input sequence
+[P, P, E, L, R, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, D, N, K, C, R]
+---------------
+
+error_19 reachable via input sequence
+[P, P, F]
+---------------
+
+error_20 reachable via input sequence
+[P, P, L, S, M, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, J, F]
+---------------
+
+error_24 reachable via input sequence
+[P, P, E, L, P, L, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, Q, M, A, F]
+---------------
+
+error_25 reachable via input sequence
+[P, C, D, Q, E, B, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, M, P, O]
+---------------
+
+error_27 reachable via input sequence
+[P, K, J, C]
+---------------
+
+error_29 reachable via input sequence
+[T, I, E]
+---------------
+
+error_36 reachable via input sequence
+[P, P, L, S, M, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, J, C, N]
+---------------
+
+error_41 reachable via input sequence
+[T, L, C]
+---------------
+
+error_43 reachable via input sequence
+[P, P, E, L, P, L, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, F, Q, R, O, M, C, B]
+---------------
+
+error_44 reachable via input sequence
+[P, P, E, L, P, L, F, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, Q, P, Q]
+---------------
+
+error_47 reachable via input sequence
+[P, P, E, L, P, L, F, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, Q, M, A, D]
+---------------
+
+error_48 reachable via input sequence
+[P, P, E, L, R, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, D, N, K, K]
+---------------
+
+error_49 reachable via input sequence
+[P, C, I, P]
+---------------
+
+error_50 reachable via input sequence
+[G, R, E]
+---------------
+
+error_59 reachable via input sequence
+[G, E, G]
+---------------
+
+error_64 reachable via input sequence
+[G, B, I]
+---------------
+
+error_70 reachable via input sequence
+[T, F, M]
+---------------
+
+error_72 reachable via input sequence
+[P, K, C, T]
+---------------
+
+error_76 reachable via input sequence
+[P, A, E]
+---------------
+
+error_77 reachable via input sequence
+[P, P, E, L, P, L, F, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, Q, M, K, M]
+---------------
+
+error_80 reachable via input sequence
+[P, P, E, L, P, L, F, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, Q, J, A, D, K, J, O]
+---------------
+
+error_81 reachable via input sequence
+[P, P, L, S, M, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, J, K, J, E]
+---------------
+
+error_86 reachable via input sequence
+[P, C, H]
+---------------
+
+error_92 reachable via input sequence
+[P, P, E, L, R, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, J, F, D, N, C, P]
+---------------
+
+error_93 reachable via input sequence
+[P, K, S]
+---------------
+
+error_94 reachable via input sequence
+[P, P, L, S, M, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, R, S, J, A, P]
+---------------
+
+error_95 reachable via input sequence
+[T, E, R]
+---------------
+
+All other errors unreachable
+
+
+LTL problems:
+===============================
+Formula: (false R (! (iH & (true U iL)) | (! ((oU & ! iL) & X (! iL U (oX & ! iL))) U (iL | iC))))
+"input C precedes output U, output X between input H and input L"
+Formula is satisfied.
+---------------
+
+Formula: (! (true U iB) | ((iO & (! X (! iB U iA) | X (! iB U (iA & (true U oX))))) U iB))
+"output X responds to input O, input A before input B"
+Formula is not satisfied! An error path is 
+[iG, oX, iB, oZ] ([iL, oV, iK, oX, iT, oU, iS, oU, iC, oU, iT, oZ, iF, oX, iN, oX, iK, oY])*
+---------------
+
+Formula: (false R (! iN | ((! iF | (! oY U ((oU & ! oY) & X (! oY U oV)))) U (oY | (false R (! iF | (oU & X (true U oV))))))))
+"output U, output V responds to input F after input N until output Y"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU, iD, oZ, iN, oU, iF] ([oW, iK, oU, iC, oW, iC, oU, iD, oZ, iN, oU, iF])*
+---------------
+
+Formula: (! (true U iG) | ((! iO | (! iG U (oW & ! iG))) U iG))
+"output W responds to input O before input G"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iN | ((! iJ | (! iR U ((oW & ! iR) & X (! iR U oX)))) U (iR | (false R (! iJ | (oW & X (true U oX))))))))
+"output W, output X responds to input J after input N until input R"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU, iD, oZ, iN, oU, iJ] ([oZ, iE, oW, iE, oY, iQ, oW, iC, oU, iD, oZ, iN, oU, iJ])*
+---------------
+
+Formula: (false R (! (iB & (true U iG)) | ((iI & (! X (! iG U iT) | X (! iG U (iT & (true U oX))))) U iG)))
+"output X responds to input I, input T between input B and input G"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iH | (true U (oX & X (true U oZ)))))
+"output X, output Z always responds to input H"
+Formula is satisfied.
+---------------
+
+Formula: ((false R ! iH) | (true U (iH & (! oU WU iO))))
+"input O precedes output U after input H"
+Formula is satisfied.
+---------------
+
+Formula: (false R (iM & (! X (true U iN) | X (true U (iN & (true U oX))))))
+"output X always responds to input M, input N"
+Formula is not satisfied! An error path is 
+[iP, oW] ([iA, oX, iR, oW, iD, oV, iI, oY, iR, oU, iQ, oX, iE, oY, iF, oU, iD, oV, iN, oW])*
+---------------
+
+Formula: (false R (! (iQ & (true U iB)) | ((! iH | (! iB U ((oZ & ! iB) & X (! iB U oW)))) U iB)))
+"output Z, output W responds to input H between input Q and input B"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! oU | ((iD & (! X (! iS U iC) | X (! iS U (iC & (true U oW))))) U (iS | (false R (iD & (! X (! iS U iC) | X (! iS U (iC & (true U oW))))))))))
+"output W responds to input D, input C after output U until input S"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU] ([iD, oZ, iN, oU, iF, oW, iK, oU, iC, oW, iC, oU])*
+---------------
+
+Formula: (false R (! iH | (true U ((oZ & ! oU) & X (! oU U oV)))))
+"output Z, output V without output U always responds to input H"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iH | ((! iM | (! oX U ((oV & ! oX) & X (! oX U oZ)))) U (oX | (false R (! iM | (oV & X (true U oZ))))))))
+"output V, output Z responds to input M after input H until output X"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! (iF & (true U iS)) | ((! iG | (! iS U (((oW & ! iS) & ! oX) & X ((! iS & ! oX) U oZ)))) U iS)))
+"output W, output Z without output X responds to input G betwen input F and input S"
+Formula is not satisfied! An error path is 
+[iT, oY, iL, oV, iF, oW, iP, oV, iA, oZ, iG, oV, iF, oX, iN, oY, iQ, oX, iB, oX, iK, oU, iP, oX, iB, oY, iI, oV, iL, oW, iS] ([oY, iE, oY, iD, oU, iI, oW, iS])*
+---------------
+
+Formula: (false R (! iE | (true U oY)))
+"output Y always responds to input E"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU, iD, oZ, iA, oW, iE] ([oW, iE, oW, iB, oU, iN, oV, iP, oW, iL, oZ, iM, oW, iC, oU, iD, oZ, iA, oW, iE])*
+---------------
+
+Formula: (false R (! (iT & (true U iM)) | (! oW U (iM | ((oZ & ! oW) & X (! oW U iQ))))))
+"output Z, input Q precedes output W between input T and input M"
+Formula is not satisfied! An error path is 
+[iT, oY, iE, oW, iA, oX, iT, oW, iR, oY, iQ, oU, iD, oX, iM, oY] ([iB, oW, iS, oY, iM, oV, iS, oW])*
+---------------
+
+Formula: (false R (! iO | ((! iH | (! iL U (((oU & ! iL) & ! oY) & X ((! iL & ! oY) U oV)))) U (iL | (false R (! iH | ((oU & ! oY) & X (! oY U oV))))))))
+"output U, output V without output Y responds to input H after input O until input L"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iF | ((! iT | (! iO U ((oV & ! iO) & X (! iO U oZ)))) U (iO | (false R (! iT | (oV & X (true U oZ))))))))
+"output V, output Z responds to input T after input F until input O"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU, iD, oZ, iQ, oU, iT, oZ, iF, oW, iR, oX, iT] ([oV, iP, oY, iR, oX, iT])*
+---------------
+
+Formula: (false R (! iK | ((! iH | (! iS U (((oY & ! iS) & ! oU) & X ((! iS & ! oU) U oZ)))) U (iS | (false R (! iH | ((oY & ! oU) & X (! oU U oZ))))))))
+"output Y, output Z without output U responds to input H after input K until input S"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! (iH & (true U oW)) | (! ((oV & ! oW) & X (! oW U (oY & ! oW))) U (oW | iQ))))
+"input Q precedes output V, output Y between input H and output W"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iP | ((iM & (! X (! iK U iS) | X (! iK U (iS & (true U oV))))) U (iK | (false R (iM & (! X (! iK U iS) | X (! iK U (iS & (true U oV))))))))))
+"output V responds to input M, input S after input P until input K"
+Formula is not satisfied! An error path is 
+[iP, oW] ([iA, oX, iR, oW, iD, oV, iI, oY, iR, oU, iQ, oX, iE, oY, iF, oU, iD, oV, iN, oW])*
+---------------
+
+Formula: ((false R ! iC) | (! iC U (iC & (! (true U oV) | (! oV U ((iB & ! oV) & X (! oV U oW)))))))
+"input B, output W precedes output V after input C"
+Formula is not satisfied! An error path is 
+[iP, oW, iK, oX, iC, oV] ([iE, oY, iR, oV, iD, oV, iJ, oU, iD, oX, iF, oY, iK, oV, iS, oY])*
+---------------
+
+Formula: (false R (! (iJ & (true U iS)) | ((! iH | (! iS U (((oZ & ! iS) & ! oX) & X ((! iS & ! oX) U oY)))) U iS)))
+"output Z, output Y without output X responds to input H betwen input J and input S"
+Formula is satisfied.
+---------------
+
+Formula: (! (true U iG) | (! ((oZ & ! iG) & X (! iG U (oX & ! iG))) U (iG | iT)))
+"input T precedes output Z, output X before input G"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! ((iI & ! iK) & (true U iK)) | ((! iH | (! iK U (oX & ! iK))) U iK)))
+"output X responds to input H between input I and input K"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iQ | (true U oX)))
+"output X always responds to input Q"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU, iD, oZ, iQ] ([oU, iE, oW, iB, oW, iA, oU, iC, oU, iD, oZ, iQ])*
+---------------
+
+Formula: (false R (! iF | ((! iH | (! iN U (((oZ & ! iN) & ! oW) & X ((! iN & ! oW) U oX)))) U (iN | (false R (! iH | ((oZ & ! oW) & X (! oW U oX))))))))
+"output Z, output X without output W responds to input H after input F until input N"
+Formula is satisfied.
+---------------
+
+Formula: ((false R ! iN) | (true U (iN & (! oW WU iB))))
+"input B precedes output W after input N"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU, iD, oZ, iN, oU, iF, oW] ([iF, oU, iC, oY, iF, oU, iD, oV, iN, oW, iC, oU, iD, oZ, iN, oU, iF, oW])*
+---------------
+
+Formula: (false R (! iH | (true U (oZ & X (true U oW)))))
+"output Z, output W always responds to input H"
+Formula is satisfied.
+---------------
+
+Formula: (! (true U iH) | ((! iA | (! iH U ((oU & ! iH) & X (! iH U oX)))) U iH))
+"output U, output X responds to input A before input H"
+Formula is satisfied.
+---------------
+
+Formula: (false R (iF & (! ! iI | (! oX WU (iM | iI)))))
+"input M precedes output X after input F until input I"
+Formula is not satisfied! An error path is 
+[iP, oW] ([iA, oX, iR, oW, iD, oV, iI, oY, iR, oU, iQ, oX, iE, oY, iF, oU, iD, oV, iN, oW])*
+---------------
+
+Formula: (false R (! oW | ((iO & (! X (! oV U iM) | X (! oV U (iM & (true U oX))))) U (oV | (false R (iO & (! X (! oV U iM) | X (! oV U (iM & (true U oX))))))))))
+"output X responds to input O, input M after output W until output V"
+Formula is not satisfied! An error path is 
+[iP, oW] ([iA, oX, iR, oW, iD, oV, iI, oY, iR, oU, iQ, oX, iE, oY, iF, oU, iD, oV, iN, oW])*
+---------------
+
+Formula: (false R (! (iB & (true U iG)) | (! ((oX & ! iG) & X (! iG U (oU & ! iG))) U (iG | iI))))
+"input I precedes output X, output U between input B and input G"
+Formula is satisfied.
+---------------
+
+Formula: (false R (iP & (! ! iR | (! oX WU (iN | iR)))))
+"input N precedes output X after input P until input R"
+Formula is not satisfied! An error path is 
+[iP, oW] ([iA, oX, iR, oW, iD, oV, iI, oY, iR, oU, iQ, oX, iE, oY, iF, oU, iD, oV, iN, oW])*
+---------------
+
+Formula: (! (true U iH) | ((iS & (! X (! iH U iJ) | X (! iH U (iJ & (true U oX))))) U iH))
+"output X responds to input S, input J before input H"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! ((iJ & ! iG) & (true U iG)) | (! oW U (iP | iG))))
+"input P precedes output W between input J and input G"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! (iT & (true U iG)) | ((! iB | (! iG U (((oY & ! iG) & ! oU) & X ((! iG & ! oU) U oZ)))) U iG)))
+"output Y, output Z without output U responds to input B betwen input T and input G"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! (oU & (true U iH)) | ((iA & (! X (! iH U iG) | X (! iH U (iG & (true U oZ))))) U iH)))
+"output Z responds to input A, input G between output U and input H"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iF | ((! iS | (! iM U ((oV & ! iM) & X (! iM U oZ)))) U (iM | (false R (! iS | (oV & X (true U oZ))))))))
+"output V, output Z responds to input S after input F until input M"
+Formula is not satisfied! An error path is 
+[iP, oW, iP, oV, iE, oY, iL, oV, iJ, oV, iF, oX, iS] ([oU, iP, oV, iE, oY, iL, oV, iJ, oV, iF, oX, iS])*
+---------------
+
+Formula: (false R (iK & (! ! iG | (! oU WU (iH | iG)))))
+"input H precedes output U after input K until input G"
+Formula is not satisfied! An error path is 
+[iP, oW] ([iA, oX, iR, oW, iD, oV, iI, oY, iR, oU, iQ, oX, iE, oY, iF, oU, iD, oV, iN, oW])*
+---------------
+
+Formula: (false R (! iQ | (true U ((oX & ! oV) & X (! oV U oU)))))
+"output X, output U without output V always responds to input Q"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU, iD, oZ, iQ] ([oU, iE, oW, iB, oW, iA, oU, iC, oU, iD, oZ, iQ])*
+---------------
+
+Formula: (! (true U iT) | (! ((oW & ! iT) & X (! iT U (oU & ! iT))) U (iT | iH)))
+"input H precedes output W, output U before input T"
+Formula is not satisfied! An error path is 
+[iG, oX, iE, oW, iS, oU, iT] ([oW, iT, oY, iP, oX, iP, oY, iS, oU, iT])*
+---------------
+
+Formula: (false R (! (iH & (true U iK)) | ((! iF | (! iK U ((oX & ! iK) & X (! iK U oV)))) U iK)))
+"output X, output V responds to input F between input H and input K"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iT | (true U (oX & X (true U oY)))))
+"output X, output Y always responds to input T"
+Formula is satisfied.
+---------------
+
+Formula: (! (true U iH) | ((iJ & (! X (! iH U iR) | X (! iH U (iR & (true U oW))))) U iH))
+"output W responds to input J, input R before input H"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iJ | (true U ((oW & ! oU) & X (! oU U oV)))))
+"output W, output V without output U always responds to input J"
+Formula is not satisfied! An error path is 
+[iP, oW, iA, oX, iJ] ([oV, iI, oW, iB, oU, iJ, oY, iA, oX, iJ])*
+---------------
+
+Formula: (! (true U iF) | ((! iH | (! iF U (oX & ! iF))) U iF))
+"output X responds to input H before input F"
+Formula is satisfied.
+---------------
+
+Formula: ((false R ! iH) | (! iH U (iH & (! (true U oU) | (! oU U ((iG & ! oU) & X (! oU U iO)))))))
+"input G, input O precedes output U after input H"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iT | ((! ((oV & ! iM) & X (! iM U (oU & ! iM))) U (iM | iL)) | (false R ! (oV & X (true U oU))))))
+"input L precedes output V, output U after input T until input M"
+Formula is not satisfied! An error path is 
+[iG, oX, iE, oW, iS, oU, iT, oW, iT, oY, iP, oX, iP, oY, iD, oV, iS, oU] ([iC, oX, iS, oU, iM, oW, iB, oZ, iB, oX, iM, oY, iB, oU])*
+---------------
+
+Formula: (false R (! iK | (true U (oX & X (true U oV)))))
+"output X, output V always responds to input K"
+Formula is not satisfied! An error path is 
+[iG, oX, iB, oZ, iL, oV, iK] ([oX, iT, oU, iS, oU, iC, oU, iT, oZ, iF, oX, iI, oW, iL, oY, iK])*
+---------------
+
+Formula: (false R (! (iF & (true U iQ)) | (! oY U (iQ | ((iI & ! oY) & X (! oY U iP))))))
+"input I, input P precedes output Y between input F and input Q"
+Formula is not satisfied! An error path is 
+[iP, oW, iP, oV, iL, oW, iS, oY, iE, oY, iF, oZ, iO, oY, iE, oY, iQ] ([oZ, iJ, oW, iP, oV, iL, oW, iS, oY, iE, oY, iQ])*
+---------------
+
+Formula: (false R (! (oY & (true U iP)) | ((! iI | (! iP U ((oV & ! iP) & X (! iP U oZ)))) U iP)))
+"output V, output Z responds to input I between output Y and input P"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU, iD, oZ, iN, oU, iD, oY, iI, oU, iP] ([oY, iA, oW, iF, oW, iC, oU, iD, oZ, iN, oU, iD, oY, iI, oU, iP])*
+---------------
+
+Formula: (false R (! iB | (! (true U oV) | (! oV U (iE | ((iI & ! oV) & X (! oV U iH)))))))
+"input I, input H precedes output V after input B until input E"
+Formula is not satisfied! An error path is 
+[iG, oX, iB, oZ, iL, oV] ([iK, oX, iT, oU, iS, oU, iC, oU, iT, oZ, iF, oX, iI, oW, iL, oY])*
+---------------
+
+Formula: (! (true U oX) | ((! iM | (! oX U ((oV & ! oX) & X (! oX U oY)))) U oX))
+"output V, output Y responds to input M before output X"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU, iI, oY, iM, oZ, iC, oW, iS, oW, iB, oX] ([iB, oX])*
+---------------
+
+Formula: (! (true U iA) | ((! iO | (! iA U (((oV & ! iA) & ! oZ) & X ((! iA & ! oZ) U oX)))) U iA))
+"output V, output X without output Z responds to input O before input A"
+Formula is not satisfied! An error path is 
+[iP, oW, iK, oX, iJ, oX, iN, oV, iM, oU, iO, oZ, iF, oX, iA] ([oY, iN, oV, iM, oU, iO, oZ, iF, oX, iA])*
+---------------
+
+Formula: (false R (! (iJ & (true U iG)) | ((iK & (! X (! iG U iT) | X (! iG U (iT & (true U oW))))) U iG)))
+"output W responds to input K, input T between input J and input G"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! ((iP & ! iG) & (true U iG)) | ((! iO | (! iG U (oU & ! iG))) U iG)))
+"output U responds to input O between input P and input G"
+Formula is satisfied.
+---------------
+
+Formula: (! (true U oU) | (! oU U ((iM & ! oU) & X (! oU U iJ))))
+"input M, input J always precedes output U"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU] ([iD, oZ, iN, oU, iF, oW, iK, oU, iC, oW, iC, oU])*
+---------------
+
+Formula: (false R (! iH | (false R (! iG | (oZ & X (true U oY))))))
+"output Z, output Y responds to input G after input H"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! (iP & (true U iK)) | ((! iH | (! iK U (((oV & ! iK) & ! oZ) & X ((! iK & ! oZ) U oX)))) U iK)))
+"output V, output X without output Z responds to input H betwen input P and input K"
+Formula is satisfied.
+---------------
+
+Formula: (! (true U iG) | (! ((oX & ! iG) & X (! iG U (oZ & ! iG))) U (iG | iD)))
+"input D precedes output X, output Z before input G"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iQ | (false R (! iG | ((oU & ! oX) & X (! oX U oY))))))
+"output U, output Y without output X responds to input G after input Q"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iL | (false R (! iA | (true U oW)))))
+"output W responds to input A after input L"
+Formula is not satisfied! An error path is 
+[iP, oW, iP, oV, iL, oW, iS, oY, iM, oV, iA] ([oY, iI, oV, iA])*
+---------------
+
+Formula: (false R (! iK | ((! iO | (! oV U ((oZ & ! oV) & X (! oV U oW)))) U (oV | (false R (! iO | (oZ & X (true U oW))))))))
+"output Z, output W responds to input O after input K until output V"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU, iS, oX, iA, oZ, iK, oZ, iO, oY, iS, oV] ([iC, oV, iD, oZ, iQ, oX, iC, oV, iF, oX, iE, oY, iN, oW, iO, oU, iP, oX, iB, oY, iI, oV, iE, oY, iJ, oW, iL, oY, iD, oZ, iM, oW, iC, oU, iS, oX, iA, oZ, iK, oZ, iO, oY, iS, oV])*
+---------------
+
+Formula: (false R (! oV | (false R (iH & (! X (true U iI) | X (! iI U (iI & (true U oX))))))))
+"output X responds to input H, input I after output V"
+Formula is not satisfied! An error path is 
+[iP, oW, iP, oV] ([iE, oY, iJ, oW, iL, oY, iD, oZ, iP, oV])*
+---------------
+
+Formula: (! (true U iH) | ((iG & (! X (! iH U iB) | X (! iH U (iB & (true U oZ))))) U iH))
+"output Z responds to input G, input B before input H"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! ((oY & ! iI) & (true U iI)) | (! oV U (iF | iI))))
+"input F precedes output V between output Y and input I"
+Formula is not satisfied! An error path is 
+[iP, oW, iP, oV, iE, oY, iJ, oW, iL, oY, iJ, oV, iI] ([oY, iJ, oV, iI])*
+---------------
+
+Formula: (! (true U (oV & X (true U oZ))) | (! oV U iA))
+"input A always precedes output V, output Z"
+Formula is not satisfied! An error path is 
+[iP, oW, iP, oV, iP, oZ] ([iQ, oZ, iK, oY, iT, oX, iC, oY, iB, oV, iP, oZ])*
+---------------
+
+Formula: (! (true U iG) | ((iA & (! X (! iG U iK) | X (! iG U (iK & (true U oY))))) U iG))
+"output Y responds to input A, input K before input G"
+Formula is not satisfied! An error path is 
+[iT, oY, iL, oV, iF, oW, iP, oV, iA, oZ, iG, oV, iF, oX, iN, oY, iQ, oX, iB, oX, iK, oU] ([iP, oX, iD, oZ, iL, oV, iC, oX, iN, oY])*
+---------------
+
+Formula: (false R (! iS | (false R (! iM | (oX & X (true U oY))))))
+"output X, output Y responds to input M after input S"
+Formula is not satisfied! An error path is 
+[iP, oW, iA, oX, iS, oU, iJ, oV, iM] ([oU, iJ, oW, iM, oY, iQ, oX, iS, oU, iJ, oV, iM])*
+---------------
+
+Formula: (false R (iS & (! ! iK | (! oY WU (iH | iK)))))
+"input H precedes output Y after input S until input K"
+Formula is not satisfied! An error path is 
+[iP, oW] ([iA, oX, iR, oW, iD, oV, iI, oY, iR, oU, iQ, oX, iE, oY, iF, oU, iD, oV, iN, oW])*
+---------------
+
+Formula: (! (true U oX) | (! oX U ((iO & ! oX) & X (! oX U oU))))
+"input O, output U always precedes output X"
+Formula is not satisfied! An error path is 
+[iG, oX, iB, oZ] ([iL, oV, iK, oX, iT, oU, iS, oU, iC, oU, iT, oZ, iF, oX, iN, oX, iK, oY])*
+---------------
+
+Formula: ((false R ! iK) | (! iK U (iK & (! (true U oU) | (! oU U ((iS & ! oU) & X (! oU U oV)))))))
+"input S, output V precedes output U after input K"
+Formula is not satisfied! An error path is 
+[iP, oW, iK, oX, iC, oV, iP, oU] ([iJ, oY, iS, oX, iB, oY, iI, oV, iE, oY, iJ, oW, iL, oY, iD, oZ, iM, oW, iK, oX, iC, oV, iP, oU])*
+---------------
+
+Formula: (false R (iH & (! ! iQ | ((! iC | (! iQ U (oU & ! iQ))) WU iQ))))
+"output U responds to input C after input H until input Q"
+Formula is not satisfied! An error path is 
+[iP, oW] ([iA, oX, iR, oW, iD, oV, iI, oY, iR, oU, iQ, oX, iE, oY, iF, oU, iD, oV, iN, oW])*
+---------------
+
+Formula: (false R (! (iP & (true U iL)) | (! ((oX & ! iL) & X (! iL U (oU & ! iL))) U (iL | iI))))
+"input I precedes output X, output U between input P and input L"
+Formula is not satisfied! An error path is 
+[iP, oW, iA, oX, iJ, oV, iI, oW, iF, oU, iL] ([oU, iQ, oW, iR, oY, iF, oV, iA, oX, iJ, oV, iI, oW, iF, oU, iL])*
+---------------
+
+Formula: (! (true U iG) | ((! iB | (! iG U (((oW & ! iG) & ! oX) & X ((! iG & ! oX) U oV)))) U iG))
+"output W, output V without output X responds to input B before input G"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! (iN & (true U iG)) | ((! iC | (! iG U ((oX & ! iG) & X (! iG U oU)))) U iG)))
+"output X, output U responds to input C between input N and input G"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iL | (false R (! iQ | (oV & X (true U oY))))))
+"output V, output Y responds to input Q after input L"
+Formula is not satisfied! An error path is 
+[iP, oW, iP, oV, iL, oW, iS, oY, iE, oY, iQ] ([oZ, iJ, oW, iP, oV, iL, oW, iS, oY, iE, oY, iQ])*
+---------------
+
+Formula: (false R (! iH | ((! iD | (! iG U ((oZ & ! iG) & X (! iG U oY)))) U (iG | (false R (! iD | (oZ & X (true U oY))))))))
+"output Z, output Y responds to input D after input H until input G"
+Formula is satisfied.
+---------------
+
+Formula: ((false R ! oW) | (! oW U (oW & (! (true U (oX & X (true U oV))) | (! oX U oZ)))))
+"output Z precedes output X, output V after output W"
+Formula is not satisfied! An error path is 
+[iP, oW, iA, oX] ([iJ, oV, iI, oW, iB, oU, iJ, oY, iA, oX])*
+---------------
+
+Formula: (! (true U iH) | ((iR & (! X (! iH U iA) | X (! iH U (iA & (true U oV))))) U iH))
+"output V responds to input R, input A before input H"
+Formula is satisfied.
+---------------
+
+Formula: (! (true U iI) | ((iH & (! X (! iI U iC) | X (! iI U (iC & (true U oX))))) U iI))
+"output X responds to input H, input C before input I"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU, iI] ([oY, iM, oZ, iC, oW, iS, oW, iE, oW, iI])*
+---------------
+
+Formula: (! (true U (oU & X (true U oV))) | (! oU U iH))
+"input H always precedes output U, output V"
+Formula is not satisfied! An error path is 
+[iP, oW, iA, oX, iS, oU, iJ, oV] ([iM, oU, iJ, oW, iM, oY, iQ, oX, iS, oU, iJ, oV])*
+---------------
+
+Formula: (! (true U iH) | ((! iD | (! iH U (((oU & ! iH) & ! oZ) & X ((! iH & ! oZ) U oX)))) U iH))
+"output U, output X without output Z responds to input D before input H"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! ((iK & ! iQ) & (true U iQ)) | ((! iG | (! iQ U (oX & ! iQ))) U iQ)))
+"output X responds to input G between input K and input Q"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! oW | (false R (! iH | ((oZ & ! oV) & X (! oV U oU))))))
+"output Z, output U without output V responds to input H after output W"
+Formula is satisfied.
+---------------
+
+Formula: (false R (iS & (! ! oY | (! oZ WU (iT | oY)))))
+"input T precedes output Z after input S until output Y"
+Formula is not satisfied! An error path is 
+[iP, oW] ([iA, oX, iR, oW, iD, oV, iI, oY, iR, oU, iQ, oX, iE, oY, iF, oU, iD, oV, iN, oW])*
+---------------
+
+Formula: (false R (! (iG & (true U oX)) | ((! iT | (! oX U (((oW & ! oX) & ! oZ) & X ((! oX & ! oZ) U oY)))) U oX)))
+"output W, output Y without output Z responds to input T betwen input G and output X"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! (iA & (true U oX)) | (! ((oV & ! oX) & X (! oX U (oY & ! oX))) U (oX | iF))))
+"input F precedes output V, output Y between input A and output X"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU, iI, oY, iM, oZ, iM, oW, iA, oW, iN, oV, iI, oY, iL, oX] ([iK, oU, iK, oY, iT, oX, iC, oY, iB, oV, iE, oY, iJ, oW, iL, oY, iL, oX])*
+---------------
+
+Formula: (! (true U iG) | (! oU U (oV | iG)))
+"output V precedes output U before input G"
+Formula is not satisfied! An error path is 
+[iT, oY, iF, oU, iK, oU, iD, oY, iN, oU, iG, oY, iR, oZ, iL, oU, iG, oZ, iO, oX, iM, oX, iQ, oX, iB, oY, iJ, oU] ([iP, oX, iD, oZ, iL, oV, iC, oX, iN, oY])*
+---------------
+
+Formula: (! (true U iH) | (! oZ U (iH | ((iR & ! oZ) & X (! oZ U iC)))))
+"input R, input C precedes output Z before input H"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! oW | ((! iG | (! iP U (((oX & ! iP) & ! oZ) & X ((! iP & ! oZ) U oY)))) U (iP | (false R (! iG | ((oX & ! oZ) & X (! oZ U oY))))))))
+"output X, output Y without output Z responds to input G after output W until input P"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! ((iH & ! oW) & (true U oW)) | ((! iQ | (! oW U (oY & ! oW))) U oW)))
+"output Y responds to input Q between input H and output W"
+Formula is satisfied.
+---------------
+
+Formula: (false R (! iS | ((! iG | (! iC U ((oX & ! iC) & X (! iC U oU)))) U (iC | (false R (! iG | (oX & X (true U oU))))))))
+"output X, output U responds to input G after input S until input C"
+Formula is satisfied.
+---------------
+
+Formula: (false R (iS & (! ! oZ | ((! iG | (! oZ U (oX & ! oZ))) WU oZ))))
+"output X responds to input G after input S until output Z"
+Formula is not satisfied! An error path is 
+[iP, oW] ([iA, oX, iR, oW, iD, oV, iI, oY, iR, oU, iQ, oX, iE, oY, iF, oU, iD, oV, iN, oW])*
+---------------
+
+Formula: (false R (! (iR & (true U iT)) | (! ((oV & ! iT) & X (! iT U (oX & ! iT))) U (iT | iK))))
+"input K precedes output V, output X between input R and input T"
+Formula is not satisfied! An error path is 
+[iG, oX, iR, oV, iI, oW, iR, oV, iS, oX, iD, oY, iJ, oZ, iO, oZ, iD, oU, iT, oX] ([iB, oY, iQ, oU, iB, oX])*
+---------------
+
+Formula: (false R (! (iG & (true U iF)) | (! ((oX & ! iF) & X (! iF U (oW & ! iF))) U (iF | iS))))
+"input S precedes output X, output W between input G and input F"
+Formula is not satisfied! An error path is 
+[iG, oX, iE, oW, iD, oV, iS, oU, iO, oX, iQ, oW, iD, oY, iQ, oU, iB, oX, iF] ([oY, iQ, oU, iB, oX, iF])*
+---------------
+
+Formula: ((false R ! iR) | (! iR U (iR & (! (true U (oY & X (true U oV))) | (! oY U iQ)))))
+"input Q precedes output Y, output V after input R"
+Formula is not satisfied! An error path is 
+[iP, oW, iA, oX, iR, oW, iA, oY] ([iL, oW, iO, oX, iL, oW, iR, oY, iJ, oW, iC, oY, iO, oY, iJ, oU, iP, oX, iB, oY, iI, oV, iE, oY, iJ, oW, iL, oY, iJ, oV, iF, oW, iA, oX, iR, oW, iA, oY])*
+---------------
+
+Formula: (false R (! (iC & (true U oX)) | ((! iD | (! oX U ((oY & ! oX) & X (! oX U oZ)))) U oX)))
+"output Y, output Z responds to input D between input C and output X"
+Formula is not satisfied! An error path is 
+[iP, oW, iC, oU, iD, oZ, iQ, oU, iE, oW, iK, oX] ([iE, oY, iM, oW, iC, oU, iD, oZ, iQ, oU, iE, oW, iK, oX])*
+---------------
+
+Formula: (false R (! (iP & (true U iG)) | ((! iR | (! iG U ((oZ & ! iG) & X (! iG U oU)))) U iG)))
+"output Z, output U responds to input R between input P and input G"
+Formula is satisfied.
+---------------
+
+47 constraints satisfied, 53 unsatisfied.
+
