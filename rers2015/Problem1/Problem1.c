@@ -1,5 +1,5 @@
 #include <stdio.h> 
-#include <assert.h>
+#include "../assert.h"
 #include <math.h>
 #include <stdlib.h>
 
@@ -1399,23 +1399,27 @@
     	if(((a119 == 6) && (cf==1))) {
     		calculate_outputm43(input);
     	} 
-    } 
+    }
     errorCheck();
 
     if((cf==1)) 
-    	fprintf(stderr, "Invalid input: %d\n", input); 
+		{ printf("invalid_state"); exit(2); }
 }
 
-int main()
-{
-    //srand((unsigned)time(NULL));
-    // main i/o-loop
-    while(1)
-    {
-        // read input
-        int input;
-        scanf("%d", &input);        
-        // operate eca engine
-        calculate_output(input);
-    }
+int main() {
+	// main i/o-loop
+	while (1) {
+		// read input
+		int input = 0;
+		int ret = scanf("%d", &input);
+		if (ret == EOF)
+			exit(0);
+		else if (ret == 0) {
+			printf("invalid_input");
+			exit(1);
+		} else {
+			// operate eca engine
+			calculate_output(input);
+		}
+	}
 }
