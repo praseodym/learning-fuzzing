@@ -1402,9 +1402,11 @@
     }
     errorCheck();
 
-    if((cf==1))
-		{ printf("invalid_state"); exit(2); }
-}
+	if (cf==1) {
+		printf("invalid_state");
+		exit(2);
+	}
+ }
 
 int main() {
 	// main i/o-loop
