@@ -1406,7 +1406,7 @@
 		printf("invalid_state\n");
 		exit(2);
 	}
- }
+}
 
 int main() {
 	#ifdef __AFL_HAVE_MANUAL_CONTROL
