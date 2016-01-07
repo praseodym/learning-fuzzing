@@ -1402,7 +1402,7 @@
     }
     errorCheck();
 
-    if((cf==1)) 
+    if((cf==1))
 		{ printf("invalid_state"); exit(2); }
 }
 
