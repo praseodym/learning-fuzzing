@@ -1403,7 +1403,7 @@
     errorCheck();
 
 	if (cf==1) {
-		printf("invalid_state");
+		printf("invalid_state\n");
 		exit(2);
 	}
  }
@@ -1417,7 +1417,7 @@ int main() {
 		if (ret == EOF)
 			exit(0);
 		else if (ret == 0) {
-			printf("invalid_input");
+			printf("invalid_input\n");
 			exit(1);
 		} else {
 			// operate eca engine
