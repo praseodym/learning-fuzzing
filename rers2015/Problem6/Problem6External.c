@@ -218,7 +218,6 @@
 	int check107(int v) {
 			return a493 == v;
 		}
-	}
 
 	int check86(int v) {
 			return a1370 == v;
