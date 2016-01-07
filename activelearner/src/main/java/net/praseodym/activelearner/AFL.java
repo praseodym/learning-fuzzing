@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class AFL {
     public native void hello();
 
-    public native void pre(String arguments);
+    public native void pre(String inputDirectory, String outputDirectory, String target);
 
     @Cacheable("runs")
     public native byte[] run(byte[] testcase);
@@ -25,7 +25,7 @@ public class AFL {
         AFL AFL = new AFL();
         AFL.hello();
 
-        AFL.pre("test");
+        AFL.pre("afl_in", "afl_out", "/home/mark/target/simpletarget");
 
         byte[] testOutput = AFL.run("1\0".getBytes());
         System.out.println("Testcase 1 output: [" + new String(testOutput) + "]");

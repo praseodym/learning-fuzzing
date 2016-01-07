@@ -16,6 +16,7 @@ import net.automatalib.words.impl.SimpleAlphabet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +26,8 @@ import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Mealy Machine Learner class
@@ -39,14 +40,16 @@ public class MealyMachineLearner implements CommandLineRunner {
     public static final int WMETHOD_MAX_DEPTH = 3;
 
     @Autowired
-    MembershipOracle.MealyMembershipOracle<String, String> mealyMembershipOracle;
+    private MembershipOracle.MealyMembershipOracle<String, String> mealyMembershipOracle;
+
+    @Value("${learner.alphabet}")
+    private String alphabetRaw;
 
     private SimpleAlphabet<String> alphabet;
 
     private Experiment.MealyExperiment<String, String> experiment() {
         alphabet = new SimpleAlphabet<>();
-        // TODO: configurable alphabet
-        Stream.of("1", "2", "3", "4", "5", "42").forEach(alphabet::add);
+        Arrays.stream(alphabetRaw.split(",")).forEach(alphabet::add);
 
         MapMapping<String, String> errorMapping = new MapMapping<>();
 

@@ -8025,19 +8025,24 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_hello(JNIEnv *env, j
   SAYF("hello\n");
 }
 
-JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env, jobject obj, jstring jargv) {
-  const char *xargv = (*env)->GetStringUTFChars(env, jargv, 0);
+JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env, jobject obj, jstring jin, jstring jout, jstring jtarget) {
+  const char *in_dir = (*env)->GetStringUTFChars(env, jin, 0);
+  const char *out_dir = (*env)->GetStringUTFChars(env, jout, 0);
+  //const char *dictionary = (*env)->GetStringUTFChars(env, jdict, 0);
+  const char *target = (*env)->GetStringUTFChars(env, jtarget, 0);
 
   //SAYF("pre\n");
-  OKF("afl argv: %s", xargv);
 
-  // TODO: get at least target program path via JNI
-  char* argv[] = {"afl-test", "-i", "afl_in", "-o", "afl_out", "--", "/home/mark/target/simpletarget", NULL};
+  char* argv[] = {"afl-test", "-i", (char *) in_dir, "-o", (char *) out_dir, //"-x", (char *) dictionary,
+                  "--", (char *) target};
 
-  main(7, argv);
+  main(sizeof(argv)/sizeof(argv[0]), argv);
   fflush(stdout);
 
-  (*env)->ReleaseStringUTFChars(env, jargv, xargv);
+//  (*env)->ReleaseStringUTFChars(env, jargv, xargv);
+//  (*env)->ReleaseStringUTFChars(env, jargv, xargv);
+//  (*env)->ReleaseStringUTFChars(env, jargv, xargv);
+//  (*env)->ReleaseStringUTFChars(env, jargv, xargv);
 }
 
 JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_run(JNIEnv *env, jobject obj, jstring jtestcase) {

@@ -8,9 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 /**
@@ -34,11 +37,25 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
     private int queuedDiscovered;
     private int execs;
 
+    @Value("${learner.target}")
+    private String target;
+
+    @Value("learner.testinput")
+    private String testinput;
+
     @Override
     public void afterPropertiesSet() throws Exception {
+        Path tempDir = Files.createTempDirectory("learner_afl");
+        Path aflIn = tempDir.resolve("afl_in");
+        Path aflOut = tempDir.resolve("afl_out");
+        Files.createDirectory(aflIn);
+        Files.createDirectory(aflOut);
+        Files.write(aflIn.resolve("a"), testinput.getBytes());
+
+        log.info("AFL directory: {}", tempDir);
+
         log.info("Starting forkserver");
-        // TODO: configurable initial input
-        afl.pre("test");
+        afl.pre(aflIn.toString(), aflOut.toString(), target);
     }
 
     @Override

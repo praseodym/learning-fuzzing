@@ -5,6 +5,7 @@ import de.learnlib.api.SULException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
@@ -26,6 +27,9 @@ public class ProcessSUL implements SUL<String, String>, DisposableBean {
     private BufferedReader stdout;
     private int execs;
 
+    @Value("${learner.target}")
+    private String target;
+
     @Override
     public void destroy() throws Exception {
         logger.info("Total executions: {}", execs);
@@ -34,8 +38,7 @@ public class ProcessSUL implements SUL<String, String>, DisposableBean {
     @Override
     public void pre() {
         logger.trace("Pre: initialise target");
-        // TODO: extract target name into configuration
-        ProcessBuilder pb = new ProcessBuilder("/home/mark/target/simpletarget");
+        ProcessBuilder pb =  new ProcessBuilder(target);
         try {
             p = pb.start();
             execs++;

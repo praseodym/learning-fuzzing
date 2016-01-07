@@ -18,10 +18,10 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_hello
 /*
  * Class:     net_praseodym_activelearner_AFL
  * Method:    pre
- * Signature: (Ljava/lang/String;)V
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jobject, jstring, jstring, jstring);
 
 /*
  * Class:     net_praseodym_activelearner_AFL
