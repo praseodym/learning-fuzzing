@@ -3,4 +3,8 @@ project(RERS2015)
 
 add_executable(Problem1 Problem1/Problem1.c assert.h)
 add_executable(Problem2 Problem2/Problem2.c assert.h)
+add_executable(Problem3 Problem3/Problem3.c assert.h)
+add_executable(Problem4 Problem4/Problem4.c Problem4/Problem4External.c assert.h)
+add_executable(Problem5 Problem5/Problem5.c Problem5/Problem5External.c assert.h)
+add_executable(Problem6 Problem6/Problem6.c Problem6/Problem6External.c assert.h)
 
