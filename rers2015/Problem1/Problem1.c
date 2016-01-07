@@ -1409,6 +1409,10 @@
  }
 
 int main() {
+	#ifdef __AFL_HAVE_MANUAL_CONTROL
+		__AFL_INIT();
+	#endif
+
 	// main i/o-loop
 	while (1) {
 		// read input
