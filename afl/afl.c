@@ -6718,17 +6718,8 @@ static void fix_up_banner(u8* name) {
 
 static void check_if_tty(void) {
 
-  struct winsize ws;
-
-  if (ioctl(1, TIOCGWINSZ, &ws)) {
-
-    if (errno == ENOTTY) {
-      OKF("Looks like we're not running on a tty, so I'll be a bit less verbose.");
-      not_on_tty = 1;
-    }
-
-    return;
-  }
+  OKF("Looks like we're not running on a tty, so I'll be a bit less verbose.");
+  not_on_tty = 1;
 
 }
 
