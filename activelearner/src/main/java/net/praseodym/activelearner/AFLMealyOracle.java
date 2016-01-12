@@ -75,12 +75,9 @@ public class AFLMealyOracle implements MembershipOracle.MealyMembershipOracle<St
         if (in != null) {
             for (String s : in.split(AFLSUL.SEPARATOR)) {
                 if (s.startsWith("assert")) {
-                    // FIXME: assert also includes output (so two entries while only one is expected)
+                    // assert also includes output (so two entries while only one is expected)
                     String last = wb.get(wb.size() - 1);
                     wb.set(wb.size() - 1, last + "_" + s);
-                } else if (s.startsWith("invalid")) {
-                    // FIXME: does this actually help against invalid_state in model?
-                    wb.add(null);
                 } else {
                     wb.add(s);
                 }
@@ -88,7 +85,7 @@ public class AFLMealyOracle implements MembershipOracle.MealyMembershipOracle<St
         }
         assert wb.size() <= length;
         while (wb.size() != length) {
-            wb.add("");
+            wb.add(AFLSUL.PADDING);
         }
         return wb.toWord();
     }

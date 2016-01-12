@@ -8050,6 +8050,12 @@ JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_run(JNIEnv *en
   char* argv[] = {NULL};
   common_fuzz_stuff(argv, (u8 *) testcase, (u32) testcase_length);
 
+  if (child_timed_out) {
+    // TODO: re-run target (with # limit)
+    WARNF("Process timed out");
+    fflush(stdout);
+  }
+
   __off64_t stdout_position = lseek(stdout_fd, 0, SEEK_CUR);
   //SAYF("lseek: %d\n", stdout_position);
   //SAYF("stdout: %s\n", stdout_buffer);

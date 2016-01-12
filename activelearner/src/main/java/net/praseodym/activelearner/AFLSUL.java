@@ -27,6 +27,7 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
 
     public static final String SEPARATOR = System.lineSeparator();
     public static final byte[] SEPARATOR_BYTE = SEPARATOR.getBytes();
+    public static final String PADDING = "invalid_state";
 
     @Autowired
     private AFL afl;
@@ -117,7 +118,7 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
         // FIXME: sometimes we get no output, bug in libafl? -> probably caused by hang, fix this
 //        assert output.length > 0 : "no output";
         if (output.length == 0) {
-            log.error("No output, target hang? Retrying.");
+            log.warn("No output, target hang? Retrying.");
             // retry
             return run(previousInput, previousOutput, input);
         }

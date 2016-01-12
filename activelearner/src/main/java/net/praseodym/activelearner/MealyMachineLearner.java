@@ -4,9 +4,9 @@ import de.learnlib.algorithms.lstargeneric.mealy.ExtensibleLStarMealy;
 import de.learnlib.algorithms.lstargeneric.mealy.ExtensibleLStarMealyBuilder;
 import de.learnlib.api.EquivalenceOracle;
 import de.learnlib.api.MembershipOracle;
+import de.learnlib.cache.mealy.MealyCacheOracle;
 import de.learnlib.eqtests.basic.WMethodEQOracle;
 import de.learnlib.experiments.Experiment;
-import de.learnlib.oracles.CounterOracle;
 import de.learnlib.statistics.SimpleProfiler;
 import net.automatalib.automata.transout.MealyMachine;
 import net.automatalib.commons.util.mappings.MapMapping;
@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Mealy Machine Learner class
@@ -56,11 +57,17 @@ public class MealyMachineLearner implements CommandLineRunner {
         Arrays.stream(alphabetRaw.split(",")).forEach(alphabet::add);
 
         MapMapping<String, String> errorMapping = new MapMapping<>();
+        errorMapping.put("invalid_state", "invalid_state");
+        for (int i = 0; i <= 26; i++) {
+            for (int j = 1; j <= 99; j++) {
+                errorMapping.put(String.format("%d_assert:!error_%d", i, j), "invalid_state");
+            }
+        }
 
-        MembershipOracle<String, Word<String>> membershipOracle = new CounterOracle.MealyCounterOracle<>(mealyMembershipOracle, "membership queries");
+//        MembershipOracle<String, Word<String>> membershipOracle = new CounterOracle.MealyCounterOracle<>(mealyMembershipOracle, "membership queries");
+        MembershipOracle<String, Word<String>> membershipOracle = MealyCacheOracle.createDAGCacheOracle(alphabet, errorMapping, mealyMembershipOracle);
 
-        // TODO: caching and other stuff
-        EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle = new WMethodEQOracle.MealyWMethodEQOracle<>(wmethodMaxDepth, mealyMembershipOracle);
+        EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle = new WMethodEQOracle.MealyWMethodEQOracle<>(wmethodMaxDepth, membershipOracle);
 
         ExtensibleLStarMealy<String, String> learningAlgorithm = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(membershipOracle).create();
 
@@ -111,7 +118,8 @@ public class MealyMachineLearner implements CommandLineRunner {
         Runtime.getRuntime().exec("dot -Tpdf -o " + outputFilenamePdf + " " + outputFilename);
 
         // Simplify .dot file and convert to pdf
-        List<String> lines = Files.readAllLines(Paths.get(outputFilename));
+        List<String> lines = Files.readAllLines(Paths.get(outputFilename)).stream()
+                .filter(s -> !s.contains("invalid_state")).collect(Collectors.toList());
         List<String> simpified = SimplifyDot.simplifyDot(lines);
         String simplifiedOutputFilename = outputFilename.replace(".dot", "_simple.dot");
         Files.write(Paths.get(simplifiedOutputFilename), simpified, Charset.defaultCharset());
