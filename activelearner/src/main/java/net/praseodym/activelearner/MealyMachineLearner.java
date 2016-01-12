@@ -37,10 +37,12 @@ public class MealyMachineLearner implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(MealyMachineLearner.class);
 
-    public static final int WMETHOD_MAX_DEPTH = 3;
 
     @Autowired
     private MembershipOracle.MealyMembershipOracle<String, String> mealyMembershipOracle;
+
+    @Value("${learner.wmethod.maxdepth}")
+    private int wmethodMaxDepth;
 
     @Value("${learner.alphabet}")
     private String alphabetRaw;
@@ -48,6 +50,8 @@ public class MealyMachineLearner implements CommandLineRunner {
     private SimpleAlphabet<String> alphabet;
 
     private Experiment.MealyExperiment<String, String> experiment() {
+        assert wmethodMaxDepth > 0;
+
         alphabet = new SimpleAlphabet<>();
         Arrays.stream(alphabetRaw.split(",")).forEach(alphabet::add);
 
@@ -56,7 +60,7 @@ public class MealyMachineLearner implements CommandLineRunner {
         MembershipOracle<String, Word<String>> membershipOracle = new CounterOracle.MealyCounterOracle<>(mealyMembershipOracle, "membership queries");
 
         // TODO: caching and other stuff
-        EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle = new WMethodEQOracle.MealyWMethodEQOracle<>(WMETHOD_MAX_DEPTH, mealyMembershipOracle);
+        EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle = new WMethodEQOracle.MealyWMethodEQOracle<>(wmethodMaxDepth, mealyMembershipOracle);
 
         ExtensibleLStarMealy<String, String> learningAlgorithm = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(membershipOracle).create();
 

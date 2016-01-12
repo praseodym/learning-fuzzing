@@ -58,19 +58,37 @@ public class LoggingSULOracle<I, O> implements MembershipOracle.MealyMembershipO
     private static <I, O> Word<O> answerQuery(SUL<I, O> sul, Word<I> prefix, Word<I> suffix) throws SULException {
         sul.pre();
         try {
-            log.debug("Answering query with prefix [{}] and suffix [{}]", prefix, suffix);
             // Prefix: Execute symbols, don't record output
             for (I sym : prefix) {
-                sul.step(sym);
+                O step = sul.step(sym);
+                // FIXME: hack
+                /*if ("invalid_state".equals(step)) {
+                    WordBuilder<O> wb = new WordBuilder<>(suffix.length());
+                    for (I sym : suffix) {
+                        wb.add(null);
+                    }
+                    return wb.toWord();
+                }*/
             }
 
             // Suffix: Execute symbols, outputs constitute output word
             WordBuilder<O> wb = new WordBuilder<>(suffix.length());
             for (I sym : suffix) {
-                wb.add(sul.step(sym));
+                O step = sul.step(sym);
+
+                // FIXME: hack
+                if ("invalid_state".equals(step)) {
+                    wb.add(null);
+                } else {
+                    wb.add(step);
+                }
             }
 
-            return wb.toWord();
+            Word<O> output = wb.toWord();
+            log.debug("Answered query with prefix [{}] and suffix [{}]: [{}]",
+                    prefix, suffix, output);
+
+            return output;
         } finally {
             sul.post();
         }

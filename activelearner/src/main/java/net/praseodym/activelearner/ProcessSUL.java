@@ -71,7 +71,12 @@ public class ProcessSUL implements SUL<String, String>, DisposableBean {
             stdin.write(in.getBytes());
             stdin.write(SEPARATOR);
             stdin.flush();
+
+            // FIXME: ugly hack to fix multi-line output
             out = stdout.readLine();
+            if (stdout.ready()) {
+                out += "_" + stdout.readLine();
+            }
         } catch (IOException e) {
             logger.trace("IOException ({}) - Process aliveness: {}", e.getMessage(), p.isAlive());
             if ("Broken pipe".equals(e.getMessage()) || "Stream closed".equals(e.getMessage())) {

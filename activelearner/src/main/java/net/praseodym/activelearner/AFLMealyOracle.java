@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -46,13 +45,20 @@ public class AFLMealyOracle implements MembershipOracle.MealyMembershipOracle<St
         } else {
             prefixInput = concatenateWord(prefix).getBytes();
             prefixOutput = aflSUL.run(null, null, prefixInput);
+            // FIXME: nicer handling of invalid_state / assert error
+            String prefixOutputString = new String(prefixOutput);
+            if (prefixOutputString.contains("invalid_state") || prefixOutputString.contains("assert")) {
+                return buildWord(null, suffix.length());
+            }
         }
         suffixInput = concatenateWord(suffix).getBytes();
         suffixOutput = aflSUL.run(prefixInput, prefixOutput, suffixInput);
         aflSUL.post();
 
         String output = new String(suffixOutput);
-        log.debug("Answered query with prefix [{}] and suffix [{}]: [{}]", prefix, suffix, output);
+        log.debug("Answered query with prefix [{}] and suffix [{}]: [{}]",
+                prefix, suffix, output.replace("\n", " ").trim());
+
         return buildWord(output, suffix.length());
     }
 
@@ -64,11 +70,23 @@ public class AFLMealyOracle implements MembershipOracle.MealyMembershipOracle<St
      * Build a Word from a String. We need the output Word to be same length as the suffix, otherwise counterexample
      * finding will end up in an infinite loop because the hypothesis will never match the actual answer we give.
      */
-    private Word<String> buildWord(@Nullable String in, int length) {
+    public static Word<String> buildWord(@Nullable String in, int length) {
         WordBuilder<String> wb = new WordBuilder<>();
         if (in != null) {
-            Collections.addAll(wb, in.split(AFLSUL.SEPARATOR));
+            for (String s : in.split(AFLSUL.SEPARATOR)) {
+                if (s.startsWith("assert")) {
+                    // FIXME: assert also includes output (so two entries while only one is expected)
+                    String last = wb.get(wb.size() - 1);
+                    wb.set(wb.size() - 1, last + "_" + s);
+                } else if (s.startsWith("invalid")) {
+                    // FIXME: does this actually help against invalid_state in model?
+                    wb.add(null);
+                } else {
+                    wb.add(s);
+                }
+            }
         }
+        assert wb.size() <= length;
         while (wb.size() != length) {
             wb.add("");
         }

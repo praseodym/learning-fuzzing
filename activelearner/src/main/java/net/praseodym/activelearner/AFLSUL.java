@@ -40,7 +40,7 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
     @Value("${learner.target}")
     private String target;
 
-    @Value("learner.testinput")
+    @Value("${learner.testinput}")
     private String testinput;
 
     @Override
@@ -66,14 +66,12 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
 
     @Override
     public void pre() {
-        log.trace("pre");
         previousInput = null;
         previousOutput = null;
     }
 
     @Override
     public void post() {
-        log.trace("post");
     }
 
     /**
@@ -111,21 +109,34 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
         execs++;
 
         if (log.isTraceEnabled()) {
-            log.trace("Run with stdin [{}] and stdout [{}]", new String(input), new String(output));
+            log.trace("Run with stdin [{}] and stdout [{}]",
+                    new String(input).replace("\n", " ").trim(),
+                    new String(output).replace("\n", " ").trim());
+        }
+
+        // FIXME: sometimes we get no output, bug in libafl? -> probably caused by hang, fix this
+//        assert output.length > 0 : "no output";
+        if (output.length == 0) {
+            log.error("No output, target hang? Retrying.");
+            // retry
+            return run(previousInput, previousOutput, input);
         }
 
         // Calculate difference between previous and new output
         if (previousOutput != null && previousOutput.length == output.length) {
             return new byte[0];
         } else if (previousOutput != null && previousOutput.length > 0) {
+            assert previousOutput.length <= output.length;
             output = Arrays.copyOfRange(output, previousOutput.length, output.length);
         }
 
         // Check forkserver for new edges
         int newQueuedDiscovered = afl.getQueuedDiscovered();
         if (queuedDiscovered != newQueuedDiscovered) {
-            log.info("Discovered new interesting testcase ({} -> {}) - stdin: [{}], stdout: [{}]",
-                    queuedDiscovered, newQueuedDiscovered, new String(input), new String(output));
+            log.info("Discovered new interesting testcase {} - stdin: [{}], stdout: [{}]",
+                    newQueuedDiscovered,
+                    new String(input).replace("\n", " ").trim(),
+                    new String(output).replace("\n", " ").trim());
             queuedDiscovered = newQueuedDiscovered;
         }
 
