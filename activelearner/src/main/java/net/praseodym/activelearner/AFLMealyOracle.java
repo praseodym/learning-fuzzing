@@ -56,8 +56,7 @@ public class AFLMealyOracle implements MembershipOracle.MealyMembershipOracle<St
         aflSUL.post();
 
         String output = new String(suffixOutput);
-        log.debug("Answered query with prefix [{}] and suffix [{}]: [{}]",
-                prefix, suffix, output.replace("\n", " ").trim());
+        log.debug("Answered query [{}] [{}] => [{}]", prefix, suffix, output.replace("\n", " ").trim());
 
         return buildWord(output, suffix.length());
     }

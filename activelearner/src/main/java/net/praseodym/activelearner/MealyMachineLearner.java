@@ -5,7 +5,6 @@ import de.learnlib.algorithms.lstargeneric.mealy.ExtensibleLStarMealyBuilder;
 import de.learnlib.api.EquivalenceOracle;
 import de.learnlib.api.MembershipOracle;
 import de.learnlib.cache.mealy.MealyCacheOracle;
-import de.learnlib.eqtests.basic.WMethodEQOracle;
 import de.learnlib.experiments.Experiment;
 import de.learnlib.statistics.SimpleProfiler;
 import net.automatalib.automata.transout.MealyMachine;
@@ -42,7 +41,10 @@ public class MealyMachineLearner implements CommandLineRunner {
     @Autowired
     private MembershipOracle.MealyMembershipOracle<String, String> mealyMembershipOracle;
 
-    @Value("${learner.wmethod.maxdepth}")
+    @Value("${learner.afleq.directory}")
+    private String equivalenceTestFiles;
+
+    @Value("${learner.wmethodeq.maxdepth}")
     private int wmethodMaxDepth;
 
     @Value("${learner.alphabet}")
@@ -67,9 +69,10 @@ public class MealyMachineLearner implements CommandLineRunner {
 //        MembershipOracle<String, Word<String>> membershipOracle = new CounterOracle.MealyCounterOracle<>(mealyMembershipOracle, "membership queries");
         MembershipOracle<String, Word<String>> membershipOracle = MealyCacheOracle.createDAGCacheOracle(alphabet, errorMapping, mealyMembershipOracle);
 
-        EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle = new WMethodEQOracle.MealyWMethodEQOracle<>(wmethodMaxDepth, membershipOracle);
+//        EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle = new WMethodEQOracle.MealyWMethodEQOracle<>(wmethodMaxDepth, membershipOracle);
+        EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle = new AFLEQOracle<>(alphabet, membershipOracle, equivalenceTestFiles);
 
-        ExtensibleLStarMealy<String, String> learningAlgorithm = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(membershipOracle).create();
+        ExtensibleLStarMealy<String, String> learningAlgorithm = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(mealyMembershipOracle).create();
 
         return new Experiment.MealyExperiment<>(learningAlgorithm, equivalenceOracle, alphabet);
     }

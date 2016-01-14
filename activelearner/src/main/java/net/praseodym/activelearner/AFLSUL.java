@@ -115,14 +115,6 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
                     new String(output).replace("\n", " ").trim());
         }
 
-        // FIXME: sometimes we get no output, bug in libafl? -> probably caused by hang, fix this
-//        assert output.length > 0 : "no output";
-        if (output.length == 0) {
-            log.warn("No output, target hang? Retrying.");
-            // retry
-            return run(previousInput, previousOutput, input);
-        }
-
         // Calculate difference between previous and new output
         if (previousOutput != null && previousOutput.length == output.length) {
             return new byte[0];

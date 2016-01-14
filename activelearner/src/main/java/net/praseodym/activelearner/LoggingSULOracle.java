@@ -85,8 +85,7 @@ public class LoggingSULOracle<I, O> implements MembershipOracle.MealyMembershipO
             }
 
             Word<O> output = wb.toWord();
-            log.debug("Answered query with prefix [{}] and suffix [{}]: [{}]",
-                    prefix, suffix, output);
+            log.debug("Answered query [{}] [{}] => [{}]", prefix, suffix, output);
 
             return output;
         } finally {
