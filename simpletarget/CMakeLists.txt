@@ -11,16 +11,19 @@ add_executable(statemachine statemachine.c)
 
 add_executable(statemachine_obfuscated statemachine_obfuscated.c)
 set(TIGRESS_HOME /home/mark/apps/tigress-2.0)
-ADD_CUSTOM_COMMAND(TARGET statemachine_obfuscated
-        MAIN_DEPENDENCY statemachine.c
-        COMMAND ${CMAKE_COMMAND} -E env "TIGRESS_HOME=${TIGRESS_HOME}" "PATH=/bin:/usr/bin:${TIGRESS_HOME}"
-        ${TIGRESS_HOME}/tigress
-        --Transform=InitEntropy --Functions=main
-        --Transform=InitOpaque --Functions=main
-        --Transform=EncodeLiterals --Functions=*
-        --Transform=EncodeArithmetic --Functions=*
-        --Transform=AddOpaque --Functions=*
-        --Transform=AntiTaintAnalysis --Functions=*
-        --Transform=Flatten --Functions=*
-        --Transform=CleanUp
-        --out=statemachine_obfuscated.c ${CMAKE_CURRENT_SOURCE_DIR}/statemachine.c)
+
+macro(tigress input)
+    ADD_CUSTOM_COMMAND(TARGET ${input}_obfuscated
+            MAIN_DEPENDENCY ${input}.c
+            COMMAND ${CMAKE_COMMAND} -E env "TIGRESS_HOME=${TIGRESS_HOME}" "PATH=/bin:/usr/bin:${TIGRESS_HOME}"
+            ${TIGRESS_HOME}/tigress
+            --Transform=InitEntropy --Functions=main
+            --Transform=InitOpaque --Functions=main
+            --Transform=EncodeLiterals --Functions=*
+            --Transform=EncodeArithmetic --Functions=*
+            --Transform=AddOpaque --Functions=*
+            --Transform=AntiTaintAnalysis --Functions=*
+            --Transform=Flatten --Functions=*
+            --Transform=CleanUp
+            --out=${input}_obfuscated.c ${CMAKE_CURRENT_SOURCE_DIR}/${input}.c)
+endmacro()
