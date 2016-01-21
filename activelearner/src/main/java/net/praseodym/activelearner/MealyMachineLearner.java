@@ -4,28 +4,24 @@ import de.learnlib.algorithms.lstargeneric.mealy.ExtensibleLStarMealy;
 import de.learnlib.algorithms.lstargeneric.mealy.ExtensibleLStarMealyBuilder;
 import de.learnlib.api.EquivalenceOracle;
 import de.learnlib.api.MembershipOracle;
-import de.learnlib.cache.mealy.MealyCacheOracle;
 import de.learnlib.experiments.Experiment;
 import de.learnlib.statistics.SimpleProfiler;
 import net.automatalib.automata.transout.MealyMachine;
-import net.automatalib.commons.util.mappings.MapMapping;
 import net.automatalib.util.graphs.dot.GraphDOT;
+import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
-import net.automatalib.words.impl.SimpleAlphabet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,42 +33,17 @@ public class MealyMachineLearner implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(MealyMachineLearner.class);
 
+    @Resource
+    private Alphabet<String> alphabet;
 
-    @Autowired
-    private MembershipOracle.MealyMembershipOracle<String, String> mealyMembershipOracle;
+    @Resource
+    private MembershipOracle<String, Word<String>> membershipOracle;
 
-    @Value("${learner.afleq.directory}")
-    private String equivalenceTestFiles;
-
-    @Value("${learner.wmethodeq.maxdepth}")
-    private int wmethodMaxDepth;
-
-    @Value("${learner.alphabet}")
-    private String alphabetRaw;
-
-    private SimpleAlphabet<String> alphabet;
+    @Resource
+    private EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle;
 
     private Experiment.MealyExperiment<String, String> experiment() {
-        assert wmethodMaxDepth > 0;
-
-        alphabet = new SimpleAlphabet<>();
-        Arrays.stream(alphabetRaw.split(",")).forEach(alphabet::add);
-
-        MapMapping<String, String> errorMapping = new MapMapping<>();
-        errorMapping.put("invalid_state", "invalid_state");
-        for (int i = 0; i <= 26; i++) {
-            for (int j = 1; j <= 99; j++) {
-                errorMapping.put(String.format("%d_assert:!error_%d", i, j), "invalid_state");
-            }
-        }
-
-//        MembershipOracle<String, Word<String>> membershipOracle = new CounterOracle.MealyCounterOracle<>(mealyMembershipOracle, "membership queries");
-        MembershipOracle<String, Word<String>> membershipOracle = MealyCacheOracle.createDAGCacheOracle(alphabet, errorMapping, mealyMembershipOracle);
-
-//        EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle = new WMethodEQOracle.MealyWMethodEQOracle<>(wmethodMaxDepth, membershipOracle);
-        EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle = new AFLEQOracle<>(alphabet, membershipOracle, equivalenceTestFiles);
-
-        ExtensibleLStarMealy<String, String> learningAlgorithm = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(mealyMembershipOracle).create();
+        ExtensibleLStarMealy<String, String> learningAlgorithm = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(membershipOracle).create();
 
         return new Experiment.MealyExperiment<>(learningAlgorithm, equivalenceOracle, alphabet);
     }

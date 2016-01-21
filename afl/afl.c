@@ -8055,9 +8055,9 @@ JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_run(JNIEnv *en
       common_fuzz_stuff(argv, (u8 *) testcase, (u32) testcase_length);
       if (child_timed_out) {
           if (i < 20) {
-              WARNF("Target process timed out, retrying");
-              fflush(stdout);
               i++;
+              WARNF("Target process timed out, retrying [%d]", i);
+              fflush(stdout);
           } else {
               FATAL("Target process timed out too many times, giving up.");
               break;
