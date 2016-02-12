@@ -27,6 +27,7 @@ add_executable(afl-fuzz afl-fuzz.c ${COMM_HDR})
 add_executable(afl-showmap afl-showmap.c ${COMM_HDR})
 add_executable(afl-tmin afl-tmin.c ${COMM_HDR})
 add_executable(afl-gotcpu afl-gotcpu.c ${COMM_HDR})
+add_executable(afl-analyze afl-analyze.c ${COMM_HDR})
 #add_executable(test-instr test-instr.c)
 
 add_library(afl MODULE afl.c net_praseodym_activelearner_AFL.h ${COMM_HDR})
