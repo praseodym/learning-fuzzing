@@ -96,6 +96,7 @@ static u8  skip_deterministic,        /* Skip deterministic stages?       */
            auto_changed,              /* Auto-generated tokens changed?   */
            no_cpu_meter_red,          /* Feng shui on the status screen   */
            no_var_check,              /* Don't detect variable behavior   */
+           shuffle_queue,             /* Shuffle input queue?             */
            bitmap_changed = 1,        /* Time to update bitmap?           */
            qemu_mode,                 /* Running in QEMU mode?            */
            skip_requested,            /* Skip request, via SIGUSR1        */
@@ -331,6 +332,24 @@ static inline u32 UR(u32 limit) {
   }
 
   return random() % limit;
+
+}
+
+
+/* Shuffle an array of pointers. Might be slightly biased. */
+
+static void shuffle_ptrs(void** ptrs, u32 cnt) {
+
+  u32 i;
+
+  for (i = 0; i < cnt - 2; i++) {
+
+    u32 j = i + UR(cnt - i);
+    void *s = ptrs[i];
+    ptrs[i] = ptrs[j];
+    ptrs[j] = s;
+
+  }
 
 }
 
@@ -1276,6 +1295,13 @@ static void read_testcases(void) {
 
   }
 
+  if (shuffle_queue && nl_cnt > 1) {
+
+    ACTF("Shuffling queue...");
+    shuffle_ptrs((void**)nl, nl_cnt);
+
+  }
+
   for (i = 0; i < nl_cnt; i++) {
 
     struct stat st;
@@ -1523,7 +1549,7 @@ static void load_extras(u8* dir) {
 
   }
 
-  if (x) FATAL("Dictinary levels not supported for directories.");
+  if (x) FATAL("Dictionary levels not supported for directories.");
 
   while ((de = readdir(d))) {
 
@@ -2229,7 +2255,7 @@ static u8 run_target(char** argv) {
     if ((res = read(fsrv_st_fd, &status, 4)) != 4) {
 
       if (stop_soon) return 0;
-      RPFATAL(res, "Unable to communicate with fork server");
+      RPFATAL(res, "Unable to communicate with fork server (OOM?)");
 
     }
 
@@ -2657,7 +2683,7 @@ static void perform_dry_run(char** argv) {
 
         useless_at_start++;
 
-        if (!in_bitmap)
+        if (!in_bitmap && !shuffle_queue)
           WARNF("No new instrumentation output, test case may be useless.");
 
         break;
@@ -3428,7 +3454,7 @@ static void maybe_delete_out_dir(void) {
            "    session, put '-' as the input directory in the command line ('-i -') and\n"
            "    try again.\n", OUTPUT_GRACE);
 
-       FATAL("At-risk data found in in '%s'", out_dir);
+       FATAL("At-risk data found in '%s'", out_dir);
 
     }
 
@@ -3725,7 +3751,7 @@ static void show_stats(void) {
   if (term_too_small) {
 
     SAYF(cBRI "Your terminal is too small to display the UI.\n"
-         "Please resize terminal window to at least 80x25.\n" cNOR);
+         "Please resize terminal window to at least 80x25.\n" cRST);
 
     return;
 
@@ -3762,7 +3788,7 @@ static void show_stats(void) {
 
   if (dumb_mode) {
 
-    strcpy(tmp, cNOR);
+    strcpy(tmp, cRST);
 
   } else {
 
@@ -3780,7 +3806,7 @@ static void show_stats(void) {
 
   }
 
-  SAYF(bV bSTOP "        run time : " cNOR "%-34s " bSTG bV bSTOP
+  SAYF(bV bSTOP "        run time : " cRST "%-34s " bSTG bV bSTOP
        "  cycles done : %s%-5s  " bSTG bV "\n",
        DTD(cur_ms, start_time), tmp, DI(queue_cycle - 1));
 
@@ -3790,24 +3816,24 @@ static void show_stats(void) {
   if (!dumb_mode && (last_path_time || resuming_fuzz || queue_cycle == 1 ||
       in_bitmap || crash_mode)) {
 
-    SAYF(bV bSTOP "   last new path : " cNOR "%-34s ",
+    SAYF(bV bSTOP "   last new path : " cRST "%-34s ",
          DTD(cur_ms, last_path_time));
 
   } else {
 
     if (dumb_mode)
 
-      SAYF(bV bSTOP "   last new path : " cPIN "n/a" cNOR 
+      SAYF(bV bSTOP "   last new path : " cPIN "n/a" cRST 
            " (non-instrumented mode)        ");
 
      else
 
-      SAYF(bV bSTOP "   last new path : " cNOR "none yet " cLRD
+      SAYF(bV bSTOP "   last new path : " cRST "none yet " cLRD
            "(odd, check syntax!)      ");
 
   }
 
-  SAYF(bSTG bV bSTOP "  total paths : " cNOR "%-5s  " bSTG bV "\n",
+  SAYF(bSTG bV bSTOP "  total paths : " cRST "%-5s  " bSTG bV "\n",
        DI(queued_paths));
 
   /* Highlight crashes in red if found, denote going over the KEEP_UNIQUE_CRASH
@@ -3816,16 +3842,16 @@ static void show_stats(void) {
   sprintf(tmp, "%s%s", DI(unique_crashes),
           (unique_crashes >= KEEP_UNIQUE_CRASH) ? "+" : "");
 
-  SAYF(bV bSTOP " last uniq crash : " cNOR "%-34s " bSTG bV bSTOP
+  SAYF(bV bSTOP " last uniq crash : " cRST "%-34s " bSTG bV bSTOP
        " uniq crashes : %s%-6s " bSTG bV "\n",
-       DTD(cur_ms, last_crash_time), unique_crashes ? cLRD : cNOR,
+       DTD(cur_ms, last_crash_time), unique_crashes ? cLRD : cRST,
        tmp);
 
   sprintf(tmp, "%s%s", DI(unique_hangs),
          (unique_hangs >= KEEP_UNIQUE_HANG) ? "+" : "");
 
-  SAYF(bV bSTOP "  last uniq hang : " cNOR "%-34s " bSTG bV bSTOP 
-       "   uniq hangs : " cNOR "%-6s " bSTG bV "\n",
+  SAYF(bV bSTOP "  last uniq hang : " cRST "%-34s " bSTG bV bSTOP 
+       "   uniq hangs : " cRST "%-6s " bSTG bV "\n",
        DTD(cur_ms, last_hang_time), tmp);
 
   SAYF(bVR bH bSTOP cCYA " cycle progress " bSTG bH20 bHB bH bSTOP cCYA
@@ -3839,23 +3865,23 @@ static void show_stats(void) {
           queue_cur->favored ? "" : "*",
           ((double)current_entry * 100) / queued_paths);
 
-  SAYF(bV bSTOP "  now processing : " cNOR "%-17s " bSTG bV bSTOP, tmp);
+  SAYF(bV bSTOP "  now processing : " cRST "%-17s " bSTG bV bSTOP, tmp);
 
 
   sprintf(tmp, "%s (%0.02f%%)", DI(t_bytes), t_byte_ratio);
 
   SAYF("    map density : %s%-21s " bSTG bV "\n", t_byte_ratio > 70 ? cLRD : 
-       ((t_bytes < 200 && !dumb_mode) ? cPIN : cNOR), tmp);
+       ((t_bytes < 200 && !dumb_mode) ? cPIN : cRST), tmp);
 
   sprintf(tmp, "%s (%0.02f%%)", DI(cur_skipped_paths),
           ((double)cur_skipped_paths * 100) / queued_paths);
 
-  SAYF(bV bSTOP " paths timed out : " cNOR "%-17s " bSTG bV, tmp);
+  SAYF(bV bSTOP " paths timed out : " cRST "%-17s " bSTG bV, tmp);
 
   sprintf(tmp, "%0.02f bits/tuple",
           t_bytes ? (((double)t_bits) / t_bytes) : 0);
 
-  SAYF(bSTOP " count coverage : " cNOR "%-21s " bSTG bV "\n", tmp);
+  SAYF(bSTOP " count coverage : " cRST "%-21s " bSTG bV "\n", tmp);
 
   SAYF(bVR bH bSTOP cCYA " stage progress " bSTG bH20 bX bH bSTOP cCYA
        " findings in depth " bSTG bH20 bVL "\n");
@@ -3865,8 +3891,8 @@ static void show_stats(void) {
 
   /* Yeah... it's still going on... halp? */
 
-  SAYF(bV bSTOP "  now trying : " cNOR "%-21s " bSTG bV bSTOP 
-       " favored paths : " cNOR "%-22s " bSTG bV "\n", stage_name, tmp);
+  SAYF(bV bSTOP "  now trying : " cRST "%-21s " bSTG bV bSTOP 
+       " favored paths : " cRST "%-22s " bSTG bV "\n", stage_name, tmp);
 
   if (!stage_max) {
 
@@ -3879,27 +3905,27 @@ static void show_stats(void) {
 
   }
 
-  SAYF(bV bSTOP " stage execs : " cNOR "%-21s " bSTG bV bSTOP, tmp);
+  SAYF(bV bSTOP " stage execs : " cRST "%-21s " bSTG bV bSTOP, tmp);
 
   sprintf(tmp, "%s (%0.02f%%)", DI(queued_with_cov),
           ((double)queued_with_cov) * 100 / queued_paths);
 
-  SAYF("  new edges on : " cNOR "%-22s " bSTG bV "\n", tmp);
+  SAYF("  new edges on : " cRST "%-22s " bSTG bV "\n", tmp);
 
   sprintf(tmp, "%s (%s%s unique)", DI(total_crashes), DI(unique_crashes),
           (unique_crashes >= KEEP_UNIQUE_CRASH) ? "+" : "");
 
   if (crash_mode) {
 
-    SAYF(bV bSTOP " total execs : " cNOR "%-21s " bSTG bV bSTOP
+    SAYF(bV bSTOP " total execs : " cRST "%-21s " bSTG bV bSTOP
          "   new crashes : %s%-22s " bSTG bV "\n", DI(total_execs),
-         unique_crashes ? cLRD : cNOR, tmp);
+         unique_crashes ? cLRD : cRST, tmp);
 
   } else {
 
-    SAYF(bV bSTOP " total execs : " cNOR "%-21s " bSTG bV bSTOP
+    SAYF(bV bSTOP " total execs : " cRST "%-21s " bSTG bV bSTOP
          " total crashes : %s%-22s " bSTG bV "\n", DI(total_execs),
-         unique_crashes ? cLRD : cNOR, tmp);
+         unique_crashes ? cLRD : cRST, tmp);
 
   }
 
@@ -3915,14 +3941,14 @@ static void show_stats(void) {
   } else {
 
     sprintf(tmp, "%s/sec", DF(avg_exec));
-    SAYF(bV bSTOP "  exec speed : " cNOR "%-21s ", tmp);
+    SAYF(bV bSTOP "  exec speed : " cRST "%-21s ", tmp);
 
   }
 
   sprintf(tmp, "%s (%s%s unique)", DI(total_hangs), DI(unique_hangs),
           (unique_hangs >= KEEP_UNIQUE_HANG) ? "+" : "");
 
-  SAYF (bSTG bV bSTOP "   total hangs : " cNOR "%-22s " bSTG bV "\n", tmp);
+  SAYF (bSTG bV bSTOP "   total hangs : " cRST "%-22s " bSTG bV "\n", tmp);
 
   /* Aaaalmost there... hold on! */
 
@@ -3942,8 +3968,8 @@ static void show_stats(void) {
 
   }
 
-  SAYF(bV bSTOP "   bit flips : " cNOR "%-37s " bSTG bV bSTOP "    levels : "
-       cNOR "%-10s " bSTG bV "\n", tmp, DI(max_depth));
+  SAYF(bV bSTOP "   bit flips : " cRST "%-37s " bSTG bV bSTOP "    levels : "
+       cRST "%-10s " bSTG bV "\n", tmp, DI(max_depth));
 
   if (!skip_deterministic)
     sprintf(tmp, "%s/%s, %s/%s, %s/%s",
@@ -3951,8 +3977,8 @@ static void show_stats(void) {
             DI(stage_finds[STAGE_FLIP16]), DI(stage_cycles[STAGE_FLIP16]),
             DI(stage_finds[STAGE_FLIP32]), DI(stage_cycles[STAGE_FLIP32]));
 
-  SAYF(bV bSTOP "  byte flips : " cNOR "%-37s " bSTG bV bSTOP "   pending : "
-       cNOR "%-10s " bSTG bV "\n", tmp, DI(pending_not_fuzzed));
+  SAYF(bV bSTOP "  byte flips : " cRST "%-37s " bSTG bV bSTOP "   pending : "
+       cRST "%-10s " bSTG bV "\n", tmp, DI(pending_not_fuzzed));
 
   if (!skip_deterministic)
     sprintf(tmp, "%s/%s, %s/%s, %s/%s",
@@ -3960,8 +3986,8 @@ static void show_stats(void) {
             DI(stage_finds[STAGE_ARITH16]), DI(stage_cycles[STAGE_ARITH16]),
             DI(stage_finds[STAGE_ARITH32]), DI(stage_cycles[STAGE_ARITH32]));
 
-  SAYF(bV bSTOP " arithmetics : " cNOR "%-37s " bSTG bV bSTOP "  pend fav : "
-       cNOR "%-10s " bSTG bV "\n", tmp, DI(pending_favored));
+  SAYF(bV bSTOP " arithmetics : " cRST "%-37s " bSTG bV bSTOP "  pend fav : "
+       cRST "%-10s " bSTG bV "\n", tmp, DI(pending_favored));
 
   if (!skip_deterministic)
     sprintf(tmp, "%s/%s, %s/%s, %s/%s",
@@ -3969,8 +3995,8 @@ static void show_stats(void) {
             DI(stage_finds[STAGE_INTEREST16]), DI(stage_cycles[STAGE_INTEREST16]),
             DI(stage_finds[STAGE_INTEREST32]), DI(stage_cycles[STAGE_INTEREST32]));
 
-  SAYF(bV bSTOP "  known ints : " cNOR "%-37s " bSTG bV bSTOP " own finds : "
-       cNOR "%-10s " bSTG bV "\n", tmp, DI(queued_discovered));
+  SAYF(bV bSTOP "  known ints : " cRST "%-37s " bSTG bV bSTOP " own finds : "
+       cRST "%-10s " bSTG bV "\n", tmp, DI(queued_discovered));
 
   if (!skip_deterministic)
     sprintf(tmp, "%s/%s, %s/%s, %s/%s",
@@ -3978,16 +4004,16 @@ static void show_stats(void) {
             DI(stage_finds[STAGE_EXTRAS_UI]), DI(stage_cycles[STAGE_EXTRAS_UI]),
             DI(stage_finds[STAGE_EXTRAS_AO]), DI(stage_cycles[STAGE_EXTRAS_AO]));
 
-  SAYF(bV bSTOP "  dictionary : " cNOR "%-37s " bSTG bV bSTOP
-       "  imported : " cNOR "%-10s " bSTG bV "\n", tmp,
+  SAYF(bV bSTOP "  dictionary : " cRST "%-37s " bSTG bV bSTOP
+       "  imported : " cRST "%-10s " bSTG bV "\n", tmp,
        sync_id ? DI(queued_imported) : (u8*)"n/a");
 
   sprintf(tmp, "%s/%s, %s/%s",
           DI(stage_finds[STAGE_HAVOC]), DI(stage_cycles[STAGE_HAVOC]),
           DI(stage_finds[STAGE_SPLICE]), DI(stage_cycles[STAGE_SPLICE]));
 
-  SAYF(bV bSTOP "       havoc : " cNOR "%-37s " bSTG bV bSTOP 
-       "  variable : %s%-10s " bSTG bV "\n", tmp, queued_variable ? cLRD : cNOR,
+  SAYF(bV bSTOP "       havoc : " cRST "%-37s " bSTG bV bSTOP 
+       "  variable : %s%-10s " bSTG bV "\n", tmp, queued_variable ? cLRD : cRST,
       no_var_check ? (u8*)"n/a" : DI(queued_variable));
 
   if (!bytes_trim_out) {
@@ -4021,7 +4047,7 @@ static void show_stats(void) {
 
   }
 
-  SAYF(bV bSTOP "        trim : " cNOR "%-37s " bSTG bVR bH20 bH2 bH2 bRB "\n"
+  SAYF(bV bSTOP "        trim : " cRST "%-37s " bSTG bVR bH20 bH2 bH2 bRB "\n"
        bLB bH30 bH20 bH2 bH bRB bSTOP cRST RESET_G1, tmp);
 
   /* Provide some CPU utilization stats. */
@@ -4115,9 +4141,9 @@ static void show_init_stats(void) {
 
   OKF("Here are some useful stats:\n\n"
 
-      cGRA "    Test case count : " cNOR "%u favored, %u variable, %u total\n"
-      cGRA "       Bitmap range : " cNOR "%u to %u bits (average: %0.02f bits)\n"
-      cGRA "        Exec timing : " cNOR "%s to %s us (average: %s us)\n",
+      cGRA "    Test case count : " cRST "%u favored, %u variable, %u total\n"
+      cGRA "       Bitmap range : " cRST "%u to %u bits (average: %0.02f bits)\n"
+      cGRA "        Exec timing : " cRST "%s to %s us (average: %s us)\n",
       queued_favored, queued_variable, queued_paths, min_bits, max_bits, 
       ((double)total_bitmap_size) / (total_bitmap_entries ? total_bitmap_entries : 1),
       DI(min_us), DI(max_us), DI(avg_us));
@@ -7517,9 +7543,10 @@ int main(int argc, char** argv) {
 
   }
 
-  if (getenv("AFL_NO_FORKSRV"))   no_forkserver    = 1;
-  if (getenv("AFL_NO_CPU_RED"))   no_cpu_meter_red = 1;
-  if (getenv("AFL_NO_VAR_CHECK")) no_var_check     = 1;
+  if (getenv("AFL_NO_FORKSRV"))    no_forkserver    = 1;
+  if (getenv("AFL_NO_CPU_RED"))    no_cpu_meter_red = 1;
+  if (getenv("AFL_NO_VAR_CHECK"))  no_var_check     = 1;
+  if (getenv("AFL_SHUFFLE_QUEUE")) shuffle_queue    = 1;
 
   if (dumb_mode == 2 && no_forkserver)
     FATAL("AFL_DUMB_FORKSRV and AFL_NO_FORKSRV are mutually exclusive");
