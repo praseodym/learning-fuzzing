@@ -47,6 +47,14 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_post
 JNIEXPORT jint JNICALL Java_net_praseodym_activelearner_AFL_getQueuedDiscovered
   (JNIEnv *, jobject);
 
+/*
+ * Class:     net_praseodym_activelearner_AFL
+ * Method:    getTraceBitmap
+ * Signature: ()[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_getTraceBitmap
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

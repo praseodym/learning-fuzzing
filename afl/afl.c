@@ -8109,7 +8109,13 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_post(JNIEnv *env, jo
   fflush(stdout);
 }
 
-JNIEXPORT jint JNICALL Java_net_praseodym_activelearner_AFL_getQueuedDiscovered
-        (JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_net_praseodym_activelearner_AFL_getQueuedDiscovered(JNIEnv *env, jobject obj) {
   return queued_discovered;
+}
+
+
+JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_getTraceBitmap(JNIEnv *env, jobject obj) {
+  jbyteArray array = (*env)->NewByteArray(env, (jsize) MAP_SIZE);
+  (*env)->SetByteArrayRegion(env, array, 0, (jsize) MAP_SIZE, (jbyte*)trace_bits);
+  return array;
 }
