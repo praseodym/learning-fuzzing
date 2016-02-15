@@ -1,5 +1,6 @@
 package net.praseodym.activelearner;
 
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -22,25 +23,24 @@ public class SimplifyDot {
         String oldEdge = "", newEdge, label = "";
         for (String line : lines) {
             Matcher matcher = p.matcher(line);
+            String newLabel;
             if (matcher.matches()) {
                 newEdge = matcher.group(1);
-                String newLabel = matcher.group(2);
+                newLabel = matcher.group(2);
 
-                newLabel = Arrays.stream(newLabel.split(" / ")).map(SimplifyDot::convertToSymbolic)
+                newLabel = Arrays.stream(newLabel.split(" / ")).map(SimplifyDot::convertLabelToSymbol)
                         .collect(Collectors.joining(" / "));
-
-                // TODO: more intelligent label merging
-//                String prefix = Strings.commonPrefix(label, newLabel);
-
-                label += (!label.isEmpty() ? " | " : "") + newLabel;
-
             } else {
                 newEdge = "";
+                newLabel = "";
             }
 
-            if (!oldEdge.isEmpty() && !oldEdge.equals(newEdge)) {
+            if (oldEdge.isEmpty() || oldEdge.equals(newEdge)) {
+                // TODO: more intelligent label merging (Strings.commonPrefix?)
+                label += (!label.isEmpty() ? " | " : "") + newLabel;
+            } else {
                 output.add("\t" + oldEdge + " [label=\"" + label.trim() + "\"];");
-                label = "";
+                label = newLabel;
             }
 
             if (!matcher.matches()) {
@@ -58,8 +58,8 @@ public class SimplifyDot {
         List<String> lines = Files.readAllLines(Paths.get(path + ".dot"));
         List<String> simpified = simplifyDot(lines);
         //System.out.println(simpified);
-        simpified.stream().forEach(a -> System.out.println(a + "\n"));
-        //Files.write(Paths.get(path + "_simple.dot"), simpified, Charset.defaultCharset());
+        simpified.stream().forEach(System.out::println);
+        Files.write(Paths.get(path + "_simple.dot"), simpified, Charset.defaultCharset());
     }
 
     public static char calculateFromAlphabetIndex(int index) {
@@ -70,7 +70,7 @@ public class SimplifyDot {
         return String.valueOf(calculateFromAlphabetIndex(Integer.valueOf(label)));
     }
 
-    private static String convertToSymbolic(String label) {
+    private static String convertLabelToSymbol(String label) {
         try {
             return calculateFromAlphabetIndex(label);
         } catch (NumberFormatException e) {
