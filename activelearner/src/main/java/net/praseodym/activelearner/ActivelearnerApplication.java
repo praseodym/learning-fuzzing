@@ -9,8 +9,6 @@ import net.automatalib.automata.transout.MealyMachine;
 import net.automatalib.commons.util.mappings.MapMapping;
 import net.automatalib.words.Word;
 import net.automatalib.words.impl.SimpleAlphabet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,8 +20,6 @@ import java.util.Arrays;
 @SpringBootApplication
 //@EnableCaching
 public class ActivelearnerApplication {
-
-    private final Logger log = LoggerFactory.getLogger(ActivelearnerApplication.class);
 
     public static void main(String[] args) {
         SpringApplication.run(ActivelearnerApplication.class, args);
@@ -48,7 +44,6 @@ public class ActivelearnerApplication {
     public MembershipOracle.MealyMembershipOracle<String, String> processMealyOracle(SUL<String, String> sul) {
         return new LoggingSULOracle<>(sul);
     }
-
 
     @Value("${learner.alphabet}")
     String alphabetRaw;
