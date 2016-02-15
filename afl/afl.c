@@ -7992,7 +7992,7 @@ int main_original(int argc, char** argv) {
     skipped_fuzz = fuzz_one(use_argv);
 
     if (!stop_soon && sync_id && !skipped_fuzz) {
-      
+
       if (!(sync_interval_cnt++ % SYNC_INTERVAL))
         sync_fuzzers(use_argv);
 
@@ -8036,7 +8036,7 @@ stop_fuzzing:
   OKF("We're done here. Have a nice day!\n");
 
   exit(0);
-
+}
 
 JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_hello(JNIEnv *env, jobject obj) {
   SAYF("hello\n");
@@ -8112,5 +8112,4 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_post(JNIEnv *env, jo
 JNIEXPORT jint JNICALL Java_net_praseodym_activelearner_AFL_getQueuedDiscovered
         (JNIEnv *env, jobject obj) {
   return queued_discovered;
-}
 }
