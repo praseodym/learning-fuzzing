@@ -4,6 +4,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * afl native binding
  */
@@ -13,7 +16,6 @@ public class AFL {
     static {
         System.loadLibrary("afl");
     }
-
     public native void hello();
 
     public native void pre(String inputDirectory, String outputDirectory, String target);
@@ -27,29 +29,28 @@ public class AFL {
 
     public native byte[] getTraceBitmap();
 
-    public static void main(String[] args) {
-        AFL AFL = new AFL();
-        AFL.hello();
-
-        AFL.pre("afl_in", "afl_out", "/home/mark/target/simpletarget");
-
-        AFL.debugRun("1");
-        AFL.debugRun("42");
-
-        AFL.post();
-    }
-
-    private void debugRun(String testcase) {
-        byte[] testOutput = run(testcase.getBytes());
-
-        System.out.println("Testcase: [" + testcase + "] -> [" + new String(testOutput) + "]");
-
-        byte[] traceBitmap = getTraceBitmap();
-
+    public static List<String> friendlyBitmap(byte[] traceBitmap) {
+        List<String> out = new ArrayList<>();
         for (int i = 0, traceBitmapLength = traceBitmap.length; i < traceBitmapLength; i++) {
             byte b = traceBitmap[i];
             if (b != 0)
-                System.out.format("- Trace byte %06d:%d\n", i, b);
+                out.add(String.format("%06d:%d", i, b));
         }
+        return out;
+    }
+
+    public static byte[] getNewTraceBits(byte[] prev, byte[] cur) {
+        assert prev.length == cur.length;
+
+        int traceBitmapLength = prev.length;
+        byte[] out = new byte[traceBitmapLength];
+
+        for (int i = 0; i < traceBitmapLength; i++) {
+//            out[i] = prev[i] == cur[i] ? 0 : cur[i];
+//            out[i] = (byte) (cur[i] - prev[i]);
+            out[i] = prev[i] > 0 ? 0 : cur[i];
+        }
+
+        return out;
     }
 }
