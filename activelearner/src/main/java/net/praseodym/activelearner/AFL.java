@@ -33,8 +33,8 @@ public class AFL {
 
         AFL.pre("afl_in", "afl_out", "/home/mark/target/simpletarget");
 
-        AFL.debugRun("1\0");
-        AFL.debugRun("42\0");
+        AFL.debugRun("1");
+        AFL.debugRun("42");
 
         AFL.post();
     }
@@ -42,14 +42,14 @@ public class AFL {
     private void debugRun(String testcase) {
         byte[] testOutput = run(testcase.getBytes());
 
-        System.out.println("Testcase output: [" + new String(testOutput) + "]");
+        System.out.println("Testcase: [" + testcase + "] -> [" + new String(testOutput) + "]");
 
         byte[] traceBitmap = getTraceBitmap();
 
         for (int i = 0, traceBitmapLength = traceBitmap.length; i < traceBitmapLength; i++) {
             byte b = traceBitmap[i];
             if (b != 0)
-                System.out.println("  Trace byte " + i + ": " + b);
+                System.out.format("- Trace byte %06d:%d\n", i, b);
         }
     }
 }
