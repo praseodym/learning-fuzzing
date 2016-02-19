@@ -1,6 +1,7 @@
 import net.praseodym.activelearner.AFL;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * AFL native library test code (not an actual unit test, but well)
@@ -17,14 +18,48 @@ public class AFLTest {
         AFL.pre("afl_in", "afl_out", args[0]);
 
         previousTraceBitmap = test("A");
-        test("A\nA");
-        test("A\nB");
-        previousTraceBitmap = test("A\nC");
-        test("A\nC\nC");
-        test("A\nC\nC\nC");
-        previousTraceBitmap = test("A\nC\nA");
-        previousTraceBitmap = test("A\nC\nA\nB");
-        test("A\nC\nA\nB\nB");
+        test("A A");
+        test("A B");
+        previousTraceBitmap = test("A C");
+        test("A C C");
+        test("A C C C");
+        previousTraceBitmap = test("A C A");
+        previousTraceBitmap = test("A C A B");
+        previousTraceBitmap = test("A C A B B");
+        previousTraceBitmap = test("A C A B B B");
+        previousTraceBitmap = test("A C A B B B B");
+        previousTraceBitmap = test("A C A B B B B B");
+        previousTraceBitmap = test("A C A B B B B B B");
+        previousTraceBitmap = test("A C A B B B B B B B");
+        previousTraceBitmap = test("A C A B B B B B B B B");
+        previousTraceBitmap = test("A B A B B B B B B B B");
+        previousTraceBitmap = test("A A B B B B B B B B");
+
+        previousTraceBitmap = null;
+        previousTraceBitmap = test("C");
+        previousTraceBitmap = test("B C");
+        previousTraceBitmap = test("A A C");
+
+//        previousTraceBitmap = test("C");
+//        previousTraceBitmap = test("C C");
+//        previousTraceBitmap = test("C C C");
+//        previousTraceBitmap = test("C C C C");
+//        previousTraceBitmap = test("C C C C C");
+//        previousTraceBitmap = test("C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C C C C C C");
+//        previousTraceBitmap = test("C C C C C C C C C C C C C");
 
         AFL.post();
     }
@@ -36,8 +71,7 @@ public class AFLTest {
                 + "] -> [" + new String(testOutput).replace('\n', ' ') + "]");
 
         byte[] traceBitmap = afl.getTraceBitmap();
-
-        //friendlyBitmap(traceBitmap).forEach(System.out::println);
+        System.out.println(AFL.friendlyBitmap(traceBitmap).stream().collect(Collectors.joining("#")));
 
         if (previousTraceBitmap != null) {
             byte[] newTraceBits = AFL.getNewTraceBits(previousTraceBitmap, traceBitmap);

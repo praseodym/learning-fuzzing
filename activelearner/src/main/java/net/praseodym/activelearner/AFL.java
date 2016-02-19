@@ -34,7 +34,8 @@ public class AFL {
         for (int i = 0, traceBitmapLength = traceBitmap.length; i < traceBitmapLength; i++) {
             byte b = traceBitmap[i];
             if (b != 0)
-                out.add(String.format("%06d:%d", i, b));
+                out.add(String.format("%06d", i));
+//                out.add(String.format("%06d:%d", i, b));
         }
         return out;
     }

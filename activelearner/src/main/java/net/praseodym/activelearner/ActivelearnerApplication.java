@@ -40,7 +40,19 @@ public class ActivelearnerApplication {
     }
 
     @Bean(name = "mealyOracle")
-    @Profile("!afl")
+    @Profile("afltracebitmap")
+    public MembershipOracle.MealyMembershipOracle<String, String> aflTraceBitmapMealyOracle(SUL<String, String> sul) {
+        return new LoggingSULOracle<>(sul);
+    }
+
+    @Bean
+    @Profile("afltracebitmap")
+    public SUL<String, String> aflTraceBitmapSul() {
+        return new AFLTraceBitmapSUL();
+    }
+
+    @Bean(name = "mealyOracle")
+    @Profile("process")
     public MembershipOracle.MealyMembershipOracle<String, String> processMealyOracle(SUL<String, String> sul) {
         return new LoggingSULOracle<>(sul);
     }
@@ -84,7 +96,7 @@ public class ActivelearnerApplication {
     }
 
     @Bean
-    @Profile("!afl")
+    @Profile("process")
     public SUL<String, String> testSul() {
         return new ProcessSUL();
     }

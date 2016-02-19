@@ -30,13 +30,13 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
     public static final String PADDING = "invalid_state";
 
     @Autowired
-    private AFL afl;
+    protected AFL afl;
 
-    private byte[] previousInput;
-    private byte[] previousOutput;
+    protected byte[] previousInput;
+    protected byte[] previousOutput;
 
     private int queuedDiscovered;
-    private int execs;
+    protected int execs;
 
     @Value("${learner.target}")
     private String target;
@@ -88,7 +88,7 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
         byte[] output = run(previousOutput, previousInput, input);
 
         previousInput = input;
-        previousOutput = output;
+        previousOutput = output; // TODO: this saves the shortened output value, not the original one
 
         return new String(output);
     }
@@ -98,12 +98,7 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
      */
     @Nonnull
     public byte[] run(@Nullable byte[] previousInput, @Nullable byte[] previousOutput, @Nonnull byte[] input) {
-        // Calculate new input
-        if (previousInput == null || previousInput.length == 0) {
-            input = Bytes.concat(input, SEPARATOR_BYTE);
-        } else {
-            input = Bytes.concat(previousInput, SEPARATOR_BYTE, input, SEPARATOR_BYTE);
-        }
+        input = calculateNewInput(previousInput, input);
 
         // Run target
         byte[] output = afl.run(input);
@@ -115,13 +110,7 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
                     new String(output).replace("\n", " ").trim());
         }
 
-        // Calculate difference between previous and new output
-        if (previousOutput != null && previousOutput.length == output.length) {
-            return new byte[0];
-        } else if (previousOutput != null && previousOutput.length > 0) {
-            assert previousOutput.length <= output.length;
-            output = Arrays.copyOfRange(output, previousOutput.length, output.length);
-        }
+        output = calculateNewOutput(previousOutput, output);
 
         // Check forkserver for new edges
         int newQueuedDiscovered = afl.getQueuedDiscovered();
@@ -133,6 +122,39 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
             queuedDiscovered = newQueuedDiscovered;
         }
 
+        return output;
+    }
+
+    /**
+     * New input is calculated by given input prefixed by previous input.
+     *
+     * @param previousInput
+     * @param input
+     * @return
+     */
+    protected byte[] calculateNewInput(@Nullable byte[] previousInput, @Nonnull byte[] input) {
+        if (previousInput == null || previousInput.length == 0) {
+            input = Bytes.concat(input, SEPARATOR_BYTE);
+        } else {
+            input = Bytes.concat(previousInput, SEPARATOR_BYTE, input, SEPARATOR_BYTE);
+        }
+        return input;
+    }
+
+    /**
+     * New output is the difference between the previous and current output.
+     *
+     * @param previousOutput
+     * @param output
+     * @return
+     */
+    protected byte[] calculateNewOutput(@Nullable byte[] previousOutput, byte[] output) {
+        if (previousOutput != null && previousOutput.length == output.length) {
+            output = new byte[0];
+        } else if (previousOutput != null && previousOutput.length > 0) {
+            assert previousOutput.length <= output.length;
+            output = Arrays.copyOfRange(output, previousOutput.length, output.length);
+        }
         return output;
     }
 }
