@@ -82,6 +82,8 @@ public class AFLEQOracle<A extends UniversalDeterministicAutomaton<?, I, ?, ?, ?
                     } catch (NullPointerException ignored) {
                     }
                 }
+                if (wb.size() == 0)
+                    continue;
                 Word<I> queryWord = wb.toWord();
                 wb.clear();
                 DefaultQuery<I, D> query = new DefaultQuery<>(queryWord);

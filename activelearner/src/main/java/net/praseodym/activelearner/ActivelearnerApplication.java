@@ -3,8 +3,8 @@ package net.praseodym.activelearner;
 import de.learnlib.api.EquivalenceOracle;
 import de.learnlib.api.MembershipOracle;
 import de.learnlib.api.SUL;
-import de.learnlib.cache.mealy.MealyCacheOracle;
 import de.learnlib.eqtests.basic.WMethodEQOracle;
+import de.learnlib.oracles.CounterOracle;
 import net.automatalib.automata.transout.MealyMachine;
 import net.automatalib.commons.util.mappings.MapMapping;
 import net.automatalib.words.Word;
@@ -77,8 +77,8 @@ public class ActivelearnerApplication {
             }
         }
 
-//        return new CounterOracle.MealyCounterOracle<>(mealyMembershipOracle, "membership queries");
-        return MealyCacheOracle.createDAGCacheOracle(alphabet(), errorMapping, mealyOracle);
+        return new CounterOracle.MealyCounterOracle<>(mealyOracle, "membership queries");
+//        return MealyCacheOracle.createDAGCacheOracle(alphabet(), errorMapping, mealyOracle);
     }
 
     @Bean

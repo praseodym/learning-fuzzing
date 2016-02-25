@@ -56,9 +56,15 @@ public class AFLMealyOracle implements MembershipOracle.MealyMembershipOracle<St
         aflSUL.post();
 
         String output = new String(suffixOutput);
-        log.debug("Answered query [{}] [{}] => [{}]", prefix, suffix, output.replace("\n", " ").trim());
+        Word<String> word = buildWord(output, suffix.length());
 
-        return buildWord(output, suffix.length());
+        if (log.isDebugEnabled()) {
+            log.debug("Answered query [{}] [{}] => [{}]", prefix, suffix, word);
+        }
+
+        assert suffix.length() == word.length();
+
+        return word;
     }
 
     private String concatenateWord(Word<String> in) {

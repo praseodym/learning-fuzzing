@@ -46,7 +46,7 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Path tempDir = Files.createTempDirectory("learner_afl");
+        Path tempDir = Files.createTempDirectory("learner_afl_");
         Path aflIn = tempDir.resolve("afl_in");
         Path aflOut = tempDir.resolve("afl_out");
         Files.createDirectory(aflIn);

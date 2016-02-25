@@ -22,6 +22,7 @@ import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,7 +66,7 @@ public class MealyMachineLearner implements CommandLineRunner {
         // report results
         log.info("-------------------------------------------------------");
         // profiling
-        log.info(SimpleProfiler.getResults());
+        Arrays.stream(SimpleProfiler.getResults().split(System.lineSeparator())).forEach(log::info);
         log.info("Total time: " + (end - start) + "ms (" + ((end - start) / 1000) + " s)");
         // learning statistics
         log.info(experiment.getRounds().getSummary());
