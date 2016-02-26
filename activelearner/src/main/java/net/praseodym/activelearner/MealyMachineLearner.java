@@ -1,17 +1,14 @@
 package net.praseodym.activelearner;
 
-import de.learnlib.algorithms.lstargeneric.mealy.ExtensibleLStarMealy;
-import de.learnlib.algorithms.lstargeneric.mealy.ExtensibleLStarMealyBuilder;
-import de.learnlib.api.EquivalenceOracle;
-import de.learnlib.api.MembershipOracle;
 import de.learnlib.experiments.Experiment;
 import de.learnlib.statistics.SimpleProfiler;
+import de.learnlib.statistics.StatisticOracle;
 import net.automatalib.automata.transout.MealyMachine;
 import net.automatalib.util.graphs.dot.GraphDOT;
 import net.automatalib.words.Alphabet;
-import net.automatalib.words.Word;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -37,21 +34,13 @@ public class MealyMachineLearner implements CommandLineRunner {
     @Resource
     private Alphabet<String> alphabet;
 
-    @Resource
-    private MembershipOracle<String, Word<String>> membershipOracle;
+    @Autowired
+    private Experiment.MealyExperiment<String, String> experiment;
 
-    @Resource
-    private EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle;
-
-    private Experiment.MealyExperiment<String, String> experiment() {
-        ExtensibleLStarMealy<String, String> learningAlgorithm = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet).withOracle(membershipOracle).create();
-
-        return new Experiment.MealyExperiment<>(learningAlgorithm, equivalenceOracle, alphabet);
-    }
+    @Autowired
+    private StatisticOracle[] statisticOracles;
 
     private MealyMachine learn() {
-        Experiment.MealyExperiment<String, String> experiment = experiment();
-
         log.info("Starting learning");
 
         experiment.setProfile(true);
@@ -65,18 +54,20 @@ public class MealyMachineLearner implements CommandLineRunner {
 
         // report results
         log.info("-------------------------------------------------------");
-        // profiling
-        Arrays.stream(SimpleProfiler.getResults().split(System.lineSeparator())).forEach(log::info);
+        logSummary(SimpleProfiler.getResults());
         log.info("Total time: " + (end - start) + "ms (" + ((end - start) / 1000) + " s)");
-        // learning statistics
-        log.info(experiment.getRounds().getSummary());
-
-//        log.info(statsMemOracle.getStatisticalData().getSummary());
-//        log.info(statsEQOracle.getStatisticalData().getSummary());
-//        log.info(statsCacheEQOracle.getStatisticalData().getSummary());
+        logSummary(experiment.getRounds().getSummary());
+        for (StatisticOracle statisticOracle : statisticOracles) {
+            logSummary(statisticOracle.getStatisticalData().getSummary());
+        }
         log.info("States in final hypothesis: " + result.size());
+        log.info("-------------------------------------------------------");
 
         return result;
+    }
+
+    private void logSummary(String summary) {
+        Arrays.stream(summary.split(System.lineSeparator())).forEach(log::info);
     }
 
     private void writeResult(MealyMachine mealyMachine) throws IOException {

@@ -6,7 +6,6 @@ import net.automatalib.words.Word;
 import net.automatalib.words.WordBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -24,8 +23,11 @@ public class AFLMealyOracle implements MembershipOracle.MealyMembershipOracle<St
 
     private final Logger log = LoggerFactory.getLogger(AFLMealyOracle.class);
 
-    @Autowired
     private AFLSUL aflSUL;
+
+    public AFLMealyOracle(AFLSUL aflSUL) {
+        this.aflSUL = aflSUL;
+    }
 
     @Override
     public void processQueries(Collection<? extends Query<String, Word<String>>> queries) {

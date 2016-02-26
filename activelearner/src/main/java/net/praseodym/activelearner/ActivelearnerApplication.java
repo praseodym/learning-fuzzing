@@ -1,14 +1,19 @@
 package net.praseodym.activelearner;
 
+import de.learnlib.algorithms.lstargeneric.mealy.ExtensibleLStarMealy;
+import de.learnlib.algorithms.lstargeneric.mealy.ExtensibleLStarMealyBuilder;
 import de.learnlib.api.EquivalenceOracle;
 import de.learnlib.api.MembershipOracle;
 import de.learnlib.api.SUL;
+import de.learnlib.cache.mealy.MealyCacheOracle;
 import de.learnlib.eqtests.basic.WMethodEQOracle;
+import de.learnlib.experiments.Experiment;
 import de.learnlib.oracles.CounterOracle;
 import net.automatalib.automata.transout.MealyMachine;
 import net.automatalib.commons.util.mappings.MapMapping;
 import net.automatalib.words.Word;
 import net.automatalib.words.impl.SimpleAlphabet;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,24 +30,10 @@ public class ActivelearnerApplication {
         SpringApplication.run(ActivelearnerApplication.class, args);
     }
 
-    @Bean(name = "mealyOracle")
-    @Profile("afl")
-    public MembershipOracle.MealyMembershipOracle<String, String> aflMealyOracle(SUL<String, String> sul) {
-        // dumb method
-//        return new LoggingSULOracle<String, String>(sul);
-        return new AFLMealyOracle();
-    }
-
     @Bean
     @Profile("afl")
-    public SUL<String, String> aflSul() {
+    public AFLSUL aflSul() {
         return new AFLSUL();
-    }
-
-    @Bean(name = "mealyOracle")
-    @Profile("afltracebitmap")
-    public MembershipOracle.MealyMembershipOracle<String, String> aflTraceBitmapMealyOracle(SUL<String, String> sul) {
-        return new LoggingSULOracle<>(sul);
     }
 
     @Bean
@@ -51,10 +42,22 @@ public class ActivelearnerApplication {
         return new AFLTraceBitmapSUL();
     }
 
+    @Bean
+    @Profile("process")
+    public SUL<String, String> testSul() {
+        return new ProcessSUL();
+    }
+
+    @Bean(name = "mealyOracle")
+    @Profile({"afl", "afltracebitmap"})
+    public CounterOracle.MealyCounterOracle<String, String> aflMealyOracle(AFLSUL sul) {
+        return new CounterOracle.MealyCounterOracle<>(new AFLMealyOracle(sul), "AFL SUL queries");
+    }
+
     @Bean(name = "mealyOracle")
     @Profile("process")
-    public MembershipOracle.MealyMembershipOracle<String, String> processMealyOracle(SUL<String, String> sul) {
-        return new LoggingSULOracle<>(sul);
+    public CounterOracle.MealyCounterOracle<String, String> processMealyOracle(SUL<String, String> sul) {
+        return new CounterOracle.MealyCounterOracle<>(new LoggingSULOracle<>(sul), "Process SUL queries");
     }
 
     @Value("${learner.alphabet}")
@@ -68,7 +71,10 @@ public class ActivelearnerApplication {
     }
 
     @Bean(name = "membershipOracle")
-    public MembershipOracle<String, Word<String>> mealyMembershipOracle(MembershipOracle<String, Word<String>> mealyOracle) {
+    @Profile("mealycache")
+    public CounterOracle.MealyCounterOracle<String, String> mealyCacheMembershipOracle(
+            MembershipOracle<String, Word<String>> mealyOracle) {
+        // Mealy cache is faster but has bugs (ConflictExceptions) in some cases.
         MapMapping<String, String> errorMapping = new MapMapping<>();
         errorMapping.put("invalid_state", "invalid_state");
         for (int i = 0; i <= 26; i++) {
@@ -76,28 +82,45 @@ public class ActivelearnerApplication {
                 errorMapping.put(String.format("%d_assert:!error_%d", i, j), "invalid_state");
             }
         }
+        mealyOracle = MealyCacheOracle.createDAGCacheOracle(alphabet(), errorMapping, mealyOracle);
+        return new CounterOracle.MealyCounterOracle<>(mealyOracle, "Membership queries to cache");
+    }
 
-        return new CounterOracle.MealyCounterOracle<>(mealyOracle, "membership queries");
-//        return MealyCacheOracle.createDAGCacheOracle(alphabet(), errorMapping, mealyOracle);
+    @Bean(name = "membershipOracle")
+    @Profile("!mealycache")
+    public CounterOracle.MealyCounterOracle<String, String> mealyMembershipOracle(
+            @Qualifier("mealyOracle") CounterOracle.MealyCounterOracle<String, String> mealyOracle) {
+        return new CounterOracle.MealyCounterOracle<>(mealyOracle, "Membership queries");
+    }
+
+    @Bean(name = "eqOracle")
+    public CounterOracle.MealyCounterOracle<String, String> eqOracle(
+            @Qualifier("mealyOracle") CounterOracle.MealyCounterOracle<String, String> mealyOracle) {
+        return new CounterOracle.MealyCounterOracle<>(mealyOracle, "Equivalence queries");
     }
 
     @Bean
     @Profile("afleq")
-    public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> aflEquivalence(@Value("${learner.afleq.directory}") String equivalenceTestFiles, MembershipOracle<String, Word<String>> membershipOracle) {
-        return new AFLEQOracle<>(alphabet(), membershipOracle, equivalenceTestFiles);
+    public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> aflEquivalence(
+            @Value("${learner.afleq.directory}") String equivalenceTestFiles,
+            CounterOracle.MealyCounterOracle<String, String> eqOracle) {
+        return new AFLEQOracle<>(alphabet(), eqOracle, equivalenceTestFiles);
     }
 
     @Bean
     @Profile("wmethodeq")
-    public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> wmethodEquivalence(@Value("${learner.wmethodeq.maxdepth}") int wmethodMaxDepth, MembershipOracle<String, Word<String>> membershipOracle) {
+    public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> wmethodEquivalence(
+            @Value("${learner.wmethodeq.maxdepth}") int wmethodMaxDepth,
+            CounterOracle.MealyCounterOracle<String, String> eqOracle) {
         assert wmethodMaxDepth > 0;
-
-        return new WMethodEQOracle.MealyWMethodEQOracle<>(wmethodMaxDepth, membershipOracle);
+        return new WMethodEQOracle.MealyWMethodEQOracle<>(wmethodMaxDepth, eqOracle);
     }
 
     @Bean
-    @Profile("process")
-    public SUL<String, String> testSul() {
-        return new ProcessSUL();
+    public Experiment.MealyExperiment<String, String> experiment(
+            MembershipOracle<String, Word<String>> membershipOracle,
+            EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle) {
+        ExtensibleLStarMealy<String, String> learningAlgorithm = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet()).withOracle(membershipOracle).create();
+        return new Experiment.MealyExperiment<>(learningAlgorithm, equivalenceOracle, alphabet());
     }
 }
