@@ -8076,6 +8076,9 @@ JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_run(JNIEnv *en
   char *argv[] = {NULL};
   child_timed_out = 0;
 
+  stage_name = (u8 *) "learner";
+  stage_short = (u8 *) "learner";
+
   int i = 0;
   do {
       common_fuzz_stuff(argv, (u8 *) testcase, (u32) testcase_length);
