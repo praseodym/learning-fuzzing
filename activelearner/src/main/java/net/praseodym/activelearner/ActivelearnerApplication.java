@@ -13,6 +13,8 @@ import net.automatalib.automata.transout.MealyMachine;
 import net.automatalib.commons.util.mappings.MapMapping;
 import net.automatalib.words.Word;
 import net.automatalib.words.impl.SimpleAlphabet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -25,6 +27,8 @@ import java.util.Arrays;
 @SpringBootApplication
 //@EnableCaching
 public class ActivelearnerApplication {
+
+    private static final Logger log = LoggerFactory.getLogger(ActivelearnerApplication.class);
 
     public static void main(String[] args) {
         SpringApplication.run(ActivelearnerApplication.class, args);
@@ -82,7 +86,9 @@ public class ActivelearnerApplication {
                 errorMapping.put(String.format("%d_assert:!error_%d", i, j), "invalid_state");
             }
         }
-        mealyOracle = MealyCacheOracle.createDAGCacheOracle(alphabet(), errorMapping, mealyOracle);
+        // DAG cache throws ConflictExceptions (in some cases), tree cache uses more memory
+        log.info("Configuring Mealy tree cache membership oracle");
+        mealyOracle = MealyCacheOracle.createTreeCacheOracle(alphabet(), errorMapping, mealyOracle);
         return new CounterOracle.MealyCounterOracle<>(mealyOracle, "Membership queries to cache");
     }
 
@@ -90,6 +96,7 @@ public class ActivelearnerApplication {
     @Profile("!mealycache")
     public CounterOracle.MealyCounterOracle<String, String> mealyMembershipOracle(
             @Qualifier("mealyOracle") CounterOracle.MealyCounterOracle<String, String> mealyOracle) {
+        log.info("Configuring uncached Mealy membership oracle");
         return new CounterOracle.MealyCounterOracle<>(mealyOracle, "Membership queries");
     }
 
@@ -104,6 +111,7 @@ public class ActivelearnerApplication {
     public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> aflEquivalence(
             @Value("${learner.afleq.directory}") String equivalenceTestFiles,
             CounterOracle.MealyCounterOracle<String, String> eqOracle) {
+        log.info("Configuring AFL equivalence");
         return new AFLEQOracle<>(alphabet(), eqOracle, equivalenceTestFiles);
     }
 
@@ -113,6 +121,7 @@ public class ActivelearnerApplication {
             @Value("${learner.wmethodeq.maxdepth}") int wmethodMaxDepth,
             CounterOracle.MealyCounterOracle<String, String> eqOracle) {
         assert wmethodMaxDepth > 0;
+        log.info("Configuring W-method equivalence with max. depth {}", wmethodMaxDepth);
         return new WMethodEQOracle.MealyWMethodEQOracle<>(wmethodMaxDepth, eqOracle);
     }
 
