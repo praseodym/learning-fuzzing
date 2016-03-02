@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 /**
@@ -44,16 +45,25 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
     @Value("${learner.testinput}")
     private String testinput;
 
+    @Value("${learner.outdir:#{null}}")
+    private String outdir;
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        Path tempDir = Files.createTempDirectory("learner_afl_");
-        Path aflIn = tempDir.resolve("afl_in");
-        Path aflOut = tempDir.resolve("afl_out");
+        Path aflDir;
+        if (outdir == null) {
+            aflDir = Files.createTempDirectory("learner_afl_");
+        } else {
+            aflDir = Paths.get(outdir);
+            assert Files.exists(aflDir) : "Output directory does not exist";
+        }
+        Path aflIn = aflDir.resolve("afl_in");
+        Path aflOut = aflDir.resolve("afl_out");
         Files.createDirectory(aflIn);
         Files.createDirectory(aflOut);
         Files.write(aflIn.resolve("a"), testinput.getBytes());
 
-        log.info("AFL directory: {}", tempDir);
+        log.info("AFL directory: {}", aflDir.toAbsolutePath());
 
         log.info("Starting forkserver");
         afl.pre(aflIn.toString(), aflOut.toString(), target);

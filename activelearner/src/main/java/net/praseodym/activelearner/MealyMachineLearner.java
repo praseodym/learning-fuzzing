@@ -8,7 +8,9 @@ import net.automatalib.util.graphs.dot.GraphDOT;
 import net.automatalib.words.Alphabet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +30,7 @@ import java.util.stream.Collectors;
  * Mealy Machine Learner class
  */
 @Component
-public class MealyMachineLearner implements CommandLineRunner {
+public class MealyMachineLearner implements CommandLineRunner, InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(MealyMachineLearner.class);
 
@@ -39,6 +42,17 @@ public class MealyMachineLearner implements CommandLineRunner {
 
     @Autowired
     private StatisticOracle[] statisticOracles;
+
+    @Value("${learner.outdir:}")
+    private String outdir;
+
+    private Path outputDirectory;
+
+    @Override
+    public void afterPropertiesSet() {
+        outputDirectory = Paths.get(outdir);
+        assert Files.exists(outputDirectory) : "Output directory does not exist";
+    }
 
     private MealyMachine learn() {
         log.info("Starting learning");
@@ -61,7 +75,6 @@ public class MealyMachineLearner implements CommandLineRunner {
             logSummary(statisticOracle.getStatisticalData().getSummary());
         }
         log.info("States in final hypothesis: " + result.size());
-        log.info("-------------------------------------------------------");
 
         return result;
     }
@@ -76,7 +89,8 @@ public class MealyMachineLearner implements CommandLineRunner {
 
         // Write output to file and convert to pdf
 //        String outputFilename = learner.config.output_dir + "/learnedModel.dot";
-        String outputFilename = "learnedModel.dot";
+        log.info("Output directory: {}", outputDirectory.toAbsolutePath());
+        String outputFilename = outputDirectory.resolve("learnedModel.dot").toString();
         String outputFilenamePdf = outputFilename.replace(".dot", ".pdf");
         File dotFile = new File(outputFilename);
         PrintStream psDotFile = new PrintStream(dotFile);
