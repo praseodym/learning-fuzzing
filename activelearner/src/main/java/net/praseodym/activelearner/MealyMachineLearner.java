@@ -100,9 +100,9 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
         // Simplify .dot file and convert to pdf
         List<String> lines = Files.readAllLines(Paths.get(outputFilename)).stream()
                 .filter(s -> !s.contains("invalid_state")).collect(Collectors.toList());
-        List<String> simpified = SimplifyDot.simplifyDot(lines);
+        List<String> simplified = SimplifyDot.simplifyDot(lines);
         String simplifiedOutputFilename = outputFilename.replace(".dot", "_simple.dot");
-        Files.write(Paths.get(simplifiedOutputFilename), simpified, Charset.defaultCharset());
+        Files.write(Paths.get(simplifiedOutputFilename), simplified, Charset.defaultCharset());
         String simplifiedOutputFilenamePdf = outputFilenamePdf.replace(".pdf", "_simple.pdf");
         Runtime.getRuntime().exec("dot -Tpdf -o " + simplifiedOutputFilenamePdf + " " + simplifiedOutputFilename);
     }
