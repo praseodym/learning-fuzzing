@@ -53,7 +53,6 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include <sys/file.h>
-#include <linux/memfd.h>
 #include <asm/unistd_64.h>
 
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined (__OpenBSD__)
@@ -1233,7 +1232,8 @@ static void setup_shm(void) {
   // Create a memfd (shm) to save stdout of our target
   const int shm_size = 1024*1024;
   int ret;
-  stdout_fd = memfd_create("stdout_fd", MFD_ALLOW_SEALING);
+  stdout_fd = memfd_create("stdout_fd", 0);
+  if (stdout_fd == -1) PFATAL("Unable to create stdout buffer (%d)", errno);
   ret = ftruncate(stdout_fd, shm_size);
   ret = fcntl(stdout_fd, F_ADD_SEALS, F_SEAL_SHRINK);
   stdout_buffer = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, stdout_fd, 0);

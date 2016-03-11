@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
 project(afl)
 
-set(VERSION 1.95b)
+set(VERSION 2.00b)
 set(PREFIX /usr/local)
 set(JAVA_HOME /usr/lib/jvm/java-8-oracle)
 set(BIN_PATH $(PREFIX)/bin)
