@@ -91,11 +91,11 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
 //        String outputFilename = learner.config.output_dir + "/learnedModel.dot";
         log.info("Output directory: {}", outputDirectory.toAbsolutePath());
         String outputFilename = outputDirectory.resolve("learnedModel.dot").toString();
-        String outputFilenamePdf = outputFilename.replace(".dot", ".pdf");
         File dotFile = new File(outputFilename);
         PrintStream psDotFile = new PrintStream(dotFile);
         GraphDOT.write(mealyMachine, alphabet, psDotFile);
-        Runtime.getRuntime().exec("dot -Tpdf -o " + outputFilenamePdf + " " + outputFilename);
+//        String outputFilenamePdf = outputFilename.replace(".dot", ".pdf");
+//        Runtime.getRuntime().exec("dot -Tpdf -o " + outputFilenamePdf + " " + outputFilename);
 
         // Simplify .dot file and convert to pdf
         List<String> lines = Files.readAllLines(Paths.get(outputFilename)).stream()
@@ -103,8 +103,8 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
         List<String> simplified = SimplifyDot.simplifyDot(lines);
         String simplifiedOutputFilename = outputFilename.replace(".dot", "_simple.dot");
         Files.write(Paths.get(simplifiedOutputFilename), simplified, Charset.defaultCharset());
-        String simplifiedOutputFilenamePdf = outputFilenamePdf.replace(".pdf", "_simple.pdf");
-        Runtime.getRuntime().exec("dot -Tpdf -o " + simplifiedOutputFilenamePdf + " " + simplifiedOutputFilename);
+//        String simplifiedOutputFilenamePdf = outputFilenamePdf.replace(".pdf", "_simple.pdf");
+//        Runtime.getRuntime().exec("dot -Tpdf -o " + simplifiedOutputFilenamePdf + " " + simplifiedOutputFilename);
     }
 
     @Override
