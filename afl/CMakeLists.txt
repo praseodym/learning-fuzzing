@@ -3,7 +3,7 @@ project(afl)
 
 set(VERSION 2.00b)
 set(PREFIX /usr/local)
-set(JAVA_HOME /usr/lib/jvm/java-8-oracle)
+set(JAVA_HOME /Library/Java/JavaVirtualMachines/jdk1.8.0_74.jdk/Contents/Home)
 set(BIN_PATH $(PREFIX)/bin)
 set(HELPER_PATH $(PREFIX)/lib/afl)
 set(DOC_PATH $(PREFIX)/share/doc/afl)

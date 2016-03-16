@@ -1931,16 +1931,7 @@ static void init_forkserver(char** argv) {
 
     setsid();
 
-//    FILE* stdout_test_file = fopen("/tmp/test", "w");
-//    int stdout_test_fd = fileno(stdout_test_file);
-//    fwrite("derp", 1, 4, stdout_test_file);
-//    fclose(stdout_test_file);
-//    dup2(stdout_test_fd, 1);
-
-    //printf("\n\nfork dup stdout_fd: %d\n", stdout_fd);
     dup2(stdout_fd, 1);
-
-//    dup2(dev_null_fd, 1);
     dup2(dev_null_fd, 2);
 
     if (out_file) {
@@ -6744,8 +6735,17 @@ static void fix_up_banner(u8* name) {
 
 static void check_if_tty(void) {
 
-  OKF("Looks like we're not running on a tty, so I'll be a bit less verbose.");
-  not_on_tty = 1;
+  struct winsize ws;
+
+  if (ioctl(1, TIOCGWINSZ, &ws)) {
+
+    if (errno == ENOTTY) {
+      OKF("Looks like we're not running on a tty, so I'll be a bit less verbose.");
+      not_on_tty = 1;
+    }
+
+    return;
+  }
 
 }
 
@@ -7405,7 +7405,13 @@ int main(int argc, char** argv) {
 
   char** use_argv;
 
-  while ((opt = getopt(argc, argv, "+i:o:f:m:t:T:dnCB:S:M:x:Q")) > 0)
+  doc_path = "docs";
+
+  SAYF("main: %d args\n", argc);
+
+  while ((opt = getopt(argc, argv, "+i:o:f:m:t:T:dnCB:S:M:x:Q")) > 0) {
+
+    printf("opt: %c [%s]\n", opt, optarg);
 
     switch (opt) {
 
@@ -7556,10 +7562,10 @@ int main(int argc, char** argv) {
         break;
 
       default:
-
-        usage(argv[0]);
+        FATAL("Unknown opt: %c [%s]\n", opt, optarg);
 
     }
+  }
 
   if (optind == argc || !in_dir || !out_dir) usage(argv[0]);
 
@@ -7589,7 +7595,7 @@ int main(int argc, char** argv) {
 
   fix_up_banner(argv[optind]);
 
-  check_if_tty();
+  not_on_tty = 1;
 
   get_core_count();
   check_crash_handling();
@@ -7608,15 +7614,16 @@ int main(int argc, char** argv) {
 
   if (!timeout_given) find_timeout();
 
-  detect_file_args(argv + optind + 1);
+
+//  SAYF("main: optind + 1 = %d\n", optind + 1);
+//  SAYF("main: argv[%d] = %s\n", optind + 1, argv[optind + 1]);
+//  TODO: this breaks things (strstr call) in some cases
+//  detect_file_args(argv + optind + 1);
 
   if (!out_file) setup_stdio_file();
 
+  SAYF("main: check_binary argv[%d] = %s\n", optind, argv[optind]);
   check_binary(argv[optind]);
-
-  use_argv = argv + optind;
-
-  perform_dry_run(use_argv);
 
   start_time = get_cur_time();
 
@@ -7625,8 +7632,12 @@ int main(int argc, char** argv) {
   else
     use_argv = argv + optind;
 
-  perform_dry_run(use_argv);
+  // FIXME: what's going on here? what should be in use_argv?
+  SAYF("main: perform_dry_run [%s]\n", use_argv);
+  char *empty_argv[] = {NULL};
+  perform_dry_run(empty_argv);
 
+  SAYF("main: cull_queue\n");
   cull_queue();
 
   show_init_stats();
@@ -7635,31 +7646,6 @@ int main(int argc, char** argv) {
 
   write_stats_file(0, 0);
   save_auto();
-
-  //if (stop_soon) goto stop_fuzzing;
-
-  /* Woop woop woop */
-
-//  skipped_fuzz = fuzz_one(use_argv);
-
-//  init_forkserver - calibrate
-//  common_fuzz_stuff - fuzz_one
-
-  // Test code
-  /*printf("run\n");
-  char* testcase = "1";
-  printf("testcase: %s\n", testcase);
-
-  //main(7, argv);
-  // put testcase in out_file / out_fd
-  printf("out_file: %s\n", out_file);
-  write_to_testcase(testcase, (u32) sizeof(testcase));
-
-  // argv for target
-  char* argvy[] = {NULL};
-  run_target(argvy);
-
-  printf("stdout: %s\n", stdout_buffer);*/
 }
 
 
@@ -7668,7 +7654,8 @@ void stop() {
   //write_stats_file(0, 0);
   //save_auto();
   
-  // TODO: clean up memfd (stdout_fd)
+  // clean up memfd (stdout_fd)
+  close(stdout_fd);
 
   /* Running for more than 30 minutes but still doing first cycle? */
 
@@ -8043,23 +8030,33 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_hello(JNIEnv *env, j
 }
 
 JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env, jobject obj, jstring jin, jstring jout, jstring jtarget) {
+  SAYF("libafl pre: initialising AFL\n");
+
   const char *in_dir = (*env)->GetStringUTFChars(env, jin, 0);
+  if (in_dir == NULL) PFATAL("libafl pre: Unable to get in_dir");
+  SAYF("libafl pre: in_dir: [%s]\n", in_dir);
+
   const char *out_dir = (*env)->GetStringUTFChars(env, jout, 0);
-  //const char *dictionary = (*env)->GetStringUTFChars(env, jdict, 0);
+  if (out_dir == NULL) PFATAL("libafl pre: Unable to get out_dir");
+  SAYF("libafl pre: out_dir: [%s]\n", out_dir);
+
+//  const char *dict_dir = (*env)->GetStringUTFChars(env, jdict, 0);
+//  if (dict_dir == NULL) PFATAL("Pre: Unable to get dict_dir");
+
   const char *target = (*env)->GetStringUTFChars(env, jtarget, 0);
+  if (target == NULL) PFATAL("libafl pre: Unable to get target");
+  SAYF("libafl pre: target: [%s]\n", target);
 
-  //SAYF("pre\n");
-
-  char* argv[] = {"afl-test", "-i", (char *) in_dir, "-o", (char *) out_dir, //"-x", (char *) dictionary,
-                  "--", (char *) target};
+  char* argv[] = {"afl-test", "-i", (char *) in_dir, "-o", (char *) out_dir, //"-x", (char *) dict_dir,
+                  "--", (char *) target, "x", "y", "z"};
 
   main(sizeof(argv)/sizeof(argv[0]), argv);
   fflush(stdout);
 
-//  (*env)->ReleaseStringUTFChars(env, jargv, xargv);
-//  (*env)->ReleaseStringUTFChars(env, jargv, xargv);
-//  (*env)->ReleaseStringUTFChars(env, jargv, xargv);
-//  (*env)->ReleaseStringUTFChars(env, jargv, xargv);
+  SAYF("libafl pre: initialised AFL\n");
+
+  // We'll keep the arguments, i.e. no ReleaseStringUTFChars calls
+  // TODO: make a local copy of the arguments so that they can be released again
 }
 
 JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_run(JNIEnv *env, jobject obj, jstring jtestcase) {
