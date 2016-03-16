@@ -8,13 +8,17 @@
 
    Copyright 2013, 2014, 2015 Google Inc. All rights reserved.
 
+   Java bridge (JNI) and stdout capture code by Mark
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at:
 
      http://www.apache.org/licenses/LICENSE-2.0
 
-   This contains fork server code extracted by Mark.
+   This is the real deal: the program takes an instrumented binary and
+   attempts a variety of basic fuzzing tricks, paying close attention to
+   how they affect the execution path.
 
  */
 
@@ -29,7 +33,7 @@
 #include "debug.h"
 #include "alloc-inl.h"
 #include "hash.h"
-#include "net_praseodym_activelearner_AFL.h"
+#include "memfd.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -238,27 +242,9 @@ static struct extra_data* a_extras;   /* Automatically selected extras    */
 static u32 a_extras_cnt;              /* Total number of tokens available */
 
 static u8* (*post_handler)(u8* buf, u32* len);
+
 static char* stdout_buffer;
 static s32 stdout_fd = -1;
-
-#ifndef F_LINUX_SPECIFIC_BASE
-#define F_LINUX_SPECIFIC_BASE 1024
-#endif
-
-#ifndef F_ADD_SEALS
-#define F_ADD_SEALS (F_LINUX_SPECIFIC_BASE + 9)
-#define F_GET_SEALS (F_LINUX_SPECIFIC_BASE + 10)
-
-#define F_SEAL_SEAL     0x0001  /* prevent further seals from being set */
-#define F_SEAL_SHRINK   0x0002  /* prevent file from shrinking */
-#define F_SEAL_GROW     0x0004  /* prevent file from growing */
-#define F_SEAL_WRITE    0x0008  /* prevent writes */
-#endif
-
-static int memfd_create(const char *name, unsigned int flags) {
-  return syscall(__NR_memfd_create, name, flags);
-}
-
 
 /* Interesting values, as per config.h */
 
@@ -1229,17 +1215,6 @@ static void setup_shm(void) {
 
   shm_id = shmget(IPC_PRIVATE, MAP_SIZE, IPC_CREAT | IPC_EXCL | 0600);
 
-  // Create a memfd (shm) to save stdout of our target
-  const int shm_size = 1024*1024;
-  int ret;
-  stdout_fd = memfd_create("stdout_fd", 0);
-  if (stdout_fd == -1) PFATAL("Unable to create stdout buffer (%d)", errno);
-  ret = ftruncate(stdout_fd, shm_size);
-  ret = fcntl(stdout_fd, F_ADD_SEALS, F_SEAL_SHRINK);
-  stdout_buffer = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, stdout_fd, 0);
-  //SAYF("stdout_fd: %d\n", stdout_fd);
-  if (shm_id < 0) PFATAL("shmget() failed");
-
   atexit(remove_shm);
 
   shm_str = alloc_printf("%d", shm_id);
@@ -1852,14 +1827,6 @@ static void destroy_extras(void) {
 
 }
 
-//    FILE *stdout_file = fdopen(stdout_fd, "w");
-//    fwrite("forked", 1, 6, stdout_file);
-//    fclose(stdout_file);
-    //SAYF("stdout_fd in fork is %d\n", stdout_fd);
-    //char *shm = mmap(NULL, 1024*1024, PROT_WRITE, MAP_PRIVATE, stdout_fd, 0);
-    //if (shm == MAP_FAILED)
-    //  FATAL("fork stdout mmap ERROR %d\n", errno);
-    
 
 /* Spin up fork server (instrumented mode only). The idea is explained here:
 
@@ -7394,37 +7361,6 @@ static void save_cmdline(u32 argc, char** argv) {
 
 }
 
-void stop() {
-  //write_bitmap();
-  //write_stats_file(0, 0);
-  //save_auto();
-  
-  // clean up memfd (stdout_fd)
-  close(stdout_fd);
-
-  /* Running for more than 30 minutes but still doing first cycle? */
-
-  if (queue_cycle == 1 && get_cur_time() - start_time > 30 * 60 * 1000) {
-
-    SAYF("\n" cYEL "[!] " cRST
-                 "Stopped during the first cycle, results may be incomplete.\n"
-                         "    (For info on resuming, see %s/README.)\n", doc_path);
-
-  }
-
-  //fclose(plot_file);
-  destroy_queue();
-  destroy_extras();
-  ck_free(target_path);
-
-  alloc_report();
-
-  OKF("Total executions: %d", total_execs);
-  OKF("We're done here. Have a nice day!\n");
-
-  //exit(0);
-}
-
 /* Main entry point */
 
 int main_original(int argc, char** argv) {
@@ -7769,175 +7705,4 @@ stop_fuzzing:
   exit(0);
 }
 
-JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_hello(JNIEnv *env, jobject obj) {
-  SAYF("hello\n");
-}
-
-JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env, jobject obj, jstring jin, jstring jout, jstring jtarget) {
-//  SAYF("libafl pre: initialising AFL\n");
-
-  in_dir = (u8 *) (*env)->GetStringUTFChars(env, jin, 0);
-  if (in_dir == NULL) PFATAL("libafl pre: Unable to get in_dir");
-//  SAYF("libafl pre: in_dir: [%s]\n", in_dir);
-
-  out_dir = (u8 *) (*env)->GetStringUTFChars(env, jout, 0);
-  if (out_dir == NULL) PFATAL("libafl pre: Unable to get out_dir");
-//  SAYF("libafl pre: out_dir: [%s]\n", out_dir);
-
-//  const char *dict_dir = (*env)->GetStringUTFChars(env, jdict, 0);
-//  if (dict_dir == NULL) PFATAL("Pre: Unable to get dict_dir");
-
-  u8 *target = (u8 *) (*env)->GetStringUTFChars(env, jtarget, 0);
-  if (target == NULL) PFATAL("libafl pre: Unable to get target");
-//  SAYF("libafl pre: target: [%s]\n", target);
-
-  // TODO: initialise other options like qemu and dictionary
-
-  u64 prev_queued = 0;
-  u32 sync_interval_cnt = 0, seek_to;
-  u8  *extras_dir = 0;
-  u8  mem_limit_given = 0;
-
-  doc_path = (u8 *) "docs";
-
-  if (!strcmp(in_dir, "-")) in_place_resume = 1;
-
-  setup_signal_handlers();
-  check_asan_opts();
-
-  if (sync_id) fix_up_sync();
-
-  if (!strcmp(in_dir, out_dir))
-    FATAL("Input and output directories can't be the same");
-
-  if (dumb_mode) {
-
-    if (crash_mode) FATAL("-C and -n are mutually exclusive");
-    if (qemu_mode)  FATAL("-Q and -n are mutually exclusive");
-
-  }
-
-  if (getenv("AFL_NO_FORKSRV"))   no_forkserver    = 1;
-  if (getenv("AFL_NO_CPU_RED"))   no_cpu_meter_red = 1;
-  if (getenv("AFL_NO_VAR_CHECK")) no_var_check     = 1;
-
-  if (dumb_mode == 2 && no_forkserver)
-    FATAL("AFL_DUMB_FORKSRV and AFL_NO_FORKSRV are mutually exclusive");
-
-  orig_cmdline = (u8 *) "<activelearner>";
-
-  fix_up_banner((u8 *) target);
-
-  not_on_tty = 1;
-
-  get_core_count();
-  check_crash_handling();
-  check_cpu_governor();
-
-  setup_post();
-  setup_shm();
-
-  setup_dirs_fds();
-  read_testcases();
-  load_auto();
-
-  pivot_inputs();
-
-  if (extras_dir) load_extras(extras_dir);
-
-  if (!timeout_given) find_timeout();
-
-  char *argv[] = {NULL};
-
-  detect_file_args(argv);
-
-  if (!out_file) setup_stdio_file();
-
-  check_binary(target);
-
-  start_time = get_cur_time();
-
-//  if (qemu_mode)
-//    use_argv = get_qemu_argv(argv[0], argv + optind, argc - optind);
-//  else
-//    use_argv = argv + optind;
-
-  perform_dry_run(argv);
-
-  cull_queue();
-
-  show_init_stats();
-
-  seek_to = find_start_position();
-
-  write_stats_file(0, 0);
-  save_auto();
-
-  fflush(stdout);
-
-//  SAYF("libafl pre: initialised AFL\n");
-
-  // We'll keep the arguments, i.e. no ReleaseStringUTFChars calls
-  // TODO: make a local copy of the arguments so that they can be released again
-}
-
-JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_run(JNIEnv *env, jobject obj, jstring jtestcase) {
-  jbyte* testcase = (*env)->GetByteArrayElements(env, jtestcase, NULL);
-  jsize testcase_length = (*env)->GetArrayLength(env, jtestcase);
-
-  //SAYF("run\n");
-  //SAYF("testcase: %s\n", testcase);
-
-  // put testcase in out_file / out_fd
-  //SAYF("out_file: %s\n", out_file);
-
-  // argv for target
-  char *argv[] = {NULL};
-  child_timed_out = 0;
-
-  stage_name = (u8 *) "learner";
-  stage_short = (u8 *) "learner";
-
-  int i = 0;
-  do {
-      common_fuzz_stuff(argv, (u8 *) testcase, (u32) testcase_length);
-      if (child_timed_out) {
-          if (i < 20) {
-              i++;
-              WARNF("Target process timed out, retrying [%d]", i);
-              fflush(stdout);
-          } else {
-              FATAL("Target process timed out too many times, giving up.");
-              break;
-          }
-      }
-  } while (child_timed_out);
-
-  __off64_t stdout_position = lseek(stdout_fd, 0, SEEK_CUR);
-  //SAYF("lseek: %d\n", stdout_position);
-  //SAYF("stdout: %s\n", stdout_buffer);
-
-  (*env)->ReleaseByteArrayElements(env, jtestcase, testcase, 0);
-
-  jbyteArray array = (*env)->NewByteArray(env, (jsize) stdout_position);
-  (*env)->SetByteArrayRegion(env, array, 0, (jsize) stdout_position, (jbyte*)stdout_buffer);
-  return array;
-  
-}
-
-JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_post(JNIEnv *env, jobject obj) {
-  //SAYF("post\n");
-  stop();
-  fflush(stdout);
-}
-
-JNIEXPORT jint JNICALL Java_net_praseodym_activelearner_AFL_getQueuedDiscovered(JNIEnv *env, jobject obj) {
-  return queued_discovered;
-}
-
-
-JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_getTraceBitmap(JNIEnv *env, jobject obj) {
-  jbyteArray array = (*env)->NewByteArray(env, (jsize) MAP_SIZE);
-  (*env)->SetByteArrayRegion(env, array, 0, (jsize) MAP_SIZE, (jbyte*)trace_bits);
-  return array;
-}
+#include "afl-jni.c"
