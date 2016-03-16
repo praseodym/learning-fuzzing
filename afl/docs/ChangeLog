@@ -13,8 +13,101 @@ Want to stay in the loop on major new features? Join our mailing list by
 sending a mail to <afl-users+subscribe@googlegroups.com>.
 
 Not sure if you should upgrade? The lowest currently recommended version
-is 1.92b. If you're stuck on an earlier release, it's strongly advisable
+is 2.07b. If you're stuck on an earlier release, it's strongly advisable
 to get on with the times.
+
+--------------
+Version 2.08b:
+--------------
+
+  - Added explicit support for -m32 and -m64 for llvm_mode. Inspired by
+    a request from Christian Holler.
+
+  - Added a new benchmarking option, as requested by Kostya Serebryany.
+
+--------------
+Version 2.07b:
+--------------
+
+  - Added CPU affinity option (-Z) on Linux. With some caution, this can
+    offer a significant (10%+) performance bump and reduce jitter.
+    Proposed by Austin Seipp.
+
+  - Updated afl-gotcpu to use CPU affinity where supported.
+
+  - Fixed confusing CPU_TARGET error messages with QEMU build. Spotted by
+    Daniel Komaromy and others.
+
+--------------
+Version 2.06b:
+--------------
+
+  - Worked around LLVM persistent mode hiccups with -shared code.
+    Contributed by Christian Holler.
+
+  - Added __AFL_COMPILER as a convenient way to detect that something is
+    built under afl-gcc / afl-clang / afl-clang-fast and enable custom
+    optimizations in your code. Suggested by Pedro Corte-Real.
+
+  - Upstreamed several minor changes developed by Franjo Ivancic to
+    allow AFL to be built as a library. This is fairly use-specific and
+    may have relatively little appeal to general audiences.
+
+--------------
+Version 2.05b:
+--------------
+
+  - Put __sanitizer_cov_module_init & co behind #ifdef to avoid problems
+    with ASAN. Spotted by Christian Holler.
+
+--------------
+Version 2.04b:
+--------------
+
+  - Removed indirect-calls coverage from -fsanitize-coverage (since it's
+    redundant). Spotted by Kostya Serebryany.
+
+--------------
+Version 2.03b:
+--------------
+
+  - Added experimental -fsanitize-coverage=trace-pc support that goes with
+    some recent additions to LLVM, as implemented by Kostya Serebryany.
+    Right now, this is cumbersome to use with common build systems, so
+    the mode remains undocumented.
+
+  - Made several substantial improvements to better support non-standard
+    map sizes in LLVM mode.
+
+  - Switched LLVM mode to thread-local execution tracing, which may offer
+    better results in some multithreaded apps.
+
+  - Fixed a minor typo, reported by Heiko Eissfeldt.
+
+  - Force-disabled symbolization for ASAN, as suggested by Christian Holler.
+
+  - AFL_NOX86 renamed to AFL_NO_X86 for consistency.
+
+  - Added AFL_LD_PRELOAD to allow LD_PRELOAD to be set for targets without
+    affecting AFL itself. Suggested by Daniel Godas-Lopez.
+
+--------------
+Version 2.02b:
+--------------
+
+  - Fixed a "lcamtuf can't count to 16" bug in the havoc stage. Reported
+    by Guillaume Endignoux.
+
+--------------
+Version 2.01b:
+--------------
+
+  - Made an improvement to cycle counter color coding, based on feedback
+    from Shai Sarfaty.
+
+  - Added a mention of aflize to sister_projects.txt.
+
+  - Fixed an installation issue with afl-as, as spotted by ilovezfs.
 
 --------------
 Version 2.00b:

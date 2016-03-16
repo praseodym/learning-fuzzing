@@ -157,6 +157,13 @@ RecidiVM (Jakub Wilk)
 
   http://jwilk.net/software/recidivm
 
+aflize (Jacek Wielemborek)
+--------------------------
+
+  Automatically build AFL-enabled versions of Debian packages.
+
+  https://github.com/d33tah/aflize
+
 -------------------------------
 Narrow-purpose or experimental:
 -------------------------------
@@ -233,3 +240,20 @@ Fuzzer shell for SQLite (Richard Hipp)
 
   http://www.sqlite.org/src/artifact/9e7e273da2030371
 
+Support for Python mutation modules (Christian Holler)
+------------------------------------------------------
+
+  https://github.com/choller/afl/blob/master/docs/mozilla/python_modules.txt
+
+Support for selective instrumentation (Christian Holler)
+--------------------------------------------------------
+
+  https://github.com/choller/afl/blob/master/docs/mozilla/partial_instrumentation.txt
+
+Kernel fuzzing (Dmitry Vyukov)
+------------------------------
+
+  A similar guided approach as applied to fuzzing syscalls:
+
+  https://github.com/google/syzkaller/wiki/Found-Bugs
+  https://github.com/dvyukov/linux/commit/33787098ffaaa83b8a7ccf519913ac5fd6125931

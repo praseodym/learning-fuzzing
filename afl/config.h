@@ -4,7 +4,7 @@
 
    Written and maintained by Michal Zalewski <lcamtuf@google.com>
 
-   Copyright 2013, 2014, 2015 Google Inc. All rights reserved.
+   Copyright 2013, 2014, 2015, 2016 Google Inc. All rights reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -321,6 +321,7 @@
 /* Constants for afl-gotcpu to control busy loop timing: */
 
 #define  CTEST_TARGET_MS    5000
+#define  CTEST_CORE_TRG_MS  1000
 #define  CTEST_BUSY_CYCLES  (10 * 1000 * 1000)
 
 /* Uncomment this to use inferior block-coverage-based instrumentation. Note
