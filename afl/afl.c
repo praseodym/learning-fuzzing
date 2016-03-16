@@ -7605,7 +7605,7 @@ int main(int argc, char** argv) {
   setup_shm();
 
   setup_dirs_fds();
-  read_testcases(); // TODO: skip for forkserver mode
+  read_testcases();
   load_auto();
 
   pivot_inputs();
@@ -7614,15 +7614,10 @@ int main(int argc, char** argv) {
 
   if (!timeout_given) find_timeout();
 
-
-//  SAYF("main: optind + 1 = %d\n", optind + 1);
-//  SAYF("main: argv[%d] = %s\n", optind + 1, argv[optind + 1]);
-//  TODO: this breaks things (strstr call) in some cases
-//  detect_file_args(argv + optind + 1);
+  detect_file_args(argv + optind + 1);
 
   if (!out_file) setup_stdio_file();
 
-  SAYF("main: check_binary argv[%d] = %s\n", optind, argv[optind]);
   check_binary(argv[optind]);
 
   start_time = get_cur_time();
@@ -7632,12 +7627,8 @@ int main(int argc, char** argv) {
   else
     use_argv = argv + optind;
 
-  // FIXME: what's going on here? what should be in use_argv?
-  SAYF("main: perform_dry_run [%s]\n", use_argv);
-  char *empty_argv[] = {NULL};
-  perform_dry_run(empty_argv);
+  perform_dry_run(use_argv);
 
-  SAYF("main: cull_queue\n");
   cull_queue();
 
   show_init_stats();
@@ -8030,30 +8021,32 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_hello(JNIEnv *env, j
 }
 
 JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env, jobject obj, jstring jin, jstring jout, jstring jtarget) {
-  SAYF("libafl pre: initialising AFL\n");
+//  SAYF("libafl pre: initialising AFL\n");
 
   const char *in_dir = (*env)->GetStringUTFChars(env, jin, 0);
   if (in_dir == NULL) PFATAL("libafl pre: Unable to get in_dir");
-  SAYF("libafl pre: in_dir: [%s]\n", in_dir);
+//  SAYF("libafl pre: in_dir: [%s]\n", in_dir);
 
   const char *out_dir = (*env)->GetStringUTFChars(env, jout, 0);
   if (out_dir == NULL) PFATAL("libafl pre: Unable to get out_dir");
-  SAYF("libafl pre: out_dir: [%s]\n", out_dir);
+//  SAYF("libafl pre: out_dir: [%s]\n", out_dir);
 
 //  const char *dict_dir = (*env)->GetStringUTFChars(env, jdict, 0);
 //  if (dict_dir == NULL) PFATAL("Pre: Unable to get dict_dir");
 
   const char *target = (*env)->GetStringUTFChars(env, jtarget, 0);
   if (target == NULL) PFATAL("libafl pre: Unable to get target");
-  SAYF("libafl pre: target: [%s]\n", target);
+//  SAYF("libafl pre: target: [%s]\n", target);
 
-  char* argv[] = {"afl-test", "-i", (char *) in_dir, "-o", (char *) out_dir, //"-x", (char *) dict_dir,
-                  "--", (char *) target, "x", "y", "z"};
+  // argv is null-terminated, ISO C11 §5.1.2.2.1
+  char *argv[] = {"afl-test", "-i", (char *) in_dir, "-o", (char *) out_dir, //"-x", (char *) dict_dir,
+                  "--", (char *) target, NULL};
 
-  main(sizeof(argv)/sizeof(argv[0]), argv);
+  // TODO: move relevant initialisation code from main to here
+  main(sizeof(argv) / sizeof(argv[0]) - 1, argv);
   fflush(stdout);
 
-  SAYF("libafl pre: initialised AFL\n");
+//  SAYF("libafl pre: initialised AFL\n");
 
   // We'll keep the arguments, i.e. no ReleaseStringUTFChars calls
   // TODO: make a local copy of the arguments so that they can be released again
