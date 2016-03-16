@@ -31,6 +31,6 @@ add_executable(afl-analyze afl-analyze.c ${COMM_HDR})
 #add_executable(test-instr test-instr.c)
 
 add_library(afl MODULE afl.c net_praseodym_activelearner_AFL.h ${COMM_HDR})
-add_executable(afl_test afl.c net_praseodym_activelearner_AFL.h ${COMM_HDR})
+#add_executable(afl_test afl.c net_praseodym_activelearner_AFL.h ${COMM_HDR})
 
 #set_target_properties(libforkserver PROPERTIES SUFFIX ".so")

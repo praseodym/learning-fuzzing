@@ -7394,252 +7394,6 @@ static void save_cmdline(u32 argc, char** argv) {
 
 }
 
-/* Forkserver main entry point */
-int main(int argc, char** argv) {
-
-  s32 opt;
-  u64 prev_queued = 0;
-  u32 sync_interval_cnt = 0, seek_to;
-  u8  *extras_dir = 0;
-  u8  mem_limit_given = 0;
-
-  char** use_argv;
-
-  doc_path = "docs";
-
-  SAYF("main: %d args\n", argc);
-
-  while ((opt = getopt(argc, argv, "+i:o:f:m:t:T:dnCB:S:M:x:Q")) > 0) {
-
-    printf("opt: %c [%s]\n", opt, optarg);
-
-    switch (opt) {
-
-      case 'i':
-
-        if (in_dir) FATAL("Multiple -i options not supported");
-        in_dir = optarg;
-
-        if (!strcmp(in_dir, "-")) in_place_resume = 1;
-
-        break;
-
-      case 'o': /* output dir */
-
-        if (out_dir) FATAL("Multiple -o options not supported");
-        out_dir = optarg;
-        break;
-
-      case 'M':
-
-        force_deterministic = 1;
-        /* Fall through */
-
-      case 'S': /* sync ID */
-
-        if (sync_id) FATAL("Multiple -S or -M options not supported");
-        sync_id = optarg;
-        break;
-
-      case 'f': /* target file */
-
-        if (out_file) FATAL("Multiple -f options not supported");
-        out_file = optarg;
-        break;
-
-      case 'x':
-
-        if (extras_dir) FATAL("Multiple -x options not supported");
-        extras_dir = optarg;
-        break;
-
-      case 't': {
-
-        u8 suffix = 0;
-
-        if (timeout_given) FATAL("Multiple -t options not supported");
-
-        if (sscanf(optarg, "%u%c", &exec_tmout, &suffix) < 1 ||
-            optarg[0] == '-') FATAL("Bad syntax used for -t");
-
-        if (exec_tmout < 5) FATAL("Dangerously low value of -t");
-
-        if (suffix == '+') timeout_given = 2; else timeout_given = 1;
-
-        break;
-
-      }
-
-      case 'm': {
-
-        u8 suffix = 'M';
-
-        if (mem_limit_given) FATAL("Multiple -m options not supported");
-        mem_limit_given = 1;
-
-        if (!strcmp(optarg, "none")) {
-
-          mem_limit = 0;
-          break;
-
-        }
-
-        if (sscanf(optarg, "%llu%c", &mem_limit, &suffix) < 1 ||
-            optarg[0] == '-') FATAL("Bad syntax used for -m");
-
-        switch (suffix) {
-
-          case 'T': mem_limit *= 1024 * 1024; break;
-          case 'G': mem_limit *= 1024; break;
-          case 'k': mem_limit /= 1024; break;
-          case 'M': break;
-
-          default:  FATAL("Unsupported suffix or bad syntax for -m");
-
-        }
-
-        if (mem_limit < 5) FATAL("Dangerously low value of -m");
-
-        if (sizeof(rlim_t) == 4 && mem_limit > 2000)
-          FATAL("Value of -m out of range on 32-bit systems");
-
-      }
-
-        break;
-
-      case 'd':
-
-        if (skip_deterministic) FATAL("Multiple -d options not supported");
-        skip_deterministic = 1;
-        use_splicing = 1;
-        break;
-
-      case 'B':
-
-        /* This is a secret undocumented option! It is useful if you find
-           an interesting test case during a normal fuzzing process, and want
-           to mutate it without rediscovering any of the test cases already
-           found during an earlier run.
-
-           To use this mode, you need to point -B to the fuzz_bitmap produced
-           by an earlier run for the exact same binary... and that's it.
-
-           I only used this once or twice to get variants of a particular
-           file, so I'm not making this an official setting. */
-
-        if (in_bitmap) FATAL("Multiple -B options not supported");
-
-        in_bitmap = optarg;
-        read_bitmap(in_bitmap);
-        break;
-
-      case 'C':
-
-        if (crash_mode) FATAL("Multiple -C options not supported");
-        crash_mode = FAULT_CRASH;
-        break;
-
-      case 'n':
-
-        if (dumb_mode) FATAL("Multiple -n options not supported");
-        if (getenv("AFL_DUMB_FORKSRV")) dumb_mode = 2; else dumb_mode = 1;
-
-        break;
-
-      case 'T':
-
-        if (use_banner) FATAL("Multiple -T options not supported");
-        use_banner = optarg;
-        break;
-
-      case 'Q':
-
-        if (qemu_mode) FATAL("Multiple -Q options not supported");
-        qemu_mode = 1;
-
-        if (!mem_limit_given) mem_limit = MEM_LIMIT_QEMU;
-
-        break;
-
-      default:
-        FATAL("Unknown opt: %c [%s]\n", opt, optarg);
-
-    }
-  }
-
-  if (optind == argc || !in_dir || !out_dir) usage(argv[0]);
-
-  setup_signal_handlers();
-  check_asan_opts();
-
-  if (sync_id) fix_up_sync();
-
-  if (!strcmp(in_dir, out_dir))
-    FATAL("Input and output directories can't be the same");
-
-  if (dumb_mode) {
-
-    if (crash_mode) FATAL("-C and -n are mutually exclusive");
-    if (qemu_mode)  FATAL("-Q and -n are mutually exclusive");
-
-  }
-
-  if (getenv("AFL_NO_FORKSRV"))   no_forkserver    = 1;
-  if (getenv("AFL_NO_CPU_RED"))   no_cpu_meter_red = 1;
-  if (getenv("AFL_NO_VAR_CHECK")) no_var_check     = 1;
-
-  if (dumb_mode == 2 && no_forkserver)
-    FATAL("AFL_DUMB_FORKSRV and AFL_NO_FORKSRV are mutually exclusive");
-
-  save_cmdline(argc, argv);
-
-  fix_up_banner(argv[optind]);
-
-  not_on_tty = 1;
-
-  get_core_count();
-  check_crash_handling();
-  check_cpu_governor();
-
-  setup_post();
-  setup_shm();
-
-  setup_dirs_fds();
-  read_testcases();
-  load_auto();
-
-  pivot_inputs();
-
-  if (extras_dir) load_extras(extras_dir);
-
-  if (!timeout_given) find_timeout();
-
-  detect_file_args(argv + optind + 1);
-
-  if (!out_file) setup_stdio_file();
-
-  check_binary(argv[optind]);
-
-  start_time = get_cur_time();
-
-  if (qemu_mode)
-    use_argv = get_qemu_argv(argv[0], argv + optind, argc - optind);
-  else
-    use_argv = argv + optind;
-
-  perform_dry_run(use_argv);
-
-  cull_queue();
-
-  show_init_stats();
-
-  seek_to = find_start_position();
-
-  write_stats_file(0, 0);
-  save_auto();
-}
-
-
 void stop() {
   //write_bitmap();
   //write_stats_file(0, 0);
@@ -7848,7 +7602,6 @@ int main_original(int argc, char** argv) {
   setup_signal_handlers();
   check_asan_opts();
 
-  if (sync_id) fix_up_sync();
 
   if (!strcmp(in_dir, out_dir))
     FATAL("Input and output directories can't be the same");
@@ -8023,27 +7776,103 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_hello(JNIEnv *env, j
 JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env, jobject obj, jstring jin, jstring jout, jstring jtarget) {
 //  SAYF("libafl pre: initialising AFL\n");
 
-  const char *in_dir = (*env)->GetStringUTFChars(env, jin, 0);
+  in_dir = (u8 *) (*env)->GetStringUTFChars(env, jin, 0);
   if (in_dir == NULL) PFATAL("libafl pre: Unable to get in_dir");
 //  SAYF("libafl pre: in_dir: [%s]\n", in_dir);
 
-  const char *out_dir = (*env)->GetStringUTFChars(env, jout, 0);
+  out_dir = (u8 *) (*env)->GetStringUTFChars(env, jout, 0);
   if (out_dir == NULL) PFATAL("libafl pre: Unable to get out_dir");
 //  SAYF("libafl pre: out_dir: [%s]\n", out_dir);
 
 //  const char *dict_dir = (*env)->GetStringUTFChars(env, jdict, 0);
 //  if (dict_dir == NULL) PFATAL("Pre: Unable to get dict_dir");
 
-  const char *target = (*env)->GetStringUTFChars(env, jtarget, 0);
+  u8 *target = (u8 *) (*env)->GetStringUTFChars(env, jtarget, 0);
   if (target == NULL) PFATAL("libafl pre: Unable to get target");
 //  SAYF("libafl pre: target: [%s]\n", target);
 
-  // argv is null-terminated, ISO C11 §5.1.2.2.1
-  char *argv[] = {"afl-test", "-i", (char *) in_dir, "-o", (char *) out_dir, //"-x", (char *) dict_dir,
-                  "--", (char *) target, NULL};
+  // TODO: initialise other options like qemu and dictionary
 
-  // TODO: move relevant initialisation code from main to here
-  main(sizeof(argv) / sizeof(argv[0]) - 1, argv);
+  u64 prev_queued = 0;
+  u32 sync_interval_cnt = 0, seek_to;
+  u8  *extras_dir = 0;
+  u8  mem_limit_given = 0;
+
+  doc_path = (u8 *) "docs";
+
+  if (!strcmp(in_dir, "-")) in_place_resume = 1;
+
+  setup_signal_handlers();
+  check_asan_opts();
+
+  if (sync_id) fix_up_sync();
+
+  if (!strcmp(in_dir, out_dir))
+    FATAL("Input and output directories can't be the same");
+
+  if (dumb_mode) {
+
+    if (crash_mode) FATAL("-C and -n are mutually exclusive");
+    if (qemu_mode)  FATAL("-Q and -n are mutually exclusive");
+
+  }
+
+  if (getenv("AFL_NO_FORKSRV"))   no_forkserver    = 1;
+  if (getenv("AFL_NO_CPU_RED"))   no_cpu_meter_red = 1;
+  if (getenv("AFL_NO_VAR_CHECK")) no_var_check     = 1;
+
+  if (dumb_mode == 2 && no_forkserver)
+    FATAL("AFL_DUMB_FORKSRV and AFL_NO_FORKSRV are mutually exclusive");
+
+  orig_cmdline = (u8 *) "<activelearner>";
+
+  fix_up_banner((u8 *) target);
+
+  not_on_tty = 1;
+
+  get_core_count();
+  check_crash_handling();
+  check_cpu_governor();
+
+  setup_post();
+  setup_shm();
+
+  setup_dirs_fds();
+  read_testcases();
+  load_auto();
+
+  pivot_inputs();
+
+  if (extras_dir) load_extras(extras_dir);
+
+  if (!timeout_given) find_timeout();
+
+  char *argv[] = {NULL};
+
+  detect_file_args(argv);
+
+  if (!out_file) setup_stdio_file();
+
+  check_binary(target);
+
+  start_time = get_cur_time();
+
+//  if (qemu_mode)
+//    use_argv = get_qemu_argv(argv[0], argv + optind, argc - optind);
+//  else
+//    use_argv = argv + optind;
+
+  perform_dry_run(argv);
+
+  cull_queue();
+
+  show_init_stats();
+
+  seek_to = find_start_position();
+
+  write_stats_file(0, 0);
+  save_auto();
+
   fflush(stdout);
 
 //  SAYF("libafl pre: initialised AFL\n");
