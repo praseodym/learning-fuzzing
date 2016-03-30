@@ -1,4 +1,4 @@
-import net.praseodym.activelearner.AFL;
+package net.praseodym.activelearner;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +15,7 @@ public class AFLTest {
         AFL AFL = afl;
         AFL.hello();
 
-        AFL.pre("afl_in", "afl_out", args[0]);
+        AFL.pre("test_afl_in", "test_afl_out", args[0]);
 
         previousTraceBitmap = test("A");
         test("A A");
