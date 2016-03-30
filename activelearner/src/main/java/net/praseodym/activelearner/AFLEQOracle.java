@@ -72,14 +72,21 @@ public class AFLEQOracle<A extends UniversalDeterministicAutomaton<?, I, ?, ?, ?
                 if (log.isDebugEnabled()) {
                     log.debug("Equivalence for {}", path.getFileName());
                 }
-                Scanner s = new Scanner(path);
+                // Match whitespace, ASCII control characters, +, and any leading zeroes as delimiter
+                Scanner s = new Scanner(path).useDelimiter("(\\s|[\\x00-\\x1F]|\\+)+0*");
                 while (s.hasNext()) {
-                    I token = (I) s.next();
+                    String token = s.next();
+
                     try {
                         // Check if symbol is in alphabet, otherwise the hypothesis.computeOutput will throw an error
-                        inputAlphabet.getSymbolIndex(token);
-                        wb.append(token);
+                        @SuppressWarnings("unchecked") I symbol = (I) token;
+                        inputAlphabet.getSymbolIndex(symbol);
+                        wb.append(symbol);
                     } catch (NullPointerException ignored) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Unknown symbol: {} {} {}", token, token.getBytes(), token.length());
+                            log.debug("Current sequence: {}", wb);
+                        }
                     }
                 }
                 if (wb.size() == 0)
