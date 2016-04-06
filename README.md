@@ -1,4 +1,4 @@
-# MSc Thesis Code
+# Combining learning and fuzzing
 
 This repository contains:
 * **activelearner**: Active learning prototype tool that integrates with AFL.
