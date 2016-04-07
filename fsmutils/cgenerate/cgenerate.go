@@ -19,6 +19,7 @@ void invalid_input() {
 int current_state = 0;
 int step(int input) {
 	switch (current_state) {`
+
 const footer string = `	}
 	return 0;
 }

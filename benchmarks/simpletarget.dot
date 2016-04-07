@@ -1,0 +1,18 @@
+digraph g {
+__start0 [label="" shape="none"];
+
+	s0 [shape="circle" label="0"];
+	s1 [shape="circle" label="1"];
+	s2 [shape="circle" label="2"];
+	s0 -> s1 [label="A / X"];
+	s0 -> s2 [label="B / Y"];
+	s0 -> s0 [label="C / Z"];
+	s1 -> s2 [label="A / Z"];
+	s1 -> s1 [label="B / Y"];
+	s1 -> s1 [label="C / Z"];
+	s2 -> s2 [label="A / Z"];
+	s2 -> s2 [label="B / Y"];
+	s2 -> s0 [label="C / Z"];
+
+__start0 -> s0;
+}
