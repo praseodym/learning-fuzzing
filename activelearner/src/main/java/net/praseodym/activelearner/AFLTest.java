@@ -67,7 +67,7 @@ public class AFLTest {
     private static byte[] test(String testcase) {
         byte[] testOutput = afl.run(testcase.getBytes());
 
-        System.out.println("Testcase: [" + testcase.replace('\n', ' ')
+        System.out.println("Test case: [" + testcase.replace('\n', ' ')
                 + "] -> [" + new String(testOutput).replace('\n', ' ') + "]");
 
         byte[] traceBitmap = afl.getTraceBitmap();
