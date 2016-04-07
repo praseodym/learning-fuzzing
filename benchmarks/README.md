@@ -8,5 +8,5 @@ Requirements:
 - `cgenerate` on PATH
 - `afl-clang-fast` on PATH
 
-To build: `mkdir -p build && cd build && cmake -GNinja .. && cmake --build .`
+To build: `mkdir -p build && pushd build && cmake -GNinja .. && cmake --build . && popd`
 

@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 project(benchmarks)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-SET(CMAKE_C_COMPILER "afl-clang-fast")
-SET(CMAKE_C_FLAGS "-Ofast")
+set(CMAKE_C_COMPILER "afl-clang-fast")
+set(CMAKE_C_FLAGS "-Ofast")
 
 macro(cgenerate input)
     add_custom_command(

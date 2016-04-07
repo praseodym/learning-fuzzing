@@ -17,13 +17,16 @@ void invalid_input() {
 }
 
 int current_state = 0;
-int step(int input) {
-	switch (current_state) {`
+`
 
-const footer string = `	}
-	return 0;
+const epilogue string = `default:
+			invalid_input();
+	}
+	return -1;
 }
+`
 
+const footer string = `
 int main() {
 	#ifdef __AFL_HAVE_MANUAL_CONTROL
 		__AFL_INIT();
@@ -74,20 +77,25 @@ func main() {
 	// Print program header header for c file
 	fmt.Println(header)
 
-	// Print switch for each state and input
+	// Print switch function for each input
 	for state := 0; state < states; state++ {
-		str := fmt.Sprintf("\t\tcase %d:\n\t\t\tswitch (input) {", state)
+		fmt.Printf("int step_state_%d(int input) {\n\tswitch (input) {", state)
 		for input := 0; input < inputs; input++ {
 			output, target, err := m.Transition(state, input)
 			if err != nil {
 				panic(err)
 			}
-			str += fmt.Sprintf("\n\t\t\t\tcase %d:\n\t\t\t\t\tcurrent_state = %d;\n\t\t\t\t\treturn %d;", input, target, output)
-
+			fmt.Printf("\n\t\tcase %d:\n\t\t\tcurrent_state = %d;\n\t\t\treturn %d;", input, target, output)
 		}
-		str += "\n\t\t\t\tdefault:\n\t\t\t\t\tinvalid_input();\n\t\t\t}\n"
-		fmt.Println(str)
+		fmt.Println(epilogue)
 	}
+
+	// Print switch for each state
+	fmt.Println("int step(int input) {\n\tswitch (current_state) {")
+	for state := 0; state < states; state++ {
+		fmt.Printf("\t\tcase %d:\n\t\t\treturn step_state_%d(input);\n", state, state)
+	}
+	fmt.Println(epilogue)
 
 	// Print footer
 	fmt.Println(footer)
