@@ -1,3 +1,5 @@
 src/
 pkg/
 *.dot
+mintrace/mintrace
+cgenerate/cgenerate
