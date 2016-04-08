@@ -1,8 +1,9 @@
 package net.praseodym.activelearner;
 
-import de.learnlib.algorithms.lstargeneric.mealy.ExtensibleLStarMealy;
 import de.learnlib.algorithms.lstargeneric.mealy.ExtensibleLStarMealyBuilder;
+import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealyBuilder;
 import de.learnlib.api.EquivalenceOracle;
+import de.learnlib.api.LearningAlgorithm;
 import de.learnlib.api.MembershipOracle;
 import de.learnlib.api.SUL;
 import de.learnlib.cache.mealy.MealyCacheOracle;
@@ -126,10 +127,25 @@ public class ActivelearnerApplication {
     }
 
     @Bean
+    @Profile("lstar")
+    public LearningAlgorithm.MealyLearner<String, String> lstarLearningAlgorithm(MembershipOracle<String,
+            Word<String>> membershipOracle) {
+        return new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet()).withOracle
+                (membershipOracle).create();
+    }
+
+    @Bean
+    @Profile("ttt")
+    public LearningAlgorithm.MealyLearner<String, String> tttLearningAlgorithm(MembershipOracle<String, Word<String>>
+                                                                                       membershipOracle) {
+        return new TTTLearnerMealyBuilder<String, String>().withAlphabet(alphabet()).withOracle(membershipOracle)
+                .create();
+    }
+
+    @Bean
     public Experiment.MealyExperiment<String, String> experiment(
-            MembershipOracle<String, Word<String>> membershipOracle,
+            LearningAlgorithm.MealyLearner<String, String> learningAlgorithm,
             EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle) {
-        ExtensibleLStarMealy<String, String> learningAlgorithm = new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet()).withOracle(membershipOracle).create();
         return new Experiment.MealyExperiment<>(learningAlgorithm, equivalenceOracle, alphabet());
     }
 }

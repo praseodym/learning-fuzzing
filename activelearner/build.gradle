@@ -17,7 +17,7 @@ apply plugin: 'spring-boot'
 
 jar {
     baseName = 'activelearner'
-    version = '0.0.1-SNAPSHOT'
+    version = '0.0.2-SNAPSHOT'
 }
 
 springBoot {
@@ -48,6 +48,7 @@ dependencies {
     compile("de.learnlib:learnlib-dhc:${learnlibVersion}")
     compile("de.learnlib:learnlib-eqtests:${learnlibVersion}")
     compile("de.learnlib:learnlib-lstar-generic:${learnlibVersion}")
+    compile("de.learnlib:learnlib-ttt:${learnlibVersion}")
 }
 
 
