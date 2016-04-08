@@ -1,5 +1,6 @@
 package net.praseodym.activelearner;
 
+import com.google.common.io.BaseEncoding;
 import de.learnlib.api.EquivalenceOracle;
 import de.learnlib.api.MembershipOracle;
 import de.learnlib.oracles.DefaultQuery;
@@ -25,6 +26,9 @@ import java.util.Scanner;
  * AFL equivalence oracle.
  * <p>
  * Uses existing AFL discovered (interesting) test cases as a way to find counterexamples.
+ * <p>
+ * For TTT (and maybe other algorithms) a single test case can be a counterexample more than once, and even
+ * turn up as a counterexample after having "passed" before. This is why we always re-test using all test cases.
  */
 public class AFLEQOracle<A extends UniversalDeterministicAutomaton<?, I, ?, ?, ?> & Output<I, D>, I, D>
         implements EquivalenceOracle<A, I, D> {
@@ -34,18 +38,21 @@ public class AFLEQOracle<A extends UniversalDeterministicAutomaton<?, I, ?, ?, ?
     private final Alphabet<I> inputAlphabet;
     private final MembershipOracle<I, D> sulOracle;
     private final WordBuilder<I> wb = new WordBuilder<>();
-    private final String directory;
+    private final Path directory;
 
     /**
      * Constructor.
      *
      * @param sulOracle interface to the system under learning
-     * @param directory
+     * @param directory directory with test cases
      */
-    public AFLEQOracle(Alphabet<I> inputAlphabet, MembershipOracle<I, D> sulOracle, String directory) {
+    public AFLEQOracle(Alphabet<I> inputAlphabet, MembershipOracle<I, D> sulOracle, String directory) throws
+            IOException {
         this.inputAlphabet = inputAlphabet;
         this.sulOracle = sulOracle;
-        this.directory = directory;
+        this.directory = Paths.get(directory);
+
+        log.info("Using AFL equivalence test cases from {}", directory);
     }
 
     /*
@@ -55,25 +62,12 @@ public class AFLEQOracle<A extends UniversalDeterministicAutomaton<?, I, ?, ?, ?
     @Override
     public DefaultQuery<I, D> findCounterExample(A hypothesis,
                                                  Collection<? extends I> inputs) {
+        try (DirectoryStream<Path> testcases = Files.newDirectoryStream(directory)) {
+            for (Path testcase : testcases) {
+                log.debug("Test case {}", testcase.getFileName());
 
-//        List<Word<I>> transCover = Automata.transitionCover(hypothesis, inputs);
-//        List<Word<I>> charSuffixes = Automata.characterizingSet(hypothesis, inputs);
-
-        // Special case: List of characterizing suffixes may be empty,
-        // but in this case we still need to test!
-//        if (charSuffixes.isEmpty())
-//            charSuffixes = Collections.singletonList(Word.<I>epsilon());
-
-        // /tmp/learner_afl5862107233829149040
-
-
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(directory))) {
-            for (Path path : directoryStream) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Equivalence for {}", path.getFileName());
-                }
-                // Match whitespace, ASCII control characters, +, and any leading zeroes as delimiter
-                Scanner s = new Scanner(path).useDelimiter("(\\s|[\\x00-\\x1F]|\\+)+0*");
+                // Match whitespace, ASCII control chars, high UTF-8 chars, + chars, and any leading zeroes as delimiter
+                Scanner s = new Scanner(testcase).useDelimiter("(\\s|[\\x00-\\x1F]|[\\x7F-\\uFFFF]|\\+)+0*");
                 while (s.hasNext()) {
                     String token = s.next();
 
@@ -82,9 +76,11 @@ public class AFLEQOracle<A extends UniversalDeterministicAutomaton<?, I, ?, ?, ?
                         @SuppressWarnings("unchecked") I symbol = (I) token;
                         inputAlphabet.getSymbolIndex(symbol);
                         wb.append(symbol);
-                    } catch (NullPointerException ignored) {
+                    } catch (NullPointerException e) {
+                        // Not a valid symbol
                         if (log.isDebugEnabled()) {
-                            log.debug("Unknown symbol: {} {} {}", token, token.getBytes(), token.length());
+                            String hex = BaseEncoding.base16().encode(token.getBytes());
+                            log.debug("Unknown symbol: {} hex: {} length: {}", token, hex, token.length());
                             log.debug("Current sequence: {}", wb);
                         }
                     }
@@ -96,28 +92,14 @@ public class AFLEQOracle<A extends UniversalDeterministicAutomaton<?, I, ?, ?, ?
                 DefaultQuery<I, D> query = new DefaultQuery<>(queryWord);
                 D hypOutput = hypothesis.computeOutput(queryWord);
                 sulOracle.processQueries(Collections.singleton(query));
-                if (!Objects.equals(hypOutput, query.getOutput()))
+                if (!Objects.equals(hypOutput, query.getOutput())) {
+                    log.info("Test case {} is counterexample", testcase.getFileName());
                     return query;
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
-        /*for (List<? extends I> middle : CollectionsUtil.allTuples(inputs, 1, maxDepth)) {
-            for (Word<I> trans : transCover) {
-                for (Word<I> suffix : charSuffixes) {
-                    wb.append(trans).append(middle).append(suffix);
-                    Word<I> queryWord = wb.toWord();
-                    wb.clear();
-                    DefaultQuery<I, D> query = new DefaultQuery<>(queryWord);
-                    D hypOutput = hypothesis.computeOutput(queryWord);
-                    sulOracle.processQueries(Collections.singleton(query));
-                    if (!Objects.equals(hypOutput, query.getOutput()))
-                        return query;
-                }
-            }
-        }*/
 
         return null;
     }

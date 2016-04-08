@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 @SpringBootApplication
@@ -111,7 +112,7 @@ public class ActivelearnerApplication {
     @Profile("afleq")
     public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> aflEquivalence(
             @Value("${learner.afleq.directory}") String equivalenceTestFiles,
-            CounterOracle.MealyCounterOracle<String, String> eqOracle) {
+            CounterOracle.MealyCounterOracle<String, String> eqOracle) throws IOException {
         log.info("Configuring AFL equivalence");
         return new AFLEQOracle<>(alphabet(), eqOracle, equivalenceTestFiles);
     }

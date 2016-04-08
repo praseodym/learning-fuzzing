@@ -83,6 +83,7 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
         Arrays.stream(summary.split(System.lineSeparator())).forEach(log::info);
     }
 
+    @SuppressWarnings("unchecked")
     private void writeResult(MealyMachine mealyMachine) throws IOException {
         // Copy configuration to output file
         // Files.copy(Paths.get(configFile), Paths.get(learner.config.output_dir + "/config.properties"), StandardCopyOption.REPLACE_EXISTING);
