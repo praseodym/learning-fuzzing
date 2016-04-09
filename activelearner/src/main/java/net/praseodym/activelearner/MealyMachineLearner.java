@@ -2,6 +2,7 @@ package net.praseodym.activelearner;
 
 import de.learnlib.experiments.Experiment;
 import de.learnlib.statistics.SimpleProfiler;
+import de.learnlib.statistics.StatisticData;
 import de.learnlib.statistics.StatisticOracle;
 import net.automatalib.automata.transout.MealyMachine;
 import net.automatalib.util.graphs.dot.GraphDOT;
@@ -15,16 +16,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Mealy Machine Learner class
@@ -58,7 +55,7 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
         log.info("Starting learning");
 
         experiment.setProfile(true);
-        experiment.setLogModels(true);
+        experiment.setHypothesesHandler((roundNumber, model) -> saveModel("hypothesis-" + roundNumber, model));
 
         long start = System.currentTimeMillis();
         experiment.run();
@@ -67,45 +64,45 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
         MealyMachine result = experiment.getFinalHypothesis();
 
         // report results
-        log.info("-------------------------------------------------------");
-        logSummary(SimpleProfiler.getResults());
-        log.info("Total time: " + (end - start) + "ms (" + ((end - start) / 1000) + " s)");
-        logSummary(experiment.getRounds().getSummary());
-        for (StatisticOracle statisticOracle : statisticOracles) {
-            logSummary(statisticOracle.getStatisticalData().getSummary());
-        }
-        log.info("States in final hypothesis: " + result.size());
+        String line = "-------------------------------------------------------\n";
+        StringBuilder sb = new StringBuilder(line);
+        long d = end - start;
+        sb.append(String.format("Total time: %d ms = %.2f s = %.2f h = %.2f d\n\n", d, d / 1000.0, d / 3600000.0, d /
+                86400000.0));
+        sb.append(SimpleProfiler.getResults()).append("\n");
+        sb.append(experiment.getRounds().getSummary()).append("\n\n");
+        Arrays.stream(statisticOracles).map(StatisticOracle::getStatisticalData).map(StatisticData::getSummary)
+                .sorted().forEach(s -> sb.append(s).append("\n"));
+        sb.append("\nStates in final hypothesis: ").append(result.size()).append("\n");
+        sb.append("Output directory: ").append(outputDirectory.toAbsolutePath()).append("\n");
+        sb.append(line);
+
+        String report = sb.toString();
+        logLines(report);
+        System.out.println(report);
 
         return result;
     }
 
-    private void logSummary(String summary) {
+    private void logLines(String summary) {
         Arrays.stream(summary.split(System.lineSeparator())).forEach(log::info);
     }
 
     @SuppressWarnings("unchecked")
-    private void writeResult(MealyMachine mealyMachine) throws IOException {
-        // Copy configuration to output file
-        // Files.copy(Paths.get(configFile), Paths.get(learner.config.output_dir + "/config.properties"), StandardCopyOption.REPLACE_EXISTING);
+    private void writeResult(MealyMachine mealyMachine) {
+        Path finalModel = saveModel("learnedModel", mealyMachine);
+        SimplifyDot.simplifyDot(finalModel, outputDirectory.resolve("learnedModel-simple.dot"));
+    }
 
-        // Write output to file and convert to pdf
-//        String outputFilename = learner.config.output_dir + "/learnedModel.dot";
-        log.info("Output directory: {}", outputDirectory.toAbsolutePath());
-        String outputFilename = outputDirectory.resolve("learnedModel.dot").toString();
-        File dotFile = new File(outputFilename);
-        PrintStream psDotFile = new PrintStream(dotFile);
-        GraphDOT.write(mealyMachine, alphabet, psDotFile);
-//        String outputFilenamePdf = outputFilename.replace(".dot", ".pdf");
-//        Runtime.getRuntime().exec("dot -Tpdf -o " + outputFilenamePdf + " " + outputFilename);
-
-        // Simplify .dot file and convert to pdf
-        List<String> lines = Files.readAllLines(Paths.get(outputFilename)).stream()
-                .filter(s -> !s.contains("invalid_state")).collect(Collectors.toList());
-        List<String> simplified = SimplifyDot.simplifyDot(lines);
-        String simplifiedOutputFilename = outputFilename.replace(".dot", "_simple.dot");
-        Files.write(Paths.get(simplifiedOutputFilename), simplified, Charset.defaultCharset());
-//        String simplifiedOutputFilenamePdf = outputFilenamePdf.replace(".pdf", "_simple.pdf");
-//        Runtime.getRuntime().exec("dot -Tpdf -o " + simplifiedOutputFilenamePdf + " " + simplifiedOutputFilename);
+    private Path saveModel(String modelName, MealyMachine mealyMachine) {
+        try {
+            Path destination = outputDirectory.resolve(modelName + ".dot");
+            PrintStream psDotFile = new PrintStream(destination.toFile());
+            GraphDOT.write(mealyMachine, alphabet, psDotFile);
+            return destination;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

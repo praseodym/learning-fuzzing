@@ -1,7 +1,9 @@
 package net.praseodym.activelearner;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +54,16 @@ public class SimplifyDot {
         return output;
     }
 
+    public static void simplifyDot(Path finalModel, Path destination) {
+        try {
+            List<String> lines = Files.readAllLines(finalModel).stream()
+                    .filter(s -> !s.contains("invalid_state")).collect(Collectors.toList());
+            List<String> simplified = SimplifyDot.simplifyDot(lines);
+            Files.write(destination, simplified, Charset.defaultCharset());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void main(String[] args) throws Exception {
         String path = "learnedModel";

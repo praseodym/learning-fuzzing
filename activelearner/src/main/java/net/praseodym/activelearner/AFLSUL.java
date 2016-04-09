@@ -71,7 +71,7 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
 
     @Override
     public void destroy() throws Exception {
-        log.info("Stopping forkserver, total run calls: {}", execs++);
+        log.info("Stopping forkserver: {} run calls, {} discovered test cases", execs++, afl.getQueuedDiscovered());
         afl.post();
     }
 
@@ -123,13 +123,15 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
         output = calculateNewOutput(previousOutput, output);
 
         // Check forkserver for new edges
-        int newQueuedDiscovered = afl.getQueuedDiscovered();
-        if (queuedDiscovered != newQueuedDiscovered) {
-            log.info("Discovered new interesting testcase {} - stdin: [{}], stdout: [{}]",
-                    newQueuedDiscovered,
-                    new String(input).replace("\n", " ").trim(),
-                    new String(output).replace("\n", " ").trim());
-            queuedDiscovered = newQueuedDiscovered;
+        if (log.isDebugEnabled()) {
+            int newQueuedDiscovered = afl.getQueuedDiscovered();
+            if (queuedDiscovered != newQueuedDiscovered) {
+                log.debug("Discovered new interesting testcase {} - stdin: [{}], stdout: [{}]",
+                        newQueuedDiscovered,
+                        new String(input).replace("\n", " ").trim(),
+                        new String(output).replace("\n", " ").trim());
+                queuedDiscovered = newQueuedDiscovered;
+            }
         }
 
         return output;
