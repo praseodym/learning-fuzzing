@@ -17,7 +17,7 @@ apply plugin: 'spring-boot'
 
 jar {
     baseName = 'activelearner'
-    version = '0.0.2-SNAPSHOT'
+    version = '0.0.3-SNAPSHOT'
 }
 
 springBoot {
@@ -42,6 +42,7 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
 
     compile('com.google.guava:guava:19.0')
+    compile('com.google.code.findbugs:jsr305:3.0.1')
 
     compile("de.learnlib:learnlib-cache:${learnlibVersion}")
     compile("de.learnlib:learnlib-basic-eqtests:${learnlibVersion}")

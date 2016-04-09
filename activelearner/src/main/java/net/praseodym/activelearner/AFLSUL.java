@@ -20,6 +20,7 @@ import java.util.Arrays;
 /**
  * AFL System under Learning (SUL)
  * <p>
+ * This class is optimised to be used with the AFLMealyOracle, which uses the run call.
  * We do not implement SUL#fork() because we are not a true single-step SUL.
  */
 public class AFLSUL implements SUL<String, String>, InitializingBean, DisposableBean {
@@ -95,21 +96,21 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
             in = "";
 
         byte[] input = in.getBytes();
-        byte[] output = run(previousOutput, previousInput, input);
+        byte[] output = run(input);
+
+        byte[] shortOutput = calculateNewOutput(previousOutput, output);
 
         previousInput = input;
-        previousOutput = output; // TODO: this saves the shortened output value, not the original one
+        previousOutput = output;
 
-        return new String(output);
+        return new String(shortOutput);
     }
 
     /**
-     * Run output and return difference between previous output (from "prefix") and new output (from "suffix")
+     * Run and return output
      */
     @Nonnull
-    public byte[] run(@Nullable byte[] previousInput, @Nullable byte[] previousOutput, @Nonnull byte[] input) {
-        input = calculateNewInput(previousInput, input);
-
+    public byte[] run(@Nonnull byte[] input) {
         // Run target
         byte[] output = afl.run(input);
         execs++;
@@ -119,8 +120,6 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
                     new String(input).replace("\n", " ").trim(),
                     new String(output).replace("\n", " ").trim());
         }
-
-        output = calculateNewOutput(previousOutput, output);
 
         // Check forkserver for new edges
         if (log.isDebugEnabled()) {

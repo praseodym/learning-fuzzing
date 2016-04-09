@@ -2,7 +2,11 @@
 
 Built with LearnLib and Spring, uses Gradle as a build tool.
 
-To build: `./gradlew build`.
+## Build
+
+We use our own [fork of LearnLib][learnlib-fork] which should be checked out and installed locally using `mvn install`.
+
+Then, to build this project, simply run `./gradlew build`.
 
 ## Configuration
 
@@ -20,3 +24,4 @@ argument to the JRE.
 
 
 [spring-profiles]: https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-profiles.html
+[learnlib-fork]: https://github.com/praseodym/learnlib

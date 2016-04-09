@@ -3,17 +3,18 @@ package net.praseodym.activelearner;
 import de.learnlib.api.MembershipOracle;
 import de.learnlib.api.Query;
 import net.automatalib.words.Word;
-import net.automatalib.words.WordBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
- * Forkserver Mealy Oracle
+ * AFL Forkserver Mealy Membership Oracle
  * <p>
  * This is an optimisation to the normal SULOracle: instead of replaying the prefix and suffix as single steps,
  * we execute the entire prefix/suffix in one step.
@@ -39,62 +40,53 @@ public class AFLMealyOracle implements MembershipOracle.MealyMembershipOracle<St
 
     @Override
     public Word<String> answerQuery(Word<String> prefix, Word<String> suffix) {
-        aflSUL.pre();
-        byte[] prefixInput, prefixOutput, suffixInput, suffixOutput;
-        if (prefix.isEmpty()) {
-            prefixInput = null;
-            prefixOutput = null;
-        } else {
-            prefixInput = concatenateWord(prefix).getBytes();
-            prefixOutput = aflSUL.run(null, null, prefixInput);
-            // FIXME: nicer handling of invalid_state / assert error
-            String prefixOutputString = new String(prefixOutput);
-            if (prefixOutputString.contains("invalid_state") || prefixOutputString.contains("assert")) {
-                return buildWord(null, suffix.length());
-            }
+        if (log.isTraceEnabled()) {
+            log.debug("Answering query, prefix: [{}] suffix: [{}]", prefix, suffix);
         }
-        suffixInput = concatenateWord(suffix).getBytes();
-        suffixOutput = aflSUL.run(prefixInput, prefixOutput, suffixInput);
-        aflSUL.post();
 
-        String output = new String(suffixOutput);
-        Word<String> word = buildWord(output, suffix.length());
+        byte[] rawOutput = aflSUL.run(concatenateWord(prefix, suffix).getBytes());
+
+        String output = new String(rawOutput);
+        Word<String> word = buildWord(output, prefix.length(), suffix.length());
 
         if (log.isDebugEnabled()) {
-            log.debug("Answered query [{}] [{}] => [{}]", prefix, suffix, word);
+            log.debug("Answered query prefix: [{}] suffix: [{}] => answer: [{}]", prefix, suffix, word);
         }
 
-        assert suffix.length() == word.length();
+        assert suffix.length() == word.length() : "Invalid answer length";
 
         return word;
     }
 
-    private String concatenateWord(Word<String> in) {
-        return in.stream().collect(Collectors.joining(AFLSUL.SEPARATOR));
+    private String concatenateWord(Word<String> prefix, Word<String> suffix) {
+        return Stream.concat(prefix.stream(), suffix.stream()).collect(Collectors.joining(AFLSUL.SEPARATOR));
     }
 
     /**
      * Build a Word from a String. We need the output Word to be same length as the suffix, otherwise counterexample
      * finding will end up in an infinite loop because the hypothesis will never match the actual answer we give.
      */
-    public static Word<String> buildWord(@Nullable String in, int length) {
-        WordBuilder<String> wb = new WordBuilder<>();
-        if (in != null) {
-            for (String s : in.split(AFLSUL.SEPARATOR)) {
-                if (s.startsWith("assert")) {
-                    // assert also includes output (so two entries while only one is expected)
-                    String last = wb.get(wb.size() - 1);
-                    wb.set(wb.size() - 1, last + "_" + s);
-                } else {
-                    wb.add(s);
-                }
+    private Word<String> buildWord(@Nonnull String in, int prefixLength, int suffixLength) {
+        ArrayDeque<String> symbols = new ArrayDeque<>(prefixLength + suffixLength);
+        for (String s : in.split(AFLSUL.SEPARATOR)) {
+            // assert symbols occurs after real symbols, we need to merge this into a single symbol
+            if (s.startsWith("assert")) {
+                s = symbols.removeLast() + "_" + s;
             }
+            symbols.addLast(s);
         }
-        assert wb.size() <= length;
-        while (wb.size() != length) {
-            wb.add(AFLSUL.PADDING);
+
+        // Remove all elements up to prefix
+        for (int i = Math.min(prefixLength, symbols.size()) - 1; i >= 0; i--) {
+            symbols.removeFirst();
         }
-        return wb.toWord();
+
+        assert symbols.size() <= suffixLength;
+        while (symbols.size() != suffixLength) {
+            symbols.addLast(AFLSUL.PADDING);
+        }
+
+        return Word.fromSymbols(symbols.toArray(new String[symbols.size()]));
     }
 
 }

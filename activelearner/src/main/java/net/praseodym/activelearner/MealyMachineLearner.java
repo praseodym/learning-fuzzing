@@ -51,22 +51,26 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
         assert Files.exists(outputDirectory) : "Output directory does not exist";
     }
 
-    private MealyMachine learn() {
+    @Override
+    public void run(String... args) throws Exception {
         log.info("Starting learning");
 
         experiment.setProfile(true);
         experiment.setHypothesesHandler((roundNumber, model) -> saveModel("hypothesis-" + roundNumber, model));
 
-        long start = System.currentTimeMillis();
+        long start = System.nanoTime();
         experiment.run();
-        long end = System.currentTimeMillis();
+        long end = System.nanoTime();
+        long d = (end - start) / 1000000;
 
+        // Save learned model
         MealyMachine result = experiment.getFinalHypothesis();
+        Path finalModel = saveModel("learnedModel", result);
+        SimplifyDot.simplifyDot(finalModel, outputDirectory.resolve("learnedModel-simple.dot"));
 
-        // report results
+        // Build statistics report
         String line = "-------------------------------------------------------\n";
         StringBuilder sb = new StringBuilder(line);
-        long d = end - start;
         sb.append(String.format("Total time: %d ms = %.2f s = %.2f h = %.2f d\n\n", d, d / 1000.0, d / 3600000.0, d /
                 86400000.0));
         sb.append(SimpleProfiler.getResults()).append("\n");
@@ -77,11 +81,10 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
         sb.append("Output directory: ").append(outputDirectory.toAbsolutePath()).append("\n");
         sb.append(line);
 
+        // Print report
         String report = sb.toString();
         logLines(report);
-        System.out.println(report);
-
-        return result;
+        System.err.println(report);
     }
 
     private void logLines(String summary) {
@@ -89,11 +92,6 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
     }
 
     @SuppressWarnings("unchecked")
-    private void writeResult(MealyMachine mealyMachine) {
-        Path finalModel = saveModel("learnedModel", mealyMachine);
-        SimplifyDot.simplifyDot(finalModel, outputDirectory.resolve("learnedModel-simple.dot"));
-    }
-
     private Path saveModel(String modelName, MealyMachine mealyMachine) {
         try {
             Path destination = outputDirectory.resolve(modelName + ".dot");
@@ -103,11 +101,5 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        MealyMachine mealyMachine = learn();
-        writeResult(mealyMachine);
     }
 }
