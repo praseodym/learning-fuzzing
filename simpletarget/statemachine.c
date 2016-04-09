@@ -79,6 +79,7 @@ int main() {
       // operate state machine
       char c = step(input);
       printf("%c\n", c);
+      fflush(stdout);
     }
   }
 }

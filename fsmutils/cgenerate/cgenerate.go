@@ -45,6 +45,7 @@ int main() {
 			// operate state machine
 			int i = step(input);
 			printf("%d\n", i);
+			fflush(stdout);
 		}
 	}
 }`
