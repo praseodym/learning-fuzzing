@@ -66,22 +66,27 @@ public class AFLEQOracle<A extends UniversalDeterministicAutomaton<?, I, ?, ?, ?
             for (Path testcase : testcases) {
                 log.debug("Test case {}", testcase.getFileName());
 
-                // Match whitespace, ASCII control chars, high UTF-8 chars, + chars, and any leading zeroes as delimiter
-                Scanner s = new Scanner(testcase).useDelimiter("(\\s|[\\x00-\\x1F]|[\\x7F-\\uFFFF]|\\+)+0*");
-                while (s.hasNext()) {
-                    String token = s.next();
+                try (Scanner s = new Scanner(testcase)) {
+                    // Match whitespace, ASCII control chars, high UTF-8 chars, + chars,
+                    // and any leading zeroes as delimiters
+                    s.useDelimiter("(\\s|[\\x00-\\x1F]|[\\x7F-\\uFFFF]|\\+)+0*");
 
-                    try {
-                        // Check if symbol is in alphabet, otherwise the hypothesis.computeOutput will throw an error
-                        @SuppressWarnings("unchecked") I symbol = (I) token;
-                        inputAlphabet.getSymbolIndex(symbol);
-                        wb.append(symbol);
-                    } catch (NullPointerException e) {
-                        // Not a valid symbol
-                        if (log.isDebugEnabled()) {
-                            String hex = BaseEncoding.base16().encode(token.getBytes());
-                            log.debug("Unknown symbol: {} hex: {} length: {}", token, hex, token.length());
-                            log.debug("Current sequence: {}", wb);
+                    while (s.hasNext()) {
+                        String token = s.next();
+
+                        try {
+                            // Check if symbol is in alphabet, otherwise the hypothesis.computeOutput will throw an
+                            // error
+                            @SuppressWarnings("unchecked") I symbol = (I) token;
+                            inputAlphabet.getSymbolIndex(symbol);
+                            wb.append(symbol);
+                        } catch (NullPointerException e) {
+                            // Not a valid symbol
+                            if (log.isDebugEnabled()) {
+                                String hex = BaseEncoding.base16().encode(token.getBytes());
+                                log.debug("Unknown symbol: {} hex: {} length: {}", token, hex, token.length());
+                                log.debug("Current sequence: {}", wb);
+                            }
                         }
                     }
                 }
