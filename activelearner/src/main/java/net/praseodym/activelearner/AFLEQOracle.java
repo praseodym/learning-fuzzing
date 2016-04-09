@@ -12,6 +12,7 @@ import net.automatalib.words.WordBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -59,9 +60,9 @@ public class AFLEQOracle<A extends UniversalDeterministicAutomaton<?, I, ?, ?, ?
      * (non-Javadoc)
      * @see de.learnlib.api.EquivalenceOracle#findCounterExample(java.lang.Object, java.util.Collection)
      */
+    @Nullable
     @Override
-    public DefaultQuery<I, D> findCounterExample(A hypothesis,
-                                                 Collection<? extends I> inputs) {
+    public DefaultQuery<I, D> findCounterExample(A hypothesis, Collection<? extends I> inputs) {
         try (DirectoryStream<Path> testcases = Files.newDirectoryStream(directory)) {
             for (Path testcase : testcases) {
                 log.debug("Test case {}", testcase.getFileName());

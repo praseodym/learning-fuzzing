@@ -22,9 +22,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
 //@EnableCaching
@@ -54,15 +56,15 @@ public class ActivelearnerApplication {
         return new ProcessSUL();
     }
 
-    @Bean(name = "mealyOracle")
+    @Bean(name = "sul")
     @Profile({"afl", "afltracebitmap"})
-    public CounterOracle.MealyCounterOracle<String, String> aflMealyOracle(AFLSUL sul) {
+    public MembershipOracle.MealyMembershipOracle<String, String> aflMealyOracle(AFLSUL sul) {
         return new CounterOracle.MealyCounterOracle<>(new AFLMealyOracle(sul), "AFL SUL queries");
     }
 
-    @Bean(name = "mealyOracle")
+    @Bean(name = "sul")
     @Profile("process")
-    public CounterOracle.MealyCounterOracle<String, String> processMealyOracle(SUL<String, String> sul) {
+    public MembershipOracle.MealyMembershipOracle<String, String> processMealyOracle(SUL<String, String> sul) {
         return new CounterOracle.MealyCounterOracle<>(new LoggingSULOracle<>(sul), "Process SUL queries");
     }
 
@@ -76,11 +78,10 @@ public class ActivelearnerApplication {
         return alphabet;
     }
 
-    @Bean(name = "membershipOracle")
     @Profile("mealycache")
+    @Bean(name = "membershipOracle")
     public CounterOracle.MealyCounterOracle<String, String> mealyCacheMembershipOracle(
             MembershipOracle<String, Word<String>> mealyOracle) {
-        // Mealy cache is faster but has bugs (ConflictExceptions) in some cases.
         MapMapping<String, String> errorMapping = new MapMapping<>();
         errorMapping.put("invalid_state", "invalid_state");
         for (int i = 0; i <= 26; i++) {
@@ -89,64 +90,67 @@ public class ActivelearnerApplication {
             }
         }
         // DAG cache throws ConflictExceptions (in some cases), tree cache uses more memory
-        log.info("Configuring Mealy tree cache membership oracle");
+        log.info("Configuring tree cache Mealy membership oracle");
         mealyOracle = MealyCacheOracle.createTreeCacheOracle(alphabet(), errorMapping, mealyOracle);
-        return new CounterOracle.MealyCounterOracle<>(mealyOracle, "Membership queries to cache");
+        return new CounterOracle.MealyCounterOracle<>(mealyOracle, "Learning membership queries to cache");
     }
 
-    @Bean(name = "membershipOracle")
+    @Bean(name = "learning")
     @Profile("!mealycache")
-    public CounterOracle.MealyCounterOracle<String, String> mealyMembershipOracle(
-            @Qualifier("mealyOracle") CounterOracle.MealyCounterOracle<String, String> mealyOracle) {
+    public CounterOracle.MealyCounterOracle<String, String> learningMembershipOracle(
+            @Qualifier("sul") MembershipOracle<String, Word<String>> membershipOracle) {
         log.info("Configuring uncached Mealy membership oracle");
-        return new CounterOracle.MealyCounterOracle<>(mealyOracle, "Membership queries");
+        return new CounterOracle.MealyCounterOracle<>(membershipOracle, "Learning membership queries");
     }
 
-    @Bean(name = "eqOracle")
-    public CounterOracle.MealyCounterOracle<String, String> eqOracle(
-            @Qualifier("mealyOracle") CounterOracle.MealyCounterOracle<String, String> mealyOracle) {
-        return new CounterOracle.MealyCounterOracle<>(mealyOracle, "Equivalence queries");
-    }
-
-    @Bean
-    @Profile("afleq")
-    public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> aflEquivalence(
-            @Value("${learner.afleq.directory}") String equivalenceTestFiles,
-            CounterOracle.MealyCounterOracle<String, String> eqOracle) throws IOException {
-        log.info("Configuring AFL equivalence");
-        return new AFLEQOracle<>(alphabet(), eqOracle, equivalenceTestFiles);
-    }
-
-    @Bean
-    @Profile("wmethodeq")
-    public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> wmethodEquivalence(
-            @Value("${learner.wmethodeq.maxdepth}") int wmethodMaxDepth,
-            CounterOracle.MealyCounterOracle<String, String> eqOracle) {
-        assert wmethodMaxDepth > 0;
-        log.info("Configuring W-method equivalence with max. depth {}", wmethodMaxDepth);
-        return new WMethodEQOracle.MealyWMethodEQOracle<>(wmethodMaxDepth, eqOracle);
+    @Bean(name = "testing")
+    public CounterOracle.MealyCounterOracle<String, String> testingMembershipOracle(
+            @Qualifier("sul") MembershipOracle<String, Word<String>> membershipOracle) {
+        return new CounterOracle.MealyCounterOracle<>(membershipOracle, "Testing membership queries");
     }
 
     @Bean
     @Profile("lstar")
-    public LearningAlgorithm.MealyLearner<String, String> lstarLearningAlgorithm(MembershipOracle<String,
-            Word<String>> membershipOracle) {
+    public LearningAlgorithm.MealyLearner<String, String> lstarLearningAlgorithm(
+            @Qualifier("learning") MembershipOracle<String, Word<String>> membershipOracle) {
         return new ExtensibleLStarMealyBuilder<String, String>().withAlphabet(alphabet()).withOracle
                 (membershipOracle).create();
     }
 
     @Bean
     @Profile("ttt")
-    public LearningAlgorithm.MealyLearner<String, String> tttLearningAlgorithm(MembershipOracle<String, Word<String>>
-                                                                                       membershipOracle) {
+    public LearningAlgorithm.MealyLearner<String, String> tttLearningAlgorithm(
+            @Qualifier("learning") MembershipOracle<String, Word<String>> membershipOracle) {
         return new TTTLearnerMealyBuilder<String, String>().withAlphabet(alphabet()).withOracle(membershipOracle)
                 .create();
     }
 
     @Bean
+    @Profile("afleq")
+    @Order(value = 1)
+    public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> aflEquivalence(
+            @Value("${learner.afleq.directory}") String equivalenceTestFiles,
+            @Qualifier("testing") MembershipOracle<String, Word<String>> membershipOracle) throws IOException {
+        log.info("Configuring AFL equivalence oracle");
+        return new AFLEQOracle<>(alphabet(), membershipOracle, equivalenceTestFiles);
+    }
+
+    @Bean
+    @Profile("wmethodeq")
+    @Order(value = 2)
+    public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> wmethodEquivalence(
+            @Value("${learner.wmethodeq.maxdepth}") int wmethodMaxDepth,
+            @Qualifier("testing") MembershipOracle<String, Word<String>> membershipOracle) {
+        assert wmethodMaxDepth > 0;
+        log.info("Configuring W-method equivalence oracle with max. depth {}", wmethodMaxDepth);
+        return new WMethodEQOracle.MealyWMethodEQOracle<>(wmethodMaxDepth, membershipOracle);
+    }
+
+    @Bean
     public Experiment.MealyExperiment<String, String> experiment(
             LearningAlgorithm.MealyLearner<String, String> learningAlgorithm,
-            EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle) {
+            @Qualifier("delegatingEquivalenceOracle")
+                    EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> equivalenceOracle) {
         return new Experiment.MealyExperiment<>(learningAlgorithm, equivalenceOracle, alphabet());
     }
 }
