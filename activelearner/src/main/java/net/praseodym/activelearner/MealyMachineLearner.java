@@ -56,7 +56,7 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
         log.info("Starting learning");
 
         experiment.setProfile(true);
-        experiment.setHypothesesHandler((roundNumber, model) -> saveModel("hypothesis-" + roundNumber, model));
+        experiment.setHypothesesHandler((round, model) -> saveModel(String.format("hypothesis%04d", round), model));
 
         long start = System.nanoTime();
         experiment.run();
