@@ -21,11 +21,9 @@ macro(tigress input)
         tigress
             --Transform=InitEntropy --Functions=main
             --Transform=InitOpaque --Functions=main
-            --Transform=EncodeLiterals --Functions=*
-            --Transform=EncodeArithmetic --Functions=*
-            --Transform=AddOpaque --Functions=*
-            --Transform=AntiTaintAnalysis --Functions=*
-            --Transform=Flatten --Functions=*
+            --Transform=EncodeLiterals --Functions=%10
+            --Transform=EncodeArithmetic --Functions=%10
+            --Transform=Flatten --Functions=%10
             --Transform=CleanUp
             --out=${input}_obfuscated.c ${input}.c
     )
