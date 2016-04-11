@@ -2,3 +2,4 @@ afl_*/
 .idea
 bin/
 traceconvert/Problem?-Traces/
+build/
