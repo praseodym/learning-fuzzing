@@ -19,7 +19,8 @@ void invalid_input() {
 int current_state = 0;
 `
 
-const epilogue string = `default:
+const epilogue string = `
+		default:
 			invalid_input();
 	}
 	return -1;
