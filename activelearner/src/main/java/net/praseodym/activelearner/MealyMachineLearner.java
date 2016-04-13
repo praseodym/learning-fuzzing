@@ -66,7 +66,7 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
         // Save learned model
         MealyMachine result = experiment.getFinalHypothesis();
         Path finalModel = saveModel("learnedModel", result);
-        SimplifyDot.simplifyDot(finalModel, outputDirectory.resolve("learnedModel-simple.dot"));
+        //SimplifyDot.simplifyDot(finalModel, outputDirectory.resolve("learnedModel-simple.dot"));
 
         // Build statistics report
         String line = "-------------------------------------------------------\n";

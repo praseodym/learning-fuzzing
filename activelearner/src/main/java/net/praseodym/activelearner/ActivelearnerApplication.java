@@ -79,9 +79,9 @@ public class ActivelearnerApplication {
     }
 
     @Profile("mealycache")
-    @Bean(name = "membershipOracle")
+    @Bean(name = "learning")
     public CounterOracle.MealyCounterOracle<String, String> mealyCacheMembershipOracle(
-            MembershipOracle<String, Word<String>> mealyOracle) {
+            @Qualifier("sul") MembershipOracle<String, Word<String>> membershipOracle) {
         MapMapping<String, String> errorMapping = new MapMapping<>();
         errorMapping.put("invalid_state", "invalid_state");
         for (int i = 0; i <= 26; i++) {
@@ -91,8 +91,9 @@ public class ActivelearnerApplication {
         }
         // DAG cache throws ConflictExceptions (in some cases), tree cache uses more memory
         log.info("Configuring tree cache Mealy membership oracle");
-        mealyOracle = MealyCacheOracle.createTreeCacheOracle(alphabet(), errorMapping, mealyOracle);
-        return new CounterOracle.MealyCounterOracle<>(mealyOracle, "Learning membership queries to cache");
+        MealyCacheOracle<String, String> cacheOracle = MealyCacheOracle.createTreeCacheOracle(alphabet(),
+                errorMapping, membershipOracle);
+        return new CounterOracle.MealyCounterOracle<>(cacheOracle, "Learning membership queries to cache");
     }
 
     @Bean(name = "learning")

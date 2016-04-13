@@ -46,28 +46,48 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
     @Value("${learner.testinput}")
     private String testinput;
 
-    @Value("${learner.outdir:#{null}}")
+    @Value("${learner.outdir:}")
     private String outdir;
+
+    @Value("${learner.aflout:}")
+    private String aflOut;
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Path aflDir;
-        if (outdir == null) {
-            aflDir = Files.createTempDirectory("learner_afl_");
-        } else {
-            aflDir = Paths.get(outdir);
-            assert Files.exists(aflDir) : "Output directory does not exist";
-        }
-        Path aflIn = aflDir.resolve("afl_in");
-        Path aflOut = aflDir.resolve("afl_out");
-        Files.createDirectory(aflIn);
-        Files.createDirectory(aflOut);
-        Files.write(aflIn.resolve("a"), testinput.getBytes());
+        Path tempPath = Files.createTempDirectory("learner_afl_");
 
-        log.info("AFL directory: {}", aflDir.toAbsolutePath());
+        String aflIn;
+        Path outPath;
+        Path aflOutPath;
+        if (aflOut.equals("")) {
+            if (outdir.equals("")) {
+                outPath = tempPath;
+            } else {
+                outPath = Paths.get(outdir);
+                assert Files.exists(outPath) : "learner.outdir directory does not exist";
+            }
+            aflOutPath = Files.createDirectory(outPath.resolve("afl_out"));
+            aflOut = aflOutPath.toAbsolutePath().toString();
+        } else {
+            aflOutPath = Paths.get(aflOut);
+            if(!Files.exists(aflOutPath)) {
+                Files.createDirectory(aflOutPath);
+            }
+        }
+
+        if (!Files.exists(aflOutPath.resolve("queue"))) {
+            Path aflInPath = Files.createDirectory(tempPath.resolve("afl_in"));
+            Files.write(aflInPath.resolve("testcase"), testinput.getBytes());
+            aflIn = aflInPath.toAbsolutePath().toString();
+        } else {
+            aflIn = "-";
+        }
+
+        log.info("AFL input directory: {}", aflIn);
+        log.info("AFL output directory: {}", aflOut);
 
         log.info("Starting forkserver");
-        afl.pre(aflIn.toString(), aflOut.toString(), target);
+        afl.pre(aflIn, aflOut, target);
     }
 
     @Override
