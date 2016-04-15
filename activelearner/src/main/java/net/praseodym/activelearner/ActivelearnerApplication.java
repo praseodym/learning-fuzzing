@@ -7,6 +7,7 @@ import de.learnlib.api.LearningAlgorithm;
 import de.learnlib.api.MembershipOracle;
 import de.learnlib.api.SUL;
 import de.learnlib.cache.mealy.MealyCacheOracle;
+import de.learnlib.eqtests.basic.RandomWordsEQOracle;
 import de.learnlib.eqtests.basic.WMethodEQOracle;
 import de.learnlib.experiments.Experiment;
 import de.learnlib.oracles.CounterOracle;
@@ -26,7 +27,7 @@ import org.springframework.core.annotation.Order;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.Random;
 
 @SpringBootApplication
 //@EnableCaching
@@ -137,8 +138,22 @@ public class ActivelearnerApplication {
     }
 
     @Bean
-    @Profile("wmethodeq")
+    @Profile("randomeq")
     @Order(value = 2)
+    public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> randomEquivalence(
+            @Value("${learner.randomeq.minlength}") int minLength,
+            @Value("${learner.randomeq.maxlength}") int maxLength,
+            @Value("${learner.randomeq.maxtests}") int maxTests,
+            @Qualifier("testing") MembershipOracle<String, Word<String>> membershipOracle) {
+        log.info("Configuring random words equivalence oracle with min. length {}, max. length {}, max. tests {}",
+                minLength, maxLength, maxTests);
+        return new RandomWordsEQOracle.MealyRandomWordsEQOracle<>(membershipOracle, minLength, maxLength, maxTests,
+                new Random());
+    }
+
+    @Bean
+    @Profile("wmethodeq")
+    @Order(value = 3)
     public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> wmethodEquivalence(
             @Value("${learner.wmethodeq.maxdepth}") int wmethodMaxDepth,
             @Qualifier("testing") MembershipOracle<String, Word<String>> membershipOracle) {
