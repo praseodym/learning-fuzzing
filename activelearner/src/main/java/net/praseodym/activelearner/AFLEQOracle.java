@@ -78,6 +78,7 @@ public class AFLEQOracle<A extends UniversalDeterministicAutomaton<?, I, ?, ?, ?
                         try {
                             // Check if symbol is in alphabet, otherwise the hypothesis.computeOutput will throw an
                             // error
+                            // TODO: make generic query strategy
                             @SuppressWarnings("unchecked") I symbol = (I) token;
                             inputAlphabet.getSymbolIndex(symbol);
                             wb.append(symbol);

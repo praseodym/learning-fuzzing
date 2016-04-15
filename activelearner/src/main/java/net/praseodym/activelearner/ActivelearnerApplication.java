@@ -138,8 +138,23 @@ public class ActivelearnerApplication {
     }
 
     @Bean
+    @Profile("adseq")
+    @Order(value = 3)
+    public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> adsEquivalence(
+            @Value("${learner.adseq.adsbin}") String adsBinary,
+            @Value("${learner.adseq.maxk}") String kMax,
+            @Value("${learner.adseq.rndlength}") String rndLength,
+            @Value("${learner.adseq.maxtests}") int maxTests,
+            @Qualifier("testing") MembershipOracle<String, Word<String>> membershipOracle) {
+        log.info("Configuring ADS equivalence oracle with max. K {}, rnd length {}, max. tests {}",
+                maxTests, kMax, rndLength);
+        return new ADSEQOracle<>(adsBinary, membershipOracle, 1, maxTests, "--prefix", "buggy", "=", "random", kMax,
+                rndLength);
+    }
+
+    @Bean
     @Profile("randomeq")
-    @Order(value = 2)
+    @Order(value = 3)
     public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> randomEquivalence(
             @Value("${learner.randomeq.minlength}") int minLength,
             @Value("${learner.randomeq.maxlength}") int maxLength,
@@ -153,7 +168,7 @@ public class ActivelearnerApplication {
 
     @Bean
     @Profile("wmethodeq")
-    @Order(value = 3)
+    @Order(value = 4)
     public EquivalenceOracle<MealyMachine<?, String, ?, String>, String, Word<String>> wmethodEquivalence(
             @Value("${learner.wmethodeq.maxdepth}") int wmethodMaxDepth,
             @Qualifier("testing") MembershipOracle<String, Word<String>> membershipOracle) {

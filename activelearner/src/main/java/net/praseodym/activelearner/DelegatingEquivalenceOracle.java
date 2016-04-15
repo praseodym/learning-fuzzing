@@ -26,6 +26,7 @@ public class DelegatingEquivalenceOracle<A extends UniversalDeterministicAutomat
     private EquivalenceOracle<A, I, D>[] equivalenceOracles;
 
     @Autowired
+    @SafeVarargs
     public DelegatingEquivalenceOracle(EquivalenceOracle<A, I, D>... equivalenceOracles) {
         log.info("Configuring delegating equivalence oracle with {}",
                 Arrays.stream(equivalenceOracles).map(eq -> eq.getClass().getSimpleName())
