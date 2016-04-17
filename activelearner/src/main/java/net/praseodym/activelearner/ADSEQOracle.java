@@ -136,7 +136,7 @@ public class ADSEQOracle<I, O> implements EquivalenceOracle.MealyEquivalenceOrac
         try {
             setupProcess();
         } catch (IOException e) {
-            throw new RuntimeException("Unable to start the external program: " + e);
+            throw new RuntimeException("Unable to start the external program", e);
         }
 
         try {
@@ -173,15 +173,9 @@ public class ADSEQOracle<I, O> implements EquivalenceOracle.MealyEquivalenceOrac
                         return r;
                     }
                 }
-
-                // If we have reached the maximum number of tests, close the test process and break
-                if (randomMode && testCount >= maxTests) {
-                    closeAll();
-                    break;
-                }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Unable to communicate with the external program: " + e);
+            throw new RuntimeException("Unable to communicate with the external program", e);
         }
 
         // Wait a bit for the external program to exit
