@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 project(benchmarks)
 
 set(CMAKE_C_COMPILER "afl-clang-fast")
-set(CMAKE_C_FLAGS "-Ofast")
+# set(CMAKE_C_FLAGS "-Ofast")
+
+set(ENV{AFL_INST_RATIO} 10)
 
 macro(cgenerate input)
     add_custom_command(
