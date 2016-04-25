@@ -18,6 +18,10 @@ apply plugin: 'spring-boot'
 jar {
     baseName = 'activelearner'
     version = '0.0.6-SNAPSHOT'
+    manifest {
+        attributes("Implementation-Title": "Activelearner",
+                   "Implementation-Version": version)
+    }
 }
 
 springBoot {
