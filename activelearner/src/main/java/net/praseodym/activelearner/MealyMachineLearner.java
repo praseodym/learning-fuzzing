@@ -56,7 +56,9 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
         log.info("Starting learning");
 
         experiment.setProfile(true);
-        experiment.setHypothesesHandler((round, model) -> saveModel(String.format("hypothesis%04d", round), model));
+        // We only save the last 100 hypotheses so as to not fill the disk
+        experiment.setHypothesesHandler((round, model) -> saveModel(String.format("hypothesis%02d", round % 100),
+                model));
 
         long start = System.nanoTime();
         experiment.run();
@@ -95,6 +97,7 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
     private Path saveModel(String modelName, MealyMachine mealyMachine) {
         try {
             Path destination = outputDirectory.resolve(modelName + ".dot");
+            log.info("Model {} has {} states", destination.getFileName(), mealyMachine.size());
             PrintStream psDotFile = new PrintStream(destination.toFile());
             GraphDOT.write(mealyMachine, alphabet, psDotFile);
             return destination;
