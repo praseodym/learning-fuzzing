@@ -12,7 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -27,7 +28,7 @@ import java.util.Arrays;
  * Mealy Machine Learner class
  */
 @Component
-public class MealyMachineLearner implements CommandLineRunner, InitializingBean {
+public class MealyMachineLearner implements ApplicationRunner, InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(MealyMachineLearner.class);
 
@@ -52,7 +53,7 @@ public class MealyMachineLearner implements CommandLineRunner, InitializingBean 
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(ApplicationArguments args) throws Exception {
         log.info("Starting learning");
 
         experiment.setProfile(true);
