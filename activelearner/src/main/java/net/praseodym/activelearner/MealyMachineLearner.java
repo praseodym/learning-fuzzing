@@ -36,7 +36,7 @@ public class MealyMachineLearner implements ApplicationRunner, InitializingBean 
     private Alphabet<String> alphabet;
 
     @Autowired
-    private Experiment.MealyExperiment<String, String> experiment;
+    private Experiment.MealyExperiment<Byte, String> experiment;
 
     @Autowired
     private StatisticOracle[] statisticOracles;

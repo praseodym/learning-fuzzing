@@ -23,13 +23,13 @@ public class AFLTraceBitmapSUL extends AFLSUL {
 
     @Nullable
     @Override
-    public String step(@Nullable String in) throws SULException {
+    public String step(@Nullable Byte in) throws SULException {
         if (in == null)
-            in = "";
+            in = 0x00;
 
         //log.trace("in: [{}] [{}]", previousInput == null ? "null" : new String(previousInput), in);
 
-        byte[] input = calculateNewInput(previousInput, in.getBytes());
+        byte[] input = calculateNewInput(previousInput, new byte[]{in});
 
         byte[] output = afl.run(input);
         execs++;

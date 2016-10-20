@@ -1,8 +1,10 @@
 package net.praseodym.activelearner;
 
+import com.google.common.hash.HashCode;
 import com.google.common.primitives.Bytes;
 import de.learnlib.api.SUL;
 import de.learnlib.api.SULException;
+import net.automatalib.words.Word;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -23,7 +25,7 @@ import java.util.Arrays;
  * This class is optimised to be used with the AFLMealyOracle, which uses the run call.
  * We do not implement SUL#fork() because we are not a true single-step SUL.
  */
-public class AFLSUL implements SUL<String, String>, InitializingBean, DisposableBean {
+public class AFLSUL implements SUL<Byte, String>, InitializingBean, DisposableBean {
 
     private final Logger log = LoggerFactory.getLogger(AFLSUL.class);
 
@@ -70,7 +72,7 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
             aflOut = aflOutPath.toAbsolutePath().toString();
         } else {
             aflOutPath = Paths.get(aflOut);
-            if(!Files.exists(aflOutPath)) {
+            if (!Files.exists(aflOutPath)) {
                 Files.createDirectory(aflOutPath);
             }
         }
@@ -112,11 +114,11 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
      */
     @Nullable
     @Override
-    public String step(@Nullable String in) throws SULException {
+    public String step(@Nullable Byte in) throws SULException {
         if (in == null)
-            in = "";
+            in = 0x00;
 
-        byte[] input = in.getBytes();
+        byte[] input = new byte[]{in};
         byte[] output = run(input);
 
         byte[] shortOutput = calculateNewOutput(previousOutput, output);
@@ -137,8 +139,7 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
         execs++;
 
         if (log.isTraceEnabled()) {
-            log.trace("Run with stdin [{}] and stdout [{}]",
-                    new String(input).replace("\n", " ").trim(),
+            log.trace("Run with stdin [{}] and stdout [{}]", toHexString(input),
                     new String(output).replace("\n", " ").trim());
         }
 
@@ -148,7 +149,7 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
             if (queuedDiscovered != newQueuedDiscovered) {
                 log.debug("Discovered new interesting testcase {} - stdin: [{}], stdout: [{}]",
                         newQueuedDiscovered,
-                        new String(input).replace("\n", " ").trim(),
+                        toHexString(input),
                         new String(output).replace("\n", " ").trim());
                 queuedDiscovered = newQueuedDiscovered;
             }
@@ -188,5 +189,9 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
             output = Arrays.copyOfRange(output, previousOutput.length, output.length);
         }
         return output;
+    }
+
+    private static String toHexString(byte[] bytes) {
+        return bytes.length < 1 ? "ε" : HashCode.fromBytes(bytes).toString();
     }
 }

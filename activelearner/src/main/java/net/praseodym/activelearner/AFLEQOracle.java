@@ -1,6 +1,8 @@
 package net.praseodym.activelearner;
 
+import com.google.common.hash.HashCode;
 import com.google.common.io.BaseEncoding;
+import com.google.common.primitives.Bytes;
 import de.learnlib.api.EquivalenceOracle;
 import de.learnlib.api.MembershipOracle;
 import de.learnlib.oracles.DefaultQuery;
@@ -18,10 +20,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * AFL equivalence oracle.
@@ -38,7 +37,6 @@ public class AFLEQOracle<A extends UniversalDeterministicAutomaton<?, I, ?, ?, ?
 
     private final Alphabet<I> inputAlphabet;
     private final MembershipOracle<I, D> sulOracle;
-    private final WordBuilder<I> wb = new WordBuilder<>();
     private final Path directory;
 
     /**
@@ -65,37 +63,15 @@ public class AFLEQOracle<A extends UniversalDeterministicAutomaton<?, I, ?, ?, ?
     public DefaultQuery<I, D> findCounterExample(A hypothesis, Collection<? extends I> inputs) {
         try (DirectoryStream<Path> testcases = Files.newDirectoryStream(directory)) {
             for (Path testcase : testcases) {
-                log.debug("Test case {}", testcase.getFileName());
-
-                try (Scanner s = new Scanner(testcase)) {
-                    // Match whitespace, ASCII control chars, high UTF-8 chars, + chars,
-                    // and any leading zeroes as delimiters
-                    s.useDelimiter("(\\s|[\\x00-\\x1F]|[\\x7F-\\uFFFF]|\\+)+0*");
-
-                    while (s.hasNext()) {
-                        String token = s.next();
-
-                        try {
-                            // Check if symbol is in alphabet, otherwise the hypothesis.computeOutput will throw an
-                            // error
-                            // TODO: make generic query strategy
-                            @SuppressWarnings("unchecked") I symbol = (I) token;
-                            inputAlphabet.getSymbolIndex(symbol);
-                            wb.append(symbol);
-                        } catch (NullPointerException e) {
-                            // Not a valid symbol
-                            if (log.isDebugEnabled()) {
-                                String hex = BaseEncoding.base16().encode(token.getBytes());
-                                log.debug("Unknown symbol: {} hex: {} length: {}", token, hex, token.length());
-                                log.debug("Current sequence: {}", wb);
-                            }
-                        }
-                    }
-                }
-                if (wb.size() == 0)
+                if (!Files.isRegularFile(testcase)) {
                     continue;
-                Word<I> queryWord = wb.toWord();
-                wb.clear();
+                }
+                log.debug("Test case {}", testcase.getFileName());
+                byte[] testcaseBytes = Files.readAllBytes(testcase);
+                if (log.isTraceEnabled()) {
+                    log.trace("Test case: {}", HashCode.fromBytes(testcaseBytes));
+                }
+                @SuppressWarnings("unchecked") Word<I> queryWord = Word.fromList((List<I>) Bytes.asList(testcaseBytes));
                 DefaultQuery<I, D> query = new DefaultQuery<>(queryWord);
                 D hypOutput = hypothesis.computeOutput(queryWord);
                 sulOracle.processQueries(Collections.singleton(query));
