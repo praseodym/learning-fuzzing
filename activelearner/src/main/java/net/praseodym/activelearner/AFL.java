@@ -33,10 +33,10 @@ public class AFL {
      * @param inputDirectory  AFL input directory, must contain at least a single valid test case used for
      *                        initialisation tests and calibration
      * @param outputDirectory AFL output directory, where AFL will save test cases it deems "interesting"
-     * @param target          location of the target binary, compiled with AFL instrumentation code
-     * @param args            optional program arguments; use '@@' as a placeholder for target file
+     * @param target          location of the target binary, compiled with AFL instrumentation code, and
+     *                        optional program arguments; use '@@' as a placeholder for target file
      */
-    public native void pre(String inputDirectory, String outputDirectory, String target, String[] args);
+    public native void pre(String inputDirectory, String outputDirectory, String... target);
 
     /**
      * Shut down AFL, including the forkserver.

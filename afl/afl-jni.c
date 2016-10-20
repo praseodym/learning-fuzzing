@@ -26,8 +26,7 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env,
                                                                 jobject obj,
                                                                 jstring jin,
                                                                 jstring jout,
-                                                                jstring jtarget,
-                                                                jobjectArray args) {
+                                                                jobjectArray jargv) {
 //  SAYF("libafl pre: initialising AFL\n");
 
   in_dir = (u8 * )(*env)->GetStringUTFChars(env, jin, 0);
@@ -41,16 +40,12 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env,
 //  const char *dict_dir = (*env)->GetStringUTFChars(env, jdict, 0);
 //  if (dict_dir == NULL) PFATAL("Pre: Unable to get dict_dir");
 
-  u8 *target = (u8 * )(*env)->GetStringUTFChars(env, jtarget, 0);
-  if (target == NULL) PFATAL("libafl pre: Unable to get target");
-  // SAYF("libafl pre: target: [%s]\n", target);
-
-  jsize length = (*env)->GetArrayLength(env, args);
+  jsize length = (*env)->GetArrayLength(env, jargv);
   //SAYF("argv length: %d\n", length);
   char *argv[length+1];
   int i = 0;
   for(; i < length; i++) {
-    jstring arg = (jstring)(*env)->GetObjectArrayElement(env, args, i);
+    jstring arg = (jstring)(*env)->GetObjectArrayElement(env, jargv, i);
     if (arg != NULL) {
       char *carg = (u8 * )(*env)->GetStringUTFChars(env, arg, NULL);
       argv[i] = carg;
@@ -106,7 +101,7 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env,
 
   orig_cmdline = (u8 *) "<activelearner>";
 
-  fix_up_banner((u8 *) target);
+  fix_up_banner((u8 *) argv[0]);
 
   not_on_tty = 1;
 
@@ -139,7 +134,7 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env,
 
   if (!out_file) setup_stdio_file();
 
-  check_binary(target);
+  check_binary(argv[0]);
 
   start_time = get_cur_time();
 
