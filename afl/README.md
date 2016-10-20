@@ -1,6 +1,13 @@
 # AFL with libafl
 
-Build with CMake.
+Build with CMake:
+
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```
 
 Dependencies (Debian):
 
