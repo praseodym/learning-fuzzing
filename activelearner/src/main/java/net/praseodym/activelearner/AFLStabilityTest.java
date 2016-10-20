@@ -13,7 +13,7 @@ public class AFLStabilityTest {
         AFL AFL = afl;
         AFL.hello();
 
-        AFL.pre("test_afl_in", "test_afl_out", args[0]);
+        AFL.pre("test_afl_in", "test_afl_out", args[0], new String[0]);
 
         byte[] input = ("9 5 6 4 6 1 8 4 4 6 1 8 4 4 6 1 8 4 4 6 1 8 4 4 6 1 6 1 8 4 4 6 1 8 4 4 6 1 6 1 6 1 8 4 4 6 1" +
                 " 8 4 4 6 1 8 4 4 6 1 8 4 4 6 1 6 1 8 4 4 6 1 8 4 4 6 1 6 1 8 4 4 6 1 6 1 8 4 4 6 1 8 4 4 6 1 6 1 8 4" +

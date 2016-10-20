@@ -13,8 +13,8 @@ import java.util.List;
 @Component
 @Lazy
 public class AFL {
-    /**
-     * Load the native AFL library.
+    /*
+      Load the native AFL library.
      */
     static {
         System.loadLibrary("afl");
@@ -27,15 +27,16 @@ public class AFL {
 
     /**
      * Initialise AFL library with an input and output directory as well as the location of the target. Also executes
-     * a number of tests on the target (e.g. whether the forkserver is and coverage bitmap work as expected) as well
+     * a number of tests on the target (e.g. whether the fork server and coverage bitmap work as expected) as well
      * as some calibration steps to determine the variation in execution time of the target (used to detect hangs).
      *
      * @param inputDirectory  AFL input directory, must contain at least a single valid test case used for
      *                        initialisation tests and calibration
      * @param outputDirectory AFL output directory, where AFL will save test cases it deems "interesting"
      * @param target          location of the target binary, compiled with AFL instrumentation code
+     * @param args            optional program arguments; use '@@' as a placeholder for target file
      */
-    public native void pre(String inputDirectory, String outputDirectory, String target);
+    public native void pre(String inputDirectory, String outputDirectory, String target, String[] args);
 
     /**
      * Shut down AFL, including the forkserver.

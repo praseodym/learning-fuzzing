@@ -15,7 +15,7 @@ public class AFLTest {
         AFL AFL = afl;
         AFL.hello();
 
-        AFL.pre("test_afl_in", "test_afl_out", args[0]);
+        AFL.pre("test_afl_in", "test_afl_out", args[0], new String[0]);
 
         previousTraceBitmap = test("A");
         test("A A");

@@ -87,7 +87,8 @@ public class AFLSUL implements SUL<String, String>, InitializingBean, Disposable
         log.info("AFL output directory: {}", aflOut);
 
         log.info("Starting forkserver");
-        afl.pre(aflIn, aflOut, target);
+        String[] argv = target.split(" ");
+        afl.pre(aflIn, aflOut, argv[0], Arrays.copyOfRange(argv, 1, argv.length));
     }
 
     @Override

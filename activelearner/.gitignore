@@ -11,3 +11,4 @@ out/
 learnedModel*
 afl_in/
 afl_out/
+classes/

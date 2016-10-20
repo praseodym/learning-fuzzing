@@ -26,7 +26,8 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env,
                                                                 jobject obj,
                                                                 jstring jin,
                                                                 jstring jout,
-                                                                jstring jtarget) {
+                                                                jstring jtarget,
+                                                                jobjectArray args) {
 //  SAYF("libafl pre: initialising AFL\n");
 
   in_dir = (u8 * )(*env)->GetStringUTFChars(env, jin, 0);
@@ -42,7 +43,22 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env,
 
   u8 *target = (u8 * )(*env)->GetStringUTFChars(env, jtarget, 0);
   if (target == NULL) PFATAL("libafl pre: Unable to get target");
-//  SAYF("libafl pre: target: [%s]\n", target);
+  // SAYF("libafl pre: target: [%s]\n", target);
+
+  jsize length = (*env)->GetArrayLength(env, args);
+  //SAYF("argv length: %d\n", length);
+  char *argv[length+1];
+  int i = 0;
+  for(; i < length; i++) {
+    jstring arg = (jstring)(*env)->GetObjectArrayElement(env, args, i);
+    if (arg != NULL) {
+      char *carg = (u8 * )(*env)->GetStringUTFChars(env, arg, NULL);
+      argv[i] = carg;
+      // SAYF("argv[%d] = %s\n", i, argv[i]);
+    }
+  }
+  // argv must be NULL-terminated
+  argv[length] = NULL;
 
   // TODO: initialise other options like qemu and dictionary
 
@@ -118,8 +134,6 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env,
   if (extras_dir) load_extras(extras_dir);
 
   if (!timeout_given) find_timeout();
-
-  char *argv[] = {NULL};
 
   detect_file_args(argv);
 
