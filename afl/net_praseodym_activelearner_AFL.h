@@ -25,19 +25,19 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre
 
 /*
  * Class:     net_praseodym_activelearner_AFL
- * Method:    run
- * Signature: ([B)[B
- */
-JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_run
-  (JNIEnv *, jobject, jbyteArray);
-
-/*
- * Class:     net_praseodym_activelearner_AFL
  * Method:    post
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_post
   (JNIEnv *, jobject);
+
+/*
+ * Class:     net_praseodym_activelearner_AFL
+ * Method:    run
+ * Signature: ([B)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_run
+  (JNIEnv *, jobject, jbyteArray);
 
 /*
  * Class:     net_praseodym_activelearner_AFL

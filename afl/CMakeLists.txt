@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
 project(afl)
 
-set(VERSION 2.08b)
+set(VERSION 2.35b)
 set(PREFIX /usr/local)
 set(JAVA_HOME $ENV{JAVA_HOME})
 set(BIN_PATH $(PREFIX)/bin)

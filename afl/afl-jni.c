@@ -1,4 +1,5 @@
 #include "net_praseodym_activelearner_AFL.h"
+#include <asm/unistd_64.h>
 
 static int memfd_create(const char *name, unsigned int flags) {
   return syscall(__NR_memfd_create, name, flags);
@@ -50,7 +51,13 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env,
   u8 *extras_dir = 0;
   u8 mem_limit_given = 0;
 
+  struct timeval tv;
+  struct timezone tz;
+
   doc_path = (u8 *) "docs";
+
+  gettimeofday(&tv, &tz);
+  srandom(tv.tv_sec ^ tv.tv_usec ^ getpid());
 
   if (!strcmp(in_dir, "-")) in_place_resume = 1;
 
@@ -69,12 +76,17 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env,
 
   }
 
-  if (getenv("AFL_NO_FORKSRV")) no_forkserver = 1;
-  if (getenv("AFL_NO_CPU_RED")) no_cpu_meter_red = 1;
-  if (getenv("AFL_NO_VAR_CHECK")) no_var_check = 1;
+  if (getenv("AFL_NO_FORKSRV"))    no_forkserver    = 1;
+  if (getenv("AFL_NO_CPU_RED"))    no_cpu_meter_red = 1;
+  if (getenv("AFL_SHUFFLE_QUEUE")) shuffle_queue    = 1;
 
   if (dumb_mode == 2 && no_forkserver)
     FATAL("AFL_DUMB_FORKSRV and AFL_NO_FORKSRV are mutually exclusive");
+
+  if (getenv("AFL_PRELOAD")) {
+    setenv("LD_PRELOAD", getenv("AFL_PRELOAD"), 1);
+    setenv("DYLD_INSERT_LIBRARIES", getenv("AFL_PRELOAD"), 1);
+  }
 
   orig_cmdline = (u8 *) "<activelearner>";
 
@@ -83,11 +95,17 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env,
   not_on_tty = 1;
 
   get_core_count();
+
+#ifdef HAVE_AFFINITY
+  bind_to_free_cpu();
+#endif /* HAVE_AFFINITY */
+
   check_crash_handling();
   check_cpu_governor();
 
   setup_post();
   setup_shm();
+  init_count_class16();
 
   setup_memfd();
 
@@ -124,7 +142,7 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env,
 
   seek_to = find_start_position();
 
-  write_stats_file(0, 0);
+  write_stats_file(0, 0, 0);
   save_auto();
 
   fflush(stdout);
@@ -139,8 +157,9 @@ JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_run(JNIEnv *en
   jbyte *testcase = (*env)->GetByteArrayElements(env, jtestcase, NULL);
   jsize testcase_length = (*env)->GetArrayLength(env, jtestcase);
 
-  //SAYF("run\n");
-  //SAYF("testcase: %s\n", testcase);
+  // testcase[testcase_length] = 0;
+  // SAYF("run\n");
+  // SAYF("testcase with length %d: %s\n", testcase_length, testcase);
 
   // put testcase in out_file / out_fd
   //SAYF("out_file: %s\n", out_file);
@@ -163,14 +182,14 @@ JNIEXPORT jbyteArray JNICALL Java_net_praseodym_activelearner_AFL_run(JNIEnv *en
         break;
       }
       i++;
-      WARNF("Target process timed out, retrying [%d]", i);
+      WARNF("Target process timed out, retrying (attempt %d)", i);
       fflush(stdout);
     }
   } while (child_timed_out);
 
   __off64_t stdout_position = lseek(stdout_fd, 0, SEEK_CUR);
-  //SAYF("lseek: %d\n", stdout_position);
-  //SAYF("stdout: %s\n", stdout_buffer);
+  // SAYF("lseek: %d\n", stdout_position);
+  // SAYF("stdout: %s\n", stdout_buffer);
 
   (*env)->ReleaseByteArrayElements(env, jtestcase, testcase, 0);
 
@@ -203,6 +222,7 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_post(JNIEnv *env, jo
   destroy_queue();
   destroy_extras();
   ck_free(target_path);
+  ck_free(sync_id);
 
   alloc_report();
 
