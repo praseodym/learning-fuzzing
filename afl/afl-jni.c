@@ -128,7 +128,9 @@ JNIEXPORT void JNICALL Java_net_praseodym_activelearner_AFL_pre(JNIEnv *env,
 
   if (extras_dir) load_extras(extras_dir);
 
-  if (!timeout_given) find_timeout();
+  timeout_given = 3;
+  exec_tmout = 30000;
+  //if (!timeout_given) find_timeout();
 
   detect_file_args(argv);
 
